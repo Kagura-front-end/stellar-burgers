@@ -21,7 +21,8 @@ export const store = configureStore({
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-export const useSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
-export const useDispatch = () => useReduxDispatch<AppDispatch>();
+// typed hooks
+export const useAppSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
+export const useAppDispatch = () => useReduxDispatch<AppDispatch>();
 
 export default store;

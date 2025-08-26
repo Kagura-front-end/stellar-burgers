@@ -6,6 +6,7 @@ import { TIngredient, TOrder, TOrdersData, TUser } from './types';
  * .env must contain: BURGER_API_URL=https://norma.nomoreparties.space/api
  */
 const URL = process.env.BURGER_API_URL as string;
+if (process.env.NODE_ENV === 'development') console.log('BURGER_API_URL =', URL);
 
 const checkResponse = <T>(res: Response): Promise<T> =>
   res.ok ? res.json() : res.json().then((err) => Promise.reject(err));

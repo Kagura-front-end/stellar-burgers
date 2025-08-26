@@ -1,103 +1,158 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import type { TUser } from '../../utils/types';
+import { TUser } from '../../utils/types';
 import {
   loginUserApi,
+  registerUserApi,
   getUserApi,
+  updateUserApi,
   logoutApi,
-  refreshToken as refreshTokenApi,
+  refreshToken as apiRefresh,
 } from '../../utils/burger-api';
+
+type AuthPayload = {
+  user: TUser;
+  accessToken: string;
+  refreshToken: string;
+};
 
 type UserState = {
   user: TUser | null;
+  accessToken: string;
+  refreshToken: string;
   loading: boolean;
   error: string | null;
-  isAuth: boolean;
 };
 
 const initialState: UserState = {
   user: null,
+  accessToken: '',
+  refreshToken: '',
   loading: false,
   error: null,
-  isAuth: false,
 };
 
-export const loginUser = createAsyncThunk<TUser, { email: string; password: string }>(
+export const loginThunk = createAsyncThunk<AuthPayload, { email: string; password: string }>(
   'user/login',
   async (credentials) => {
-    const data = await loginUserApi(credentials); // returns { success, user, accessToken, refreshToken }
-    return data.user;
+    const data = await loginUserApi(credentials);
+    return data;
   },
 );
 
-export const fetchUser = createAsyncThunk<TUser>('user/fetch', async () => {
-  const user = await getUserApi();
-  return user;
+export const registerThunk = createAsyncThunk<
+  AuthPayload,
+  { name: string; email: string; password: string }
+>('user/register', async (body) => {
+  const data = await registerUserApi(body);
+  return data;
 });
 
-export const logoutUser = createAsyncThunk<void>('user/logout', async () => {
+export const fetchUserThunk = createAsyncThunk<TUser>('user/fetch', async () => {
+  const data = await getUserApi();
+  return data;
+});
+
+export const updateUserThunk = createAsyncThunk<
+  TUser,
+  Partial<{ name: string; email: string; password: string }>
+>('user/update', async (patch) => {
+  const data = await updateUserApi(patch);
+  return data;
+});
+
+export const refreshThunk = createAsyncThunk<{
+  accessToken: string;
+  refreshToken: string;
+}>('user/refresh', async () => {
+  const data = await apiRefresh();
+  return { accessToken: data.accessToken, refreshToken: data.refreshToken };
+});
+
+export const logoutThunk = createAsyncThunk('user/logout', async () => {
   await logoutApi();
-});
-
-export const refreshSession = createAsyncThunk<void>('user/refresh', async () => {
-  await refreshTokenApi();
 });
 
 const slice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    resetUser(state) {
+    clearAuth(state) {
       state.user = null;
-      state.isAuth = false;
-      state.loading = false;
-      state.error = null;
+      state.accessToken = '';
+      state.refreshToken = '';
     },
   },
-  extraReducers: (b) => {
-    b
+  extraReducers: (builder) => {
+    builder
       // login
-      .addCase(loginUser.pending, (s) => {
+      .addCase(loginThunk.pending, (s) => {
         s.loading = true;
         s.error = null;
       })
-      .addCase(loginUser.fulfilled, (s, a) => {
+      .addCase(loginThunk.fulfilled, (s, a) => {
         s.loading = false;
-        s.user = a.payload; // <- payload is TUser
-        s.isAuth = true;
+        s.user = a.payload.user;
+        s.accessToken = a.payload.accessToken;
+        s.refreshToken = a.payload.refreshToken;
       })
-      .addCase(loginUser.rejected, (s, a) => {
+      .addCase(loginThunk.rejected, (s, a) => {
         s.loading = false;
-        s.error = String(a.error.message || 'Login failed');
-        s.user = null;
-        s.isAuth = false;
+        s.error = a.error.message || 'Login failed';
       })
-
+      // register
+      .addCase(registerThunk.pending, (s) => {
+        s.loading = true;
+        s.error = null;
+      })
+      .addCase(registerThunk.fulfilled, (s, a) => {
+        s.loading = false;
+        s.user = a.payload.user;
+        s.accessToken = a.payload.accessToken;
+        s.refreshToken = a.payload.refreshToken;
+      })
+      .addCase(registerThunk.rejected, (s, a) => {
+        s.loading = false;
+        s.error = a.error.message || 'Register failed';
+      })
       // fetch user
-      .addCase(fetchUser.pending, (s) => {
+      .addCase(fetchUserThunk.pending, (s) => {
         s.loading = true;
         s.error = null;
       })
-      .addCase(fetchUser.fulfilled, (s, a) => {
+      .addCase(fetchUserThunk.fulfilled, (s, a) => {
         s.loading = false;
         s.user = a.payload;
-        s.isAuth = true;
       })
-      .addCase(fetchUser.rejected, (s, a) => {
+      .addCase(fetchUserThunk.rejected, (s, a) => {
         s.loading = false;
-        s.error = String(a.error.message || 'Fetch user failed');
-        s.user = null;
-        s.isAuth = false;
+        s.error = a.error.message || 'Fetch user failed';
       })
-
+      // update user
+      .addCase(updateUserThunk.pending, (s) => {
+        s.loading = true;
+        s.error = null;
+      })
+      .addCase(updateUserThunk.fulfilled, (s, a) => {
+        s.loading = false;
+        s.user = a.payload;
+      })
+      .addCase(updateUserThunk.rejected, (s, a) => {
+        s.loading = false;
+        s.error = a.error.message || 'Update user failed';
+      })
+      // refresh tokens
+      .addCase(refreshThunk.fulfilled, (s, a) => {
+        s.accessToken = a.payload.accessToken;
+        s.refreshToken = a.payload.refreshToken;
+      })
       // logout
-      .addCase(logoutUser.fulfilled, (s) => {
+      .addCase(logoutThunk.fulfilled, (s) => {
         s.user = null;
-        s.isAuth = false;
+        s.accessToken = '';
+        s.refreshToken = '';
       });
   },
 });
 
-export const { resetUser } = slice.actions;
+export const { clearAuth } = slice.actions;
 export default slice.reducer;
-export const selectUser = (s: { user: UserState }) => s.user.user;
-export const selectIsAuth = (s: { user: UserState }) => s.user.isAuth;
