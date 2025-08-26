@@ -1,9 +1,5 @@
 import { FC } from 'react';
-import {
-  Input,
-  Button,
-  PasswordInput
-} from '@zlden/react-developer-burger-ui-components';
+import { Input, Button, PasswordInput } from '@zlden/react-developer-burger-ui-components';
 import styles from '../common.module.css';
 import { Link } from 'react-router-dom';
 import { ResetPasswordUIProps } from './type';
@@ -14,16 +10,12 @@ export const ResetPasswordUI: FC<ResetPasswordUIProps> = ({
   setPassword,
   handleSubmit,
   token,
-  setToken
+  setToken,
 }) => (
   <main className={styles.container}>
     <div className={`pt-6 ${styles.wrapCenter}`}>
       <h3 className='pb-6 text text_type_main-medium'>Восстановление пароля</h3>
-      <form
-        className={`pb-15 ${styles.form}`}
-        name='login'
-        onSubmit={handleSubmit}
-      >
+      <form className={`pb-15 ${styles.form}`} name='login' onSubmit={handleSubmit}>
         <div className='pb-6'>
           <PasswordInput
             onChange={(e) => setPassword(e.target.value)}
@@ -49,9 +41,7 @@ export const ResetPasswordUI: FC<ResetPasswordUIProps> = ({
           </Button>
         </div>
         {errorText && (
-          <p className={`${styles.error} text text_type_main-default pb-6`}>
-            {errorText}
-          </p>
+          <p className={`${styles.error} text text_type_main-default pb-6`}>{errorText}</p>
         )}
       </form>
       <div className={`${styles.question} text text_type_main-default pb-6`}>

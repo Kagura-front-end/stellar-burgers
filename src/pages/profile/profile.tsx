@@ -5,27 +5,25 @@ export const Profile: FC = () => {
   /** TODO: взять переменную из стора */
   const user = {
     name: '',
-    email: ''
+    email: '',
   };
 
   const [formValue, setFormValue] = useState({
     name: user.name,
     email: user.email,
-    password: ''
+    password: '',
   });
 
   useEffect(() => {
     setFormValue((prevState) => ({
       ...prevState,
       name: user?.name || '',
-      email: user?.email || ''
+      email: user?.email || '',
     }));
   }, [user]);
 
   const isFormChanged =
-    formValue.name !== user?.name ||
-    formValue.email !== user?.email ||
-    !!formValue.password;
+    formValue.name !== user?.name || formValue.email !== user?.email || !!formValue.password;
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -36,14 +34,14 @@ export const Profile: FC = () => {
     setFormValue({
       name: user.name,
       email: user.email,
-      password: ''
+      password: '',
     });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormValue((prevState) => ({
       ...prevState,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 

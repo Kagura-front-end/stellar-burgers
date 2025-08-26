@@ -5,7 +5,7 @@ import {
   BurgerIcon,
   ListIcon,
   Logo,
-  ProfileIcon
+  ProfileIcon,
 } from '@zlden/react-developer-burger-ui-components';
 
 export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
@@ -26,9 +26,7 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
       </div>
       <div className={styles.link_position_last}>
         <ProfileIcon type={'primary'} />
-        <p className='text text_type_main-default ml-2'>
-          {userName || 'Личный кабинет'}
-        </p>
+        <p className='text text_type_main-default ml-2'>{userName || 'Личный кабинет'}</p>
       </div>
     </nav>
   </header>

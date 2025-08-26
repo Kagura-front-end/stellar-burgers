@@ -1,9 +1,6 @@
 import React, { FC, memo } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  CurrencyIcon,
-  FormattedDate
-} from '@zlden/react-developer-burger-ui-components';
+import { CurrencyIcon, FormattedDate } from '@zlden/react-developer-burger-ui-components';
 
 import styles from './order-card.module.css';
 
@@ -26,38 +23,25 @@ export const OrderCardUI: FC<OrderCardUIProps> = memo(
           <FormattedDate date={orderInfo.date} />
         </span>
       </div>
-      <h4 className={`pt-6 text text_type_main-medium ${styles.order_name}`}>
-        {orderInfo.name}
-      </h4>
-      {location.pathname === '/profile/orders' && (
-        <OrderStatus status={orderInfo.status} />
-      )}
+      <h4 className={`pt-6 text text_type_main-medium ${styles.order_name}`}>{orderInfo.name}</h4>
+      {location.pathname === '/profile/orders' && <OrderStatus status={orderInfo.status} />}
       <div className={`pt-6 ${styles.order_content}`}>
         <ul className={styles.ingredients}>
           {orderInfo.ingredientsToShow.map((ingredient, index) => {
             let zIndex = maxIngredients - index;
             let right = 20 * index;
             return (
-              <li
-                className={styles.img_wrap}
-                style={{ zIndex: zIndex, right: right }}
-                key={index}
-              >
+              <li className={styles.img_wrap} style={{ zIndex: zIndex, right: right }} key={index}>
                 <img
                   style={{
-                    opacity:
-                      orderInfo.remains && maxIngredients === index + 1
-                        ? '0.5'
-                        : '1'
+                    opacity: orderInfo.remains && maxIngredients === index + 1 ? '0.5' : '1',
                   }}
                   className={styles.img}
                   src={ingredient.image_mobile}
                   alt={ingredient.name}
                 />
                 {maxIngredients === index + 1 ? (
-                  <span
-                    className={`text text_type_digits-default ${styles.remains}`}
-                  >
+                  <span className={`text text_type_digits-default ${styles.remains}`}>
                     {orderInfo.remains > 0 ? `+${orderInfo.remains}` : null}
                   </span>
                 ) : null}
@@ -66,14 +50,12 @@ export const OrderCardUI: FC<OrderCardUIProps> = memo(
           })}
         </ul>
         <div>
-          <span
-            className={`text text_type_digits-default pr-1 ${styles.order_total}`}
-          >
+          <span className={`text text_type_digits-default pr-1 ${styles.order_total}`}>
             {orderInfo.total}
           </span>
           <CurrencyIcon type='primary' />
         </div>
       </div>
     </Link>
-  )
+  ),
 );

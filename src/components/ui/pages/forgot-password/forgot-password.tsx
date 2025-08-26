@@ -5,20 +5,11 @@ import styles from '../common.module.css';
 import { Link } from 'react-router-dom';
 import { PageUIProps } from '../common-type';
 
-export const ForgotPasswordUI: FC<PageUIProps> = ({
-  errorText,
-  email,
-  setEmail,
-  handleSubmit
-}) => (
+export const ForgotPasswordUI: FC<PageUIProps> = ({ errorText, email, setEmail, handleSubmit }) => (
   <main className={styles.container}>
     <div className={`pt-6 ${styles.wrapCenter}`}>
       <h3 className='pb-6 text text_type_main-medium'>Восстановление пароля</h3>
-      <form
-        className={`pb-15 ${styles.form}`}
-        name='login'
-        onSubmit={handleSubmit}
-      >
+      <form className={`pb-15 ${styles.form}`} name='login' onSubmit={handleSubmit}>
         <div className='pb-6'>
           <Input
             type='email'
@@ -37,9 +28,7 @@ export const ForgotPasswordUI: FC<PageUIProps> = ({
           </Button>
         </div>
         {errorText && (
-          <p className={`${styles.error} text text_type_main-default pb-6`}>
-            {errorText}
-          </p>
+          <p className={`${styles.error} text text_type_main-default pb-6`}>{errorText}</p>
         )}
       </form>
       <div className={`${styles.question} text text_type_main-default pb-6`}>

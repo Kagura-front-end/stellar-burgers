@@ -12,7 +12,7 @@ export const OrderInfo: FC = () => {
     status: '',
     name: '',
     updatedAt: 'string',
-    number: 0
+    number: 0,
   };
 
   const ingredients: TIngredient[] = [];
@@ -27,35 +27,32 @@ export const OrderInfo: FC = () => {
       [key: string]: TIngredient & { count: number };
     };
 
-    const ingredientsInfo = orderData.ingredients.reduce(
-      (acc: TIngredientsWithCount, item) => {
-        if (!acc[item]) {
-          const ingredient = ingredients.find((ing) => ing._id === item);
-          if (ingredient) {
-            acc[item] = {
-              ...ingredient,
-              count: 1
-            };
-          }
-        } else {
-          acc[item].count++;
+    const ingredientsInfo = orderData.ingredients.reduce((acc: TIngredientsWithCount, item) => {
+      if (!acc[item]) {
+        const ingredient = ingredients.find((ing) => ing._id === item);
+        if (ingredient) {
+          acc[item] = {
+            ...ingredient,
+            count: 1,
+          };
         }
+      } else {
+        acc[item].count++;
+      }
 
-        return acc;
-      },
-      {}
-    );
+      return acc;
+    }, {});
 
     const total = Object.values(ingredientsInfo).reduce(
       (acc, item) => acc + item.price * item.count,
-      0
+      0,
     );
 
     return {
       ...orderData,
       ingredientsInfo,
       date,
-      total
+      total,
     };
   }, [orderData, ingredients]);
 

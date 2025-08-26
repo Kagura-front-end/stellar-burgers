@@ -20,5 +20,5 @@ export const BurgerConstructorElement: FC<BurgerConstructorElementProps> = memo(
         handleClose={handleClose}
       />
     );
-  }
+  },
 );
