@@ -1,6 +1,8 @@
 import React, { FC, RefObject } from 'react';
 import { Tab } from '@zlden/react-developer-burger-ui-components';
+
 import type { TIngredient } from '@utils-types';
+import { BurgerIngredient } from '../../burger-ingredient';
 
 export type TabKey = 'bun' | 'sauce' | 'main';
 
@@ -25,7 +27,6 @@ export const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
   titleMainRef,
   onTabClick,
 }) => (
-  // Make sure to handle empty arrays
   <section className='pb-10'>
     <div className='pt-5 pb-10' style={{ display: 'flex', gap: 10 }}>
       <Tab value='bun' active={currentTab === 'bun'} onClick={() => onTabClick('bun')}>
@@ -45,11 +46,7 @@ export const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
       </h2>
       <div className='pl-4 pr-4 mb-10' style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
         {Array.isArray(buns) &&
-          buns.map((item) => (
-            <div key={item._id} className='ingredient-item'>
-              {/* Render bun item */}
-            </div>
-          ))}
+          buns.map((item) => <BurgerIngredient key={item._id} ingredient={item} />)}
       </div>
 
       <h2 ref={titleSauceRef} className='text text_type_main-medium mb-6'>
@@ -57,11 +54,7 @@ export const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
       </h2>
       <div className='pl-4 pr-4 mb-10' style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
         {Array.isArray(sauces) &&
-          sauces.map((item) => (
-            <div key={item._id} className='ingredient-item'>
-              {/* Render sauce item */}
-            </div>
-          ))}
+          sauces.map((item) => <BurgerIngredient key={item._id} ingredient={item} />)}
       </div>
 
       <h2 ref={titleMainRef} className='text text_type_main-medium mb-6'>
@@ -69,14 +62,8 @@ export const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
       </h2>
       <div className='pl-4 pr-4 mb-10' style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
         {Array.isArray(mains) &&
-          mains.map((item) => (
-            <div key={item._id} className='ingredient-item'>
-              {/* Render main item */}
-            </div>
-          ))}
+          mains.map((item) => <BurgerIngredient key={item._id} ingredient={item} />)}
       </div>
     </div>
   </section>
 );
-
-export default BurgerIngredientsUI;
