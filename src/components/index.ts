@@ -1,3 +1,4 @@
+// src/components/index.ts
 export * from './app-header';
 export * from './burger-constructor';
 export * from './burger-constructor-element';
@@ -12,4 +13,7 @@ export * from './order-info';
 export * from './order-status';
 export * from './orders-list';
 export * from './profile-menu';
-export * from './ui';
+
+// ✅ Re-export ONLY the UI names that won't clash with container names
+export { BurgerIngredientsUI } from './ui/burger-ingredients';
+// (add other UI exports here, but keep their UI-specific names)

@@ -1,64 +1,41 @@
-import { useState, useRef, useEffect, FC } from 'react';
-import { useInView } from 'react-intersection-observer';
-
-import { TTabMode } from '@utils-types';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../services/hooks';
+import { fetchIngredients, selectIngredients } from '../../services/ingredients/ingredients.slice';
+import type { TIngredient } from '@utils-types';
 import { BurgerIngredientsUI } from '../ui/burger-ingredients';
 
+type TabKey = 'bun' | 'sauce' | 'main';
+
 export const BurgerIngredients: FC = () => {
-  /** TODO: взять переменные из стора */
-  const buns = [];
-  const mains = [];
-  const sauces = [];
-
-  const [currentTab, setCurrentTab] = useState<TTabMode>('bun');
-  const titleBunRef = useRef<HTMLHeadingElement>(null);
-  const titleMainRef = useRef<HTMLHeadingElement>(null);
-  const titleSaucesRef = useRef<HTMLHeadingElement>(null);
-
-  const [bunsRef, inViewBuns] = useInView({
-    threshold: 0,
-  });
-
-  const [mainsRef, inViewFilling] = useInView({
-    threshold: 0,
-  });
-
-  const [saucesRef, inViewSauces] = useInView({
-    threshold: 0,
-  });
+  const dispatch = useAppDispatch();
+  const items = useAppSelector(selectIngredients);
 
   useEffect(() => {
-    if (inViewBuns) {
-      setCurrentTab('bun');
-    } else if (inViewSauces) {
-      setCurrentTab('sauce');
-    } else if (inViewFilling) {
-      setCurrentTab('main');
-    }
-  }, [inViewBuns, inViewFilling, inViewSauces]);
+    if (!items.length) dispatch(fetchIngredients());
+  }, [dispatch, items.length]);
 
-  const onTabClick = (tab: string) => {
-    setCurrentTab(tab as TTabMode);
-    if (tab === 'bun') titleBunRef.current?.scrollIntoView({ behavior: 'smooth' });
-    if (tab === 'main') titleMainRef.current?.scrollIntoView({ behavior: 'smooth' });
-    if (tab === 'sauce') titleSaucesRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const buns = useMemo(() => items.filter((i: TIngredient) => i.type === 'bun'), [items]);
+  const sauces = useMemo(() => items.filter((i: TIngredient) => i.type === 'sauce'), [items]);
+  const mains = useMemo(() => items.filter((i: TIngredient) => i.type === 'main'), [items]);
 
-  return null;
+  const [currentTab, setCurrentTab] = useState<TabKey>('bun');
+
+  const titleBunRef = useRef<HTMLHeadingElement>(null);
+  const titleSauceRef = useRef<HTMLHeadingElement>(null);
+  const titleMainRef = useRef<HTMLHeadingElement>(null);
 
   return (
     <BurgerIngredientsUI
       currentTab={currentTab}
       buns={buns}
-      mains={mains}
       sauces={sauces}
+      mains={mains}
       titleBunRef={titleBunRef}
+      titleSauceRef={titleSauceRef}
       titleMainRef={titleMainRef}
-      titleSaucesRef={titleSaucesRef}
-      bunsRef={bunsRef}
-      mainsRef={mainsRef}
-      saucesRef={saucesRef}
-      onTabClick={onTabClick}
+      onTabClick={(t: TabKey) => setCurrentTab(t)}
     />
   );
 };
+
+export default BurgerIngredients;

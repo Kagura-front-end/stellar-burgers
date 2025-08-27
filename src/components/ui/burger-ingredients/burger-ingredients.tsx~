@@ -78,3 +78,5 @@ export const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
     </div>
   </section>
 );
+
+export default BurgerIngredientsUI;

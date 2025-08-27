@@ -5,7 +5,7 @@ import { fetchIngredients } from '../../services/ingredients/ingredients.slice';
 
 import styles from './constructor-page.module.css';
 import { BurgerIngredients, BurgerConstructor } from '../../components';
-import { Preloader } from '../../components/ui';
+import { Preloader } from '@ui';
 
 export const ConstructorPage: FC = () => {
   const dispatch = useDispatch<AppDispatch>();

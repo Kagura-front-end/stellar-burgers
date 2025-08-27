@@ -12,6 +12,7 @@ import {
   Register,
   NotFound404,
 } from '@pages';
+import { IngredientDetails } from '@components';
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
       { path: 'forgot-password', element: <ForgotPassword /> },
       { path: 'reset-password', element: <ResetPassword /> },
       { path: 'feed', element: <Feed /> },
+      { path: 'ingredients/:id', element: <IngredientDetails /> }, // ← add this
       {
         path: 'profile',
         element: (

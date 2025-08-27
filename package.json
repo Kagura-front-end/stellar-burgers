@@ -96,7 +96,8 @@
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "format": "prettier \"src/**/*.{ts,tsx,js,jsx,json,css,scss}\" -w",
-    "prepare": "husky install"
+    "test": "jest --passWithNoTests",
+    "prepare": "husky"
   },
   "eslintConfig": {
     "extends": [
@@ -110,10 +111,7 @@
     ".storybook/"
   ],
   "lint-staged": {
-    "src/**/*.{ts,tsx,js,jsx,json,css,scss}": [
-      "prettier -w",
-      "eslint --fix"
-    ]
+    "src/**/*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"]
   },
   "prettier": {
     "singleQuote": true,

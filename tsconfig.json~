@@ -28,6 +28,12 @@
       "@selectors": ["src/services/selectors"]
     }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "src/components/ui/pages"]
+  "include": ["src"]
+}
+{
+"exclude": [
+"node_modules",
+"dist",
+"src/components/ui/pages"
+]
 }
