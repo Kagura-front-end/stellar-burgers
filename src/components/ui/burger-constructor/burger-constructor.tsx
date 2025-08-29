@@ -96,3 +96,5 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
     )}
   </section>
 );
+
+export default BurgerConstructorUI;

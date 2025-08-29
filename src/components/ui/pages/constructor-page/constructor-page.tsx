@@ -1,37 +1,23 @@
-import { useEffect } from 'react';
+import { FC, ReactNode } from 'react';
 import styles from './constructor-page.module.css';
+import { Preloader } from '../../';
 
-import { BurgerIngredients, BurgerConstructor } from '@components';
-import { Preloader } from '@ui';
-import { useAppDispatch, useAppSelector } from '../../../../services/hooks';
-import {
-  fetchIngredients,
-  selectIngredientsLoading,
-} from '../../../../services/ingredients/ingredients.slice';
+export type ConstructorPageUIProps = {
+  isLoading: boolean;
+  children: ReactNode;
+};
 
-export const ConstructorPage = () => {
-  const dispatch = useAppDispatch();
-  const isIngredientsLoading = useAppSelector(selectIngredientsLoading);
-
-  useEffect(() => {
-    dispatch(fetchIngredients());
-  }, [dispatch]);
+export const ConstructorPageUI: FC<ConstructorPageUIProps> = ({ isLoading, children }) => {
+  if (isLoading) return <Preloader />;
 
   return (
-    <>
-      {isIngredientsLoading ? (
-        <Preloader />
-      ) : (
-        <main className={styles.containerMain}>
-          <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
-            Соберите бургер
-          </h1>
-          <div className={`${styles.main} pl-5 pr-5`}>
-            <BurgerIngredients />
-            <BurgerConstructor />
-          </div>
-        </main>
-      )}
-    </>
+    <main className={styles.containerMain}>
+      <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
+        Соберите бургер
+      </h1>
+      <div className={`${styles.main} pl-5 pr-5`}>{children}</div>
+    </main>
   );
 };
+
+export default ConstructorPageUI;

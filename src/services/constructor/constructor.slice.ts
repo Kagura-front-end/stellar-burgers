@@ -1,0 +1,69 @@
+import { createSlice, PayloadAction, nanoid } from '@reduxjs/toolkit';
+import type { TIngredient } from '@utils-types';
+import type { RootState } from '../store';
+
+export type TConstructorIngredient = TIngredient & { uuid: string };
+
+type ConstructorState = {
+  bun: TIngredient | null;
+  items: TConstructorIngredient[];
+};
+
+const initialState: ConstructorState = { bun: null, items: [] };
+
+const slice = createSlice({
+  name: 'burgerConstructor',
+  initialState,
+  reducers: {
+    setBun(state, action: PayloadAction<TIngredient>) {
+      state.bun = action.payload;
+    },
+    addItem(state, action: PayloadAction<TIngredient>) {
+      const ing = action.payload;
+      if (ing.type === 'bun') {
+        state.bun = ing;
+      } else {
+        state.items.push({ ...ing, uuid: nanoid() });
+      }
+    },
+    removeItem(state, action: PayloadAction<string>) {
+      state.items = state.items.filter((i) => i.uuid !== action.payload);
+    },
+    moveItem(state, action: PayloadAction<{ from: number; to: number }>) {
+      const { from, to } = action.payload;
+      if (
+        from === to ||
+        from < 0 ||
+        to < 0 ||
+        from >= state.items.length ||
+        to >= state.items.length
+      )
+        return;
+      const copy = state.items.slice();
+      const [moved] = copy.splice(from, 1);
+      copy.splice(to, 0, moved);
+      state.items = copy;
+    },
+    reset(state) {
+      state.bun = null;
+      state.items = [];
+    },
+  },
+});
+
+export const { setBun, addItem, removeItem, moveItem, reset } = slice.actions;
+export default slice.reducer;
+
+// selectors
+export const selectConstructor = (s: RootState) => s.burgerConstructor;
+export const selectConstructorBun = (s: RootState) => s.burgerConstructor.bun;
+export const selectConstructorItems = (s: RootState) => s.burgerConstructor.items;
+
+// counts by _id (bun counts as 2)
+export const selectCountsMap = (state: RootState): Record<string, number> => {
+  const { bun, items } = state.burgerConstructor;
+  const map: Record<string, number> = {};
+  if (bun) map[bun._id] = 2;
+  for (const i of items) map[i._id] = (map[i._id] ?? 0) + 1;
+  return map;
+};

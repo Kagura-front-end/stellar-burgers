@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@redux-devtools/extension": "^3.3.0",
     "@reduxjs/toolkit": "^2.8.2",
     "@zlden/react-developer-burger-ui-components": "^1.15.0",
     "clsx": "^2.0.0",
@@ -111,7 +112,10 @@
     ".storybook/"
   ],
   "lint-staged": {
-    "src/**/*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"]
+    "src/**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "prettier": {
     "singleQuote": true,

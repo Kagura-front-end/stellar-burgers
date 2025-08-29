@@ -1,19 +1,19 @@
+export * from './preloader';
 export * from './app-header';
+export * from './burger-ingredients';
 export * from './burger-constructor';
 export * from './burger-constructor-element';
 export * from './burger-ingredient';
-export * from './burger-ingredients';
-export * from './feed-info';
 export * from './ingredient-details';
-export * from './ingredients-category';
 export * from './modal';
-export * from './modal-overlay';
-export * from './order-card';
 export * from './order-details';
-export * from './order-info';
 export * from './order-status';
 export * from './orders-list';
-export * from './preloader';
+export * from './order-card';
+export * from './order-info';
 export * from './profile-menu';
-export { BurgerIngredientsUI } from './burger-ingredients';
-export type { BurgerIngredientsUIProps } from './burger-ingredients';
+export * from './feed-info';
+export { ModalOverlayUI } from './modal-overlay';
+
+// pages (presentational pages only)
+export * from './pages/constructor-page';

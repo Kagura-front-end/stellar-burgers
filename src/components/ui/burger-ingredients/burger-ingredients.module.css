@@ -33,3 +33,16 @@ p {
   font-size: 24px;
   line-height: 30px;
 }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.scrollableContainer {
+    height: 100%;
+    max-height: calc(100vh - 260px);
+    overflow-y: auto;
+    padding-right: 8px;
+}

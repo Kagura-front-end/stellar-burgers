@@ -1,0 +1,2 @@
+export { BurgerConstructorElementUI } from './burger-constructor-element';
+export type { BurgerConstructorElementProps } from './burger-constructor-element';

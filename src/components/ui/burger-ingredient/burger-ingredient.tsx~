@@ -16,7 +16,7 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = ({
   ingredient,
   count,
   handleAdd,
-  locationState,
+  locationState, // ⬅ add
 }) => {
   const { _id, image, name, price } = ingredient;
 
@@ -24,7 +24,7 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = ({
     handleAdd?.();
   };
 
-  const linkContent = (
+  const content = (
     <>
       {!!count && <Counter count={count} size='default' />}
       <img className={styles.image} src={image} alt={name} />
@@ -33,33 +33,19 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = ({
         <CurrencyIcon type='primary' />
       </div>
       <p className={`${styles.title} text text_type_main-default`}>{name}</p>
-    </>
-  );
-
-  const regularContent = (
-    <>
-      {!!count && <Counter count={count} size='default' />}
-      <img className={styles.image} src={image} alt={name} />
-      <div className={`${styles.price} mt-1 mb-1`}>
-        <p className='text text_type_digits-default mr-2'>{price}</p>
-        <CurrencyIcon type='primary' />
-      </div>
-      <p className={`${styles.title} text text_type_main-default`}>{name}</p>
+      <AddButton text='Добавить' onClick={onAddClick} />
     </>
   );
 
   return (
     <article className={styles.card}>
       {locationState ? (
-        <Link to={`/ingredients/${_id}`} state={locationState} className={styles.linkArea}>
-          {linkContent}
+        <Link to={`/ingredients/${_id}`} state={locationState}>
+          {content}
         </Link>
       ) : (
-        regularContent
+        content
       )}
-
-      {/* Button OUTSIDE the link to prevent navigation from canceling the click */}
-      <AddButton text='Добавить' onClick={onAddClick} />
     </article>
   );
 };

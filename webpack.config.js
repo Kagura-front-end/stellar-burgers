@@ -10,14 +10,19 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: ['babel-loader']
+        use: ['babel-loader'],
       },
       {
         test: /\.(ts)x?$/,
         exclude: /node_modules/,
         use: {
-          loader: 'ts-loader'
-        }
+          loader: 'ts-loader',
+          options: {
+            configFile: path.resolve(__dirname, 'tsconfig.json'),
+            // If the error persists, temporarily enable the next line:
+            // transpileOnly: true,
+          },
+        },
       },
       {
         test: /\.css$/,
@@ -34,8 +39,8 @@ module.exports = {
             options: {
               modules: true
             }
-          }
-        ]
+          },
+        ],
       },
       {
         test: /\.(jpg|jpeg|png|svg)$/,
@@ -44,8 +49,8 @@ module.exports = {
       {
         test: /\.(woff|woff2)$/,
         type: 'asset/resource'
-      }
-    ]
+      },
+    ],
   },
   plugins: [
     new ESLintPlugin({
@@ -55,7 +60,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html'
     }),
-    new Dotenv()
+    new Dotenv(),
   ],
   resolve: {
     extensions: [
@@ -79,18 +84,19 @@ module.exports = {
       '@utils-types': path.resolve(__dirname, './src/utils/types'),
       '@api': path.resolve(__dirname, './src/utils/burger-api.ts'),
       '@slices': path.resolve(__dirname, './src/services/slices'),
-      '@selectors': path.resolve(__dirname, './src/services/selectors')
-    }
+      '@selectors': path.resolve(__dirname, './src/services/selectors'),
+    },
   },
   output: {
     path: path.resolve(__dirname, './dist'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    clean: true,
   },
   devServer: {
     static: path.join(__dirname, './dist'),
     compress: true,
     historyApiFallback: true,
     port: 4000,
-    hot: true
-  }
+    hot: true,
+  },
 };

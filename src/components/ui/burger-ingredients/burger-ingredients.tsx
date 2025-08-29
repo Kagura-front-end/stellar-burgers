@@ -1,12 +1,14 @@
-import React, { FC, RefObject } from 'react';
+import { FC, RefObject } from 'react';
 import { Tab } from '@zlden/react-developer-burger-ui-components';
-
 import type { TIngredient } from '@utils-types';
-import { BurgerIngredient } from '../../burger-ingredient';
+import { IngredientsCategoryUI } from '../ingredients-category';
+import { BurgerIngredientUI } from '../burger-ingredient';
+import { type Location } from 'react-router-dom';
+import styles from './burger-ingredients.module.css';
 
-export type TabKey = 'bun' | 'sauce' | 'main';
+type TabKey = 'bun' | 'sauce' | 'main';
 
-export interface BurgerIngredientsUIProps {
+export type BurgerIngredientsUIProps = {
   currentTab: TabKey;
   buns: TIngredient[];
   sauces: TIngredient[];
@@ -14,10 +16,16 @@ export interface BurgerIngredientsUIProps {
   titleBunRef: RefObject<HTMLHeadingElement>;
   titleSauceRef: RefObject<HTMLHeadingElement>;
   titleMainRef: RefObject<HTMLHeadingElement>;
+  listBunsRef: RefObject<HTMLDivElement>;
+  listSaucesRef: RefObject<HTMLDivElement>;
+  listMainsRef: RefObject<HTMLDivElement>;
   onTabClick: (t: TabKey) => void;
-}
+  countsMap: Record<string, number>;
+  handleAdd: (i: TIngredient) => void;
+  locationState?: { background: Location } | undefined;
+};
 
-export const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
+const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
   currentTab,
   buns,
   sauces,
@@ -25,10 +33,16 @@ export const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
   titleBunRef,
   titleSauceRef,
   titleMainRef,
+  listBunsRef,
+  listSaucesRef,
+  listMainsRef,
   onTabClick,
+  countsMap,
+  handleAdd,
+  locationState,
 }) => (
-  <section className='pb-10'>
-    <div className='pt-5 pb-10' style={{ display: 'flex', gap: 10 }}>
+  <section className={styles.section}>
+    <div className={styles.tabs}>
       <Tab value='bun' active={currentTab === 'bun'} onClick={() => onTabClick('bun')}>
         Булки
       </Tab>
@@ -40,30 +54,43 @@ export const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
       </Tab>
     </div>
 
-    <div className='scrollable-container' style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-      <h2 ref={titleBunRef} className='text text_type_main-medium mb-6'>
-        Булки
-      </h2>
-      <div className='pl-4 pr-4 mb-10' style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
-        {Array.isArray(buns) &&
-          buns.map((item) => <BurgerIngredient key={item._id} ingredient={item} count={0} />)}
-      </div>
+    <IngredientsCategoryUI title='Булки' titleRef={titleBunRef} ref={listBunsRef}>
+      {buns.map((ingredient) => (
+        <BurgerIngredientUI
+          key={ingredient._id}
+          ingredient={ingredient}
+          count={countsMap[ingredient._id] ?? 0}
+          handleAdd={() => handleAdd(ingredient)}
+          locationState={locationState}
+        />
+      ))}
+    </IngredientsCategoryUI>
 
-      <h2 ref={titleSauceRef} className='text text_type_main-medium mb-6'>
-        Соусы
-      </h2>
-      <div className='pl-4 pr-4 mb-10' style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
-        {Array.isArray(sauces) &&
-          sauces.map((item) => <BurgerIngredient key={item._id} ingredient={item} count={0} />)}
-      </div>
+    <IngredientsCategoryUI title='Соусы' titleRef={titleSauceRef} ref={listSaucesRef}>
+      {sauces.map((ingredient) => (
+        <BurgerIngredientUI
+          key={ingredient._id}
+          ingredient={ingredient}
+          count={countsMap[ingredient._id] ?? 0}
+          handleAdd={() => handleAdd(ingredient)}
+          locationState={locationState}
+        />
+      ))}
+    </IngredientsCategoryUI>
 
-      <h2 ref={titleMainRef} className='text text_type_main-medium mb-6'>
-        Начинки
-      </h2>
-      <div className='pl-4 pr-4 mb-10' style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
-        {Array.isArray(mains) &&
-          mains.map((item) => <BurgerIngredient key={item._id} ingredient={item} count={0} />)}
-      </div>
-    </div>
+    <IngredientsCategoryUI title='Начинки' titleRef={titleMainRef} ref={listMainsRef}>
+      {mains.map((ingredient) => (
+        <BurgerIngredientUI
+          key={ingredient._id}
+          ingredient={ingredient}
+          count={countsMap[ingredient._id] ?? 0}
+          handleAdd={() => handleAdd(ingredient)}
+          locationState={locationState}
+        />
+      ))}
+    </IngredientsCategoryUI>
   </section>
 );
+
+export default BurgerIngredientsUI;
+export { BurgerIngredientsUI };
