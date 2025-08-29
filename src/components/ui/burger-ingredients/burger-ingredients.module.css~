@@ -63,4 +63,21 @@ p {
 }
 */
 
+.section { display:flex; flex-direction:column; max-width:600px; color:#f2f2f3; font-family:'Jet Brains Mono'; }
 
+.tabs { display:flex; gap:16px; margin-bottom:16px; }
+.tabs > * { flex:1 1 0; }        /* equal-width tabs */
+
+.content {
+    height: calc(100vh - 220px);
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding-right: 8px;
+}
+
+.list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(260px, 1fr)); /* 2 columns */
+    gap: 24px;
+    align-items: start;
+}

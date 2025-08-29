@@ -13,9 +13,9 @@ const IngredientsCategoryUI = forwardRef<HTMLDivElement, IngredientsCategoryUIPr
       <h2 ref={titleRef} className='text text_type_main-medium'>
         {title}
       </h2>
-      {/* Scrollable grid */}
+      {/* Scrollable grid with proper items wrapper */}
       <div ref={ref} className={styles.grid} data-testid='scrollable-container'>
-        {children}
+        <div className={styles.items}>{children}</div>
       </div>
     </section>
   ),
