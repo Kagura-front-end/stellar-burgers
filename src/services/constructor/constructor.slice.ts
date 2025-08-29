@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, nanoid } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, nanoid, createSelector } from '@reduxjs/toolkit';
 import type { TIngredient } from '@utils-types';
 import type { RootState } from '../store';
 
@@ -54,16 +54,16 @@ const slice = createSlice({
 export const { setBun, addItem, removeItem, moveItem, reset } = slice.actions;
 export default slice.reducer;
 
-// selectors
 export const selectConstructor = (s: RootState) => s.burgerConstructor;
 export const selectConstructorBun = (s: RootState) => s.burgerConstructor.bun;
 export const selectConstructorItems = (s: RootState) => s.burgerConstructor.items;
 
-// counts by _id (bun counts as 2)
-export const selectCountsMap = (state: RootState): Record<string, number> => {
-  const { bun, items } = state.burgerConstructor;
-  const map: Record<string, number> = {};
-  if (bun) map[bun._id] = 2;
-  for (const i of items) map[i._id] = (map[i._id] ?? 0) + 1;
-  return map;
-};
+export const selectCountsMap = createSelector(
+  [selectConstructorBun, selectConstructorItems],
+  (bun, items) => {
+    const map: Record<string, number> = {};
+    if (bun) map[bun._id] = 2;
+    for (const i of items) map[i._id] = (map[i._id] ?? 0) + 1;
+    return map;
+  },
+);
