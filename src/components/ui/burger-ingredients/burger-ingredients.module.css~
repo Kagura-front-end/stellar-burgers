@@ -50,7 +50,7 @@ p {
 .scrollArea {
     height: 600px;
     overflow-y: auto;
-    scroll-behavior: smooth;
+    scroll-behavior: smooth; 
 }
 
 .content {
