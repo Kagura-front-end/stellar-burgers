@@ -1,6 +1,6 @@
 import { FC, SyntheticEvent } from 'react';
 import type { TIngredient } from '@utils-types';
-import { Counter, CurrencyIcon, AddButton } from '@zlden/react-developer-burger-ui-components';
+import { Counter, CurrencyIcon } from '@zlden/react-developer-burger-ui-components';
 import { Link, type Location } from 'react-router-dom';
 import styles from './burger-ingredient.module.css';
 
@@ -18,25 +18,18 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = ({
   handleAdd,
   locationState,
 }) => {
-  const { _id, image, name, price } = ingredient;
+  const { _id, image, name, price, type } = ingredient;
 
-  const onAddClick = (_e: SyntheticEvent) => {
+  const onAddClick = (e: SyntheticEvent) => {
+    e.stopPropagation(); // Prevent card navigation
+    e.preventDefault(); // Prevent link navigation if inside a Link
     handleAdd?.();
   };
 
-  const linkContent = (
-    <>
-      {!!count && <Counter count={count} size='default' />}
-      <img className={styles.image} src={image} alt={name} />
-      <div className={`${styles.price} mt-1 mb-1`}>
-        <p className='text text_type_digits-default mr-2'>{price}</p>
-        <CurrencyIcon type='primary' />
-      </div>
-      <p className={`${styles.title} text text_type_main-default`}>{name}</p>
-    </>
-  );
+  // Disable button for buns that are already selected (count === 2)
+  const isDisabled = type === 'bun' && count === 2;
 
-  const regularContent = (
+  const content = (
     <>
       {!!count && <Counter count={count} size='default' />}
       <img className={styles.image} src={image} alt={name} />
@@ -52,14 +45,21 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = ({
     <article className={styles.card}>
       {locationState ? (
         <Link to={`/ingredients/${_id}`} state={locationState} className={styles.linkArea}>
-          {linkContent}
+          {content}
         </Link>
       ) : (
-        regularContent
+        content
       )}
 
-      {/* Button OUTSIDE the link to prevent navigation from canceling the click */}
-      <AddButton text='Добавить' onClick={onAddClick} />
+      <button
+        type='button'
+        className={styles.addButton}
+        onClick={onAddClick}
+        disabled={isDisabled}
+        aria-label='Добавить ингредиент'
+      >
+        Добавить
+      </button>
     </article>
   );
 };
