@@ -1,13 +1,23 @@
 import { FC, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import type { RootState } from '../../services/store';
+import type { TOrder } from '@utils-types';
+
 import {
   selectConstructorBun,
   selectConstructorItems,
   selectTotalPrice,
-  // removeItem, // если нужно удаление, вернём позже — текущий UI его не принимает
+  // clearAll as clearConstructor, // <- uncomment if you already have it and want to clear constructor after order
 } from '../../services/constructor/constructor.slice';
+
+import {
+  placeOrderThunk,
+  selectOrderNumber,
+  selectOrderPlacing,
+  placeOrderActions,
+} from '../../services/orders/placeOrder.slice';
+
 import BurgerConstructorUI from '../ui/burger-constructor/burger-constructor';
 
 const BurgerConstructor: FC = () => {
@@ -15,37 +25,62 @@ const BurgerConstructor: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // constructor state
   const bun = useAppSelector((s: RootState) => selectConstructorBun(s));
   const items = useAppSelector((s: RootState) => selectConstructorItems(s));
   const price = useAppSelector((s: RootState) => selectTotalPrice(s));
 
-  // авторизация (используем уже имеющиеся данные)
+  // place-order state
+  const orderNumber = useAppSelector((s: RootState) => selectOrderNumber(s));
+  const orderRequest = useAppSelector((s: RootState) => selectOrderPlacing(s));
+
+  // auth (keep logic consistent with current project)
   const isAuth =
     useAppSelector((s: RootState) => Boolean(s.user?.user)) ||
     Boolean(localStorage.getItem('accessToken'));
 
   const constructorItems = useMemo(() => ({ bun, ingredients: items }), [bun, items]);
 
-  // пока без API-модалки
-  const orderRequest = false;
-  const orderModalData = null;
+  // Create full TOrder object for modal
+  const orderModalData = useMemo(() => {
+    if (!orderNumber) return null;
 
-  const onOrderClick = () => {
-    // запрет на отправку, если нет булки или начинки
+    const fakeOrder: TOrder = {
+      _id: 'tmp',
+      status: 'created',
+      name: 'Заказ',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      number: orderNumber,
+      ingredients: [],
+    };
+    return fakeOrder;
+  }, [orderNumber]);
+
+  const onOrderClick = async () => {
+    // must have bun + at least one filling/sauce
     if (!bun || items.length === 0) return;
 
-    // проверка авторизации
+    // redirect unauthenticated users to login and come back after
     if (!isAuth) {
       navigate('/login', { replace: true, state: { from: location } });
       return;
     }
 
-    // тут позже вызовете реальный POST заказа
-    console.log('Create order', { bun, items, price });
+    // API expects an array of ingredient ids, bun twice (top & bottom)
+    const getId = (x: any) => ('id' in x ? x.id : x._id);
+    const ingredientIds = [getId(bun), ...items.map(getId), getId(bun)];
+
+    const res = await dispatch(placeOrderThunk(ingredientIds) as any);
+
+    if (res.meta?.requestStatus === 'fulfilled') {
+      // optionally clear constructor if you have the action:
+      // dispatch(clearConstructor());
+    }
   };
 
   const closeOrderModal = () => {
-    // заглушка до подключения API/модалки заказа
+    dispatch(placeOrderActions.clearOrder());
   };
 
   return (

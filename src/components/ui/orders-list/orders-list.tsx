@@ -1,14 +1,28 @@
 import { FC } from 'react';
-
+import { useLocation, Link } from 'react-router-dom';
+import type { OrdersListUIProps } from './type';
+import { OrderCardUI } from '@ui';
 import styles from './orders-list.module.css';
 
-import { OrdersListUIProps } from './type';
-import { OrderCard } from '@components';
+export const OrdersList: FC<OrdersListUIProps> = ({ orders, onClick }) => {
+  const location = useLocation();
 
-export const OrdersListUI: FC<OrdersListUIProps> = ({ orderByDate }) => (
-  <div className={`${styles.content}`}>
-    {orderByDate.map((order) => (
-      <OrderCard order={order} key={order._id} />
-    ))}
-  </div>
-);
+  return (
+    <ul className={styles.list}>
+      {orders.map((order) => (
+        <li key={order._id} className={styles.item}>
+          <Link
+            to={`${order.number}`}
+            state={{ background: location }}
+            className={styles.link}
+            onClick={() => onClick?.(order.number)}
+          >
+            <OrderCardUI order={order} />
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+export default OrdersList;

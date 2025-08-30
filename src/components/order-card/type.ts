@@ -1,5 +1,6 @@
-import { TOrder } from '@utils-types';
+import type { TOrder } from '@utils-types';
 
-export type OrderCardProps = {
+export type OrderCardUIProps = {
   order: TOrder;
+  onClick?: () => void;
 };

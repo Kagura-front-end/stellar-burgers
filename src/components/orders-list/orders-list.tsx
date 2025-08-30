@@ -1,12 +1,20 @@
-import { FC, memo } from 'react';
-
-import { OrdersListProps } from './type';
+import { FC, useMemo } from 'react';
 import { OrdersListUI } from '@ui';
+import type { TOrder } from '@utils-types';
 
-export const OrdersList: FC<OrdersListProps> = memo(({ orders }) => {
-  const orderByDate = [...orders].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+type Props = {
+  orders: TOrder[];
+  onClick: (num: string | number) => void;
+};
+
+export const OrdersList: FC<Props> = ({ orders, onClick }) => {
+  const sorted = useMemo(
+    () =>
+      [...orders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [orders],
   );
 
-  return <OrdersListUI orderByDate={orderByDate} />;
-});
+  return <OrdersListUI orders={sorted} onClick={onClick} />;
+};
+
+export default OrdersList;
