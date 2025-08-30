@@ -12,6 +12,7 @@ import { createSocketMiddleware } from './realtime/socketMiddleware';
 import { publicOrdersReducer, publicOrdersActions } from './orders/publicOrders.slice';
 import { profileOrdersReducer, profileOrdersActions } from './orders/profileOrders.slice';
 import { placeOrderReducer } from './orders/placeOrder.slice';
+import { currentOrderReducer } from './orders/currentOrder.slice';
 
 const rootReducer = combineReducers({
   ingredients: ingredientsReducer,
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   publicOrders: publicOrdersReducer,
   profileOrders: profileOrdersReducer,
   placeOrder: placeOrderReducer,
+  currentOrder: currentOrderReducer,
 });
 
 // Create WebSocket middlewares

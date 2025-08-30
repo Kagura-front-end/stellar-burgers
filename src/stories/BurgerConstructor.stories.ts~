@@ -38,7 +38,7 @@ export const WithOrderNumber: Story = {
         price: 1255,
         image: '',
         image_large: '',
-        image_mobile: '',
+        image_mobile: ''
       },
       ingredients: [
         {
@@ -52,11 +52,9 @@ export const WithOrderNumber: Story = {
           price: 50,
           image: '',
           image_large: '',
-          image_mobile: '',
-          // if your constructor item type requires it:
-          uuid: 'sample-uuid-2',
-        },
-      ],
+          image_mobile: ''
+        }
+      ]
     },
     orderRequest: false,
     price: 2555,
