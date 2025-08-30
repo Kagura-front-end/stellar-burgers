@@ -75,5 +75,5 @@ export const selectTotalCount = createSelector(
 
 export const selectTotalPrice = createSelector(
   [selectConstructorBun, selectConstructorItems],
-  (bun, items): number => (bun ? bun.price * 2 : 0) + items.reduce((sum, it) => sum + it.price, 0),
+  (bun, items) => (bun ? bun.price * 2 : 0) + items.reduce((sum, it) => sum + it.price, 0),
 );

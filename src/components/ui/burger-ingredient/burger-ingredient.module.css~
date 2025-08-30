@@ -24,14 +24,4 @@
   text-align: center;
 }
 
-.addButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 260px;
-}
 
-.addButton:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}

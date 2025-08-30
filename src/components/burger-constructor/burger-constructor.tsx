@@ -1,33 +1,52 @@
 import { FC, useMemo } from 'react';
-import { TConstructorIngredient } from '@utils-types';
-import { BurgerConstructorUI } from '@ui';
+import { useAppDispatch, useAppSelector } from '../../services/hooks';
+import { useLocation, useNavigate } from 'react-router-dom';
+import type { RootState } from '../../services/store';
+import {
+  selectConstructorBun,
+  selectConstructorItems,
+  selectTotalPrice,
+  // removeItem, // если нужно удаление, вернём позже — текущий UI его не принимает
+} from '../../services/constructor/constructor.slice';
+import BurgerConstructorUI from '../ui/burger-constructor/burger-constructor';
 
-export const BurgerConstructor: FC = () => {
-  // Until the constructor is wired to the store, keep an empty stub:
-  const constructorItems: {
-    bun: null | { price: number; name?: string; image?: string };
-    ingredients: TConstructorIngredient[];
-  } = {
-    bun: null, // IMPORTANT: null → UI shows "Выберите булки"
-    ingredients: [], // empty → UI shows "Выберите начинку"
-  };
+const BurgerConstructor: FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
+  const bun = useAppSelector((s: RootState) => selectConstructorBun(s));
+  const items = useAppSelector((s: RootState) => selectConstructorItems(s));
+  const price = useAppSelector((s: RootState) => selectTotalPrice(s));
+
+  // авторизация (используем уже имеющиеся данные)
+  const isAuth =
+    useAppSelector((s: RootState) => Boolean(s.user?.user)) ||
+    Boolean(localStorage.getItem('accessToken'));
+
+  // стартовый UI ждёт объект constructorItems: { bun, ingredients }
+  const constructorItems = useMemo(() => ({ bun, ingredients: items }), [bun, items]);
+
+  // пока без API-модалки
   const orderRequest = false;
   const orderModalData = null;
 
-  // Matches the UI's expected "price" prop
-  const price = useMemo(() => {
-    const bunPrice = constructorItems.bun ? constructorItems.bun.price * 2 : 0;
-    const itemsPrice = constructorItems.ingredients.reduce((sum, it) => sum + it.price, 0);
-    return bunPrice + itemsPrice;
-  }, [constructorItems]);
-
   const onOrderClick = () => {
-    // no-op for now — will be replaced when we wire the API
+    // запрет на отправку, если нет булки или начинки
+    if (!bun || items.length === 0) return;
+
+    // проверка авторизации
+    if (!isAuth) {
+      navigate('/login', { replace: true, state: { from: location } });
+      return;
+    }
+
+    // тут позже вызовете реальный POST заказа
+    console.log('Create order', { bun, items, price });
   };
 
   const closeOrderModal = () => {
-    // no-op for now — modal won't open until we have order data
+    // заглушка до подключения API/модалки заказа
   };
 
   return (
@@ -43,3 +62,4 @@ export const BurgerConstructor: FC = () => {
 };
 
 export default BurgerConstructor;
+export { BurgerConstructor };

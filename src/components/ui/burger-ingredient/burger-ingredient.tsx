@@ -51,13 +51,7 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = ({
         content
       )}
 
-      <button
-        type='button'
-        className={styles.addButton}
-        onClick={onAddClick}
-        disabled={isDisabled}
-        aria-label='Добавить ингредиент'
-      >
+      <button type='button' onClick={onAddClick} disabled={isDisabled}>
         Добавить
       </button>
     </article>
