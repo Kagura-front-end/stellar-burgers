@@ -1,33 +1,71 @@
-import React, { FC } from 'react';
-import styles from './app-header.module.css';
-import { TAppHeaderUIProps } from './type';
+import { FC } from 'react';
+import { NavLink } from 'react-router-dom';
 import {
+  Logo,
   BurgerIcon,
   ListIcon,
-  Logo,
   ProfileIcon,
 } from '@zlden/react-developer-burger-ui-components';
+import styles from './app-header.module.css';
 
-export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
+export type TAppHeaderUIProps = {
+  userName?: string;
+};
+
+export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName = '' }) => (
   <header className={styles.header}>
-    <nav className={`${styles.menu} p-4`}>
-      <div className={styles.menu_part_left}>
-        <>
-          <BurgerIcon type={'primary'} />
-          <p className='text text_type_main-default ml-2 mr-10'>Конструктор</p>
-        </>
-        <>
-          <ListIcon type={'primary'} />
-          <p className='text text_type_main-default ml-2'>Лента заказов</p>
-        </>
+    <nav className={styles.nav}>
+      {/* left group */}
+      <div className={styles.left}>
+        <NavLink
+          to='/'
+          end
+          className={({ isActive }) => (isActive ? styles.link_active : styles.link)}
+        >
+          {({ isActive }) => (
+            <>
+              <BurgerIcon type={isActive ? 'primary' : 'secondary'} />
+              <span className='text text_type_main-default'>Конструктор</span>
+            </>
+          )}
+        </NavLink>
+
+        <NavLink
+          to='/feed'
+          className={({ isActive }) => (isActive ? styles.link_active : styles.link)}
+        >
+          {({ isActive }) => (
+            <>
+              <ListIcon type={isActive ? 'primary' : 'secondary'} />
+              <span className='text text_type_main-default'>Лента заказов</span>
+            </>
+          )}
+        </NavLink>
       </div>
+
+      {/* center logo */}
       <div className={styles.logo}>
-        <Logo className='' />
+        <NavLink to='/'>
+          <Logo className={styles.logoIcon} />
+        </NavLink>
       </div>
-      <div className={styles.link_position_last}>
-        <ProfileIcon type={'primary'} />
-        <p className='text text_type_main-default ml-2'>{userName || 'Личный кабинет'}</p>
+
+      {/* right group */}
+      <div className={styles.right}>
+        <NavLink
+          to='/profile'
+          className={({ isActive }) => (isActive ? styles.link_active : styles.link)}
+        >
+          {({ isActive }) => (
+            <>
+              <ProfileIcon type={isActive ? 'primary' : 'secondary'} />
+              <span className='text text_type_main-default'>{userName || 'Личный кабинет'}</span>
+            </>
+          )}
+        </NavLink>
       </div>
     </nav>
   </header>
 );
+
+export default AppHeaderUI;

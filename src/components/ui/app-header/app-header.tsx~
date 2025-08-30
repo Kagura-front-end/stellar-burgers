@@ -1,0 +1,54 @@
+import { FC } from 'react';
+import { NavLink } from 'react-router-dom';
+import { Logo } from '@zlden/react-developer-burger-ui-components';
+import styles from './app-header.module.css';
+
+export type TAppHeaderUIProps = {
+  /** Optional now (storybook sometimes passes nothing) */
+  userName?: string;
+  /** Where the Profile link should point. Defaults to "/profile". */
+  profileTo?: string;
+  /** Optional state passed to NavLink (e.g., { from: location }) */
+  profileState?: unknown;
+};
+
+export const AppHeaderUI: FC<TAppHeaderUIProps> = ({
+  userName = '',
+  profileTo = '/profile',
+  profileState,
+}) => (
+  <header className={styles.header}>
+    <nav className={styles.nav}>
+      <div className={styles.left}>
+        <NavLink to='/' className={({ isActive }) => (isActive ? styles.link_active : styles.link)}>
+          Конструктор
+        </NavLink>
+
+        <NavLink
+          to='/feed'
+          className={({ isActive }) => (isActive ? styles.link_active : styles.link)}
+        >
+          Лента заказов
+        </NavLink>
+      </div>
+
+      <div className={styles.logo}>
+        <NavLink to='/'>
+          <Logo className={styles.logoIcon} />
+        </NavLink>
+      </div>
+
+      <div className={styles.right}>
+        <NavLink
+          to={profileTo}
+          state={profileState}
+          className={({ isActive }) => (isActive ? styles.link_active : styles.link)}
+        >
+          <span className='text text_type_main-default'>{userName || 'Личный кабинет'}</span>
+        </NavLink>
+      </div>
+    </nav>
+  </header>
+);
+
+export default AppHeaderUI;
