@@ -1,2 +1,2 @@
-export { BurgerIngredient as BurgerIngredientUI } from './burger-ingredient';
-export type { TBurgerIngredientProps } from './burger-ingredient';
+export { default, BurgerIngredientUI } from './burger-ingredient';
+export type { TBurgerIngredientUIProps } from './type';
