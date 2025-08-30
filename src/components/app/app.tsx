@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import type { Location } from 'react-router-dom';
 
@@ -16,6 +17,11 @@ import { ProfileOrders } from '../../pages/profile-orders/profile-orders';
 // guard
 import ProtectedRoute from './ProtectedRoute';
 
+// 🔹 redux hooks + thunk to bootstrap auth
+import { useAppDispatch, useAppSelector } from '../../services/store';
+import { fetchUser } from '../../services/user/user.slice';
+import { Preloader } from '@ui';
+
 // simple local 404 fallback (use your real page later if you have it)
 const NotFound = () => <div style={{ padding: 24 }}>Страница не найдена</div>;
 
@@ -27,6 +33,24 @@ export default function App() {
   const state = location.state as { background?: Location } | undefined;
 
   const onClose = () => navigate(-1);
+
+  // 🔹 auth bootstrap
+  const dispatch = useAppDispatch();
+  const checked = useAppSelector((s) => s.user.isAuthChecked);
+
+  useEffect(() => {
+    // tries to get current user (using tokens if any)
+    dispatch(fetchUser());
+  }, [dispatch]);
+
+  // 🔹 block UI until we know whether the user is authenticated
+  if (!checked) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}>
+        <Preloader />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.app}>

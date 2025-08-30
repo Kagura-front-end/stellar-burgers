@@ -6,13 +6,13 @@ import {
 } from 'react-redux';
 
 import ingredientsReducer from './ingredients/ingredients.slice';
-import { userReducer } from './user/user.slice'; // ✅ Добавлен импорт userReducer
+import userReducer from './user/user.slice';
 import constructorReducer from './constructor/constructor.slice';
 
 const rootReducer = combineReducers({
   ingredients: ingredientsReducer,
-  user: userReducer, // ✅ Добавлен редюсер пользователя
-  burgerConstructor: constructorReducer,
+  user: userReducer,
+  burgerConstructor: constructorReducer, // ✅ Changed from 'constructor' to 'burgerConstructor'
 });
 
 export const store = configureStore({

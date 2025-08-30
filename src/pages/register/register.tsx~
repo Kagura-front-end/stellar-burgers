@@ -1,12 +1,11 @@
 import { FC, SyntheticEvent, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../services/store';
-import { RegisterUI } from '@ui-pages';
+import { RegisterUI } from '@ui-pages'; // if your UI barrel uses a different path, keep it consistent
 import { registerUserThunk } from '../../services/user/user.slice';
 
 export const Register: FC = () => {
-  // NOTE: RegisterUI expects userName / setUserName
-  const [userName, setUserName] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -14,27 +13,31 @@ export const Register: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // show API errors under the form if any
   const errorText = useAppSelector((s) => s.user.error ?? '');
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    const res = await dispatch(registerUserThunk({ name: userName, email, password }) as any);
+    const res = await dispatch(registerUserThunk({ name, email, password }) as any);
+
     if (res.meta.requestStatus === 'fulfilled') {
+      // after successful registration go back where user came from or to home
       const to = (location.state as any)?.from?.pathname ?? '/';
       navigate(to, { replace: true });
     }
+    // if rejected, error text from slice will be shown by RegisterUI
   };
 
   return (
     <>
       <RegisterUI
         errorText={errorText}
+        name={name}
+        setName={setName}
         email={email}
         setEmail={setEmail}
         password={password}
         setPassword={setPassword}
-        userName={userName}
-        setUserName={setUserName}
         handleSubmit={handleSubmit}
       />
 

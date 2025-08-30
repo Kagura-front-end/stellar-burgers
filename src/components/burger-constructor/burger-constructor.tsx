@@ -24,7 +24,6 @@ const BurgerConstructor: FC = () => {
     useAppSelector((s: RootState) => Boolean(s.user?.user)) ||
     Boolean(localStorage.getItem('accessToken'));
 
-  // стартовый UI ждёт объект constructorItems: { bun, ingredients }
   const constructorItems = useMemo(() => ({ bun, ingredients: items }), [bun, items]);
 
   // пока без API-модалки

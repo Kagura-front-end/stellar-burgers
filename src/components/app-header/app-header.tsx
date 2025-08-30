@@ -1,15 +1,21 @@
 import { FC } from 'react';
-import { useAppSelector } from '../../services/hooks';
-import type { RootState } from '../../services/store';
-
-// If your @ui barrel re-exports AppHeaderUI:
+import { useLocation } from 'react-router-dom';
+import { useAppSelector } from '../../services/store';
+import { selectIsAuth, selectUser } from '../../services/user/user.slice';
 import { AppHeaderUI } from '@ui';
-// If that fails, use direct import:
-// import { AppHeaderUI } from '../ui/app-header/app-header';
 
 export const AppHeader: FC = () => {
-  const userName = useAppSelector((s: RootState) => s.user?.user?.name ?? '');
-  return <AppHeaderUI userName={userName} />;
+  const location = useLocation();
+  const isAuth = useAppSelector(selectIsAuth);
+  const user = useAppSelector(selectUser);
+
+  return (
+    <AppHeaderUI
+      userName={user?.name ?? ''}
+      profileTo={isAuth ? '/profile' : '/login'}
+      profileState={!isAuth ? { from: location } : undefined}
+    />
+  );
 };
 
 export default AppHeader;

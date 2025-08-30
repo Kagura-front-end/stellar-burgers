@@ -135,7 +135,13 @@ export const registerUserApi = (data: TRegisterData) =>
     method: 'POST',
     headers: { 'Content-Type': 'application/json;charset=utf-8' },
     body: JSON.stringify(data),
-  }).then((res) => checkResponse<TAuthResponse>(res));
+  })
+    .then((res) => checkResponse<TAuthResponse>(res))
+    .then((auth) => {
+      setCookie('accessToken', auth.accessToken);
+      localStorage.setItem('refreshToken', auth.refreshToken);
+      return auth;
+    });
 
 export const loginUserApi = (data: TLoginData) =>
   fetch(`${URL}/auth/login`, {

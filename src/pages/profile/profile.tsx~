@@ -1,5 +1,4 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../services/store';
 import {
   fetchUser,
@@ -15,11 +14,10 @@ import {
   Input,
   PasswordInput,
 } from '@zlden/react-developer-burger-ui-components';
+import styles from './profile.module.css';
 
 export const Profile: FC = () => {
   const dispatch = useAppDispatch();
-  const location = useLocation();
-
   const user = useAppSelector(selectUser);
   const loading = useAppSelector(selectUserLoading);
   const updating = useAppSelector(selectUserUpdating);
@@ -62,14 +60,13 @@ export const Profile: FC = () => {
   if (loading) return null;
 
   return (
-    <div>
-      <aside>
-        {/* Minimal required props so it compiles without styles */}
-        <ProfileMenuUI pathname={location.pathname} handleLogout={() => {}} />
+    <div className={styles.page}>
+      <aside className={styles.menu}>
+        <ProfileMenuUI />
       </aside>
 
-      <section>
-        <form onSubmit={onSubmit}>
+      <section className={styles.content}>
+        <form className={styles.form} onSubmit={onSubmit}>
           <Input
             placeholder='Имя'
             value={form.name}
@@ -86,7 +83,7 @@ export const Profile: FC = () => {
           />
 
           {isDirty && (
-            <div>
+            <div className={styles.actions}>
               <Button
                 htmlType='button'
                 type='secondary'

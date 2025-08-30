@@ -25,36 +25,39 @@ const initialState: UserState = {
   error: null,
 };
 
-// --- HELPERS ---
-const unwrapUser = (data: unknown) =>
-  (data as any)?.user ? ((data as any).user as TUser) : (data as TUser);
-
 // --- THUNKS ---
 
 export const fetchUser = createAsyncThunk('user/fetchUser', async () => {
   const data = await getUserApi();
-  return unwrapUser(data);
+  return data as TUser;
 });
 
 export const updateUser = createAsyncThunk(
   'user/updateUser',
   async (payload: Partial<TUser> & { password?: string }) => {
     const data = await updateUserApi(payload);
-    return unwrapUser(data);
+    return data as TUser;
   },
 );
 
 // ЛОГИН
 export const loginUserThunk = createAsyncThunk(
   'user/loginUser',
-  async (payload: { email: string; password: string }) => unwrapUser(await loginUserApi(payload)),
+  async (payload: { email: string; password: string }) => {
+    const data = await loginUserApi(payload);
+    // Правильное преобразование типа - берем user из ответа
+    return (data as unknown as { user: TUser }).user;
+  },
 );
 
 // РЕГИСТРАЦИЯ
 export const registerUserThunk = createAsyncThunk(
   'user/registerUser',
-  async (payload: { name: string; email: string; password: string }) =>
-    unwrapUser(await registerUserApi(payload)),
+  async (payload: { name: string; email: string; password: string }) => {
+    const data = await registerUserApi(payload);
+    // Правильное преобразование типа - берем user из ответа
+    return (data as unknown as { user: TUser }).user;
+  },
 );
 
 // ЛОГАУТ

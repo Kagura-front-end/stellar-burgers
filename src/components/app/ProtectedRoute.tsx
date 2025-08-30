@@ -1,6 +1,7 @@
 import { PropsWithChildren } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../services/hooks';
+import { useAppSelector } from '../../services/store';
+import { selectIsAuth } from '../../services/user/user.slice';
 
 /**
  * onlyUnAuth = true  → внутрь пускаем только НЕавторизованных (login/register и т.п.)
@@ -10,13 +11,11 @@ type Props = PropsWithChildren<{ onlyUnAuth?: boolean }>;
 
 export default function ProtectedRoute({ onlyUnAuth = false, children }: Props) {
   const location = useLocation();
+  const isAuth = useAppSelector(selectIsAuth);
+  const isAuthChecked = useAppSelector((s) => s.user.isAuthChecked);
 
-  // Аккуратно определяем, залогинен ли пользователь.
-  // 1) если есть user в сторе (как в большинстве стартовых китов)
-  // 2) если есть токен в localStorage (fallback)
-  const isAuth =
-    useAppSelector((s: any) => Boolean(s.user?.user)) ||
-    Boolean(localStorage.getItem('accessToken'));
+  // Ждем завершения проверки авторизации
+  if (!isAuthChecked) return null;
 
   // Хотим страницу только для НЕавторизованных (login/register), а пользователь уже залогинен:
   if (onlyUnAuth && isAuth) {

@@ -1,6 +1,7 @@
 import { FC, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { useLocation, useNavigate } from 'react-router-dom';
+import type { RootState } from '../../services/store';
 import {
   selectConstructorBun,
   selectConstructorItems,
@@ -14,13 +15,13 @@ const BurgerConstructor: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const bun = useAppSelector(selectConstructorBun as any);
-  const items = useAppSelector(selectConstructorItems as any);
-  const price = useAppSelector(selectTotalPrice as any);
+  const bun = useAppSelector((s: RootState) => selectConstructorBun(s));
+  const items = useAppSelector((s: RootState) => selectConstructorItems(s));
+  const price = useAppSelector((s: RootState) => selectTotalPrice(s));
 
   // авторизация (используем уже имеющиеся данные)
   const isAuth =
-    useAppSelector((s: any) => Boolean(s.user?.user)) ||
+    useAppSelector((s: RootState) => Boolean(s.user?.user)) ||
     Boolean(localStorage.getItem('accessToken'));
 
   // стартовый UI ждёт объект constructorItems: { bun, ingredients }
