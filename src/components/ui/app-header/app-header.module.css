@@ -3,12 +3,20 @@
     background: #1c1c21;
 }
 
+.container {
+    width: 100%;
+    max-width: 1240px;         /* use the same number your main layout uses */
+    margin: 0 auto;
+    padding: 0 20px;           /* same horizontal gutter as the page */
+}
+
 .nav {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: 16px;
     padding: 16px 24px;
+    position: relative;
 }
 
 .left,
