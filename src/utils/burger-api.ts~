@@ -20,10 +20,8 @@ type TAuthResponse = TServerResponse<{ user: TUser; accessToken: string; refresh
 type TIngredientsResponse = TServerResponse<{ data: TIngredient[] }>;
 type TNewOrderResponse = TServerResponse<{ order: TOrder; name: string }>;
 
-const withBearer = (token?: string | null) => {
-  if (!token) return '';
-  return token.startsWith('Bearer ') ? token : `Bearer ${token}`;
-};
+const withBearer = (token: string | null) =>
+  !token ? '' : token.startsWith('Bearer ') ? token : `Bearer ${token}`;
 
 // ---------- token refresh + authed fetch ----------
 export const refreshToken = (): Promise<TRefreshResponse> =>
