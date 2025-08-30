@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../services/store';
 import {
   fetchUser,
@@ -7,6 +7,7 @@ import {
   selectUserLoading,
   selectUserUpdating,
   updateUser,
+  logoutUserThunk,
 } from '../../services/user/user.slice';
 import { ProfileMenuUI } from '@ui';
 import {
@@ -15,23 +16,23 @@ import {
   Input,
   PasswordInput,
 } from '@zlden/react-developer-burger-ui-components';
+import styles from './profile.module.css'; // add this file (see below)
 
 export const Profile: FC = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const user = useAppSelector(selectUser);
   const loading = useAppSelector(selectUserLoading);
   const updating = useAppSelector(selectUserUpdating);
 
-  // Load user once if not loaded yet
   useEffect(() => {
     if (!user) dispatch(fetchUser());
   }, [dispatch, user]);
 
   const [form, setForm] = useState({ name: '', email: '', password: '' });
 
-  // Sync form with user when it changes
   useEffect(() => {
     if (user) setForm({ name: user.name, email: user.email, password: '' });
   }, [user]);
@@ -59,17 +60,21 @@ export const Profile: FC = () => {
     if (Object.keys(payload).length) dispatch(updateUser(payload));
   };
 
+  const onLogout = async () => {
+    await dispatch(logoutUserThunk() as any);
+    navigate('/login', { replace: true, state: { from: location } });
+  };
+
   if (loading) return null;
 
   return (
-    <div>
-      <aside>
-        {/* Minimal required props so it compiles without styles */}
-        <ProfileMenuUI pathname={location.pathname} handleLogout={() => {}} />
+    <div className={styles.page}>
+      <aside className={styles.menu}>
+        <ProfileMenuUI pathname={location.pathname} handleLogout={onLogout} />
       </aside>
 
-      <section>
-        <form onSubmit={onSubmit}>
+      <section className={styles.content}>
+        <form className={styles.form} onSubmit={onSubmit}>
           <Input
             placeholder='Имя'
             value={form.name}
@@ -86,7 +91,7 @@ export const Profile: FC = () => {
           />
 
           {isDirty && (
-            <div>
+            <div className={styles.actions}>
               <Button
                 htmlType='button'
                 type='secondary'

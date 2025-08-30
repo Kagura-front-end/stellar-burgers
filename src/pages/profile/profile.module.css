@@ -1,0 +1,38 @@
+.page {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 40px 20px 0;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 60px;
+    align-items: start;
+}
+
+.menu {
+    position: sticky;
+    top: 90px;
+}
+
+.hint {
+    margin-top: 24px;
+    opacity: 0.6;
+}
+
+.content {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.form {
+    width: 100%;
+    max-width: 480px;
+    display: grid;
+    row-gap: 24px;
+}
+
+.actions {
+    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+}
