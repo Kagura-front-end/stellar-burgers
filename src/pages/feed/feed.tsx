@@ -1,13 +1,15 @@
 import { FC, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../services/store';
+import { publicOrdersActions } from '../../services/orders/publicOrders.slice';
 import {
-  publicOrdersActions,
   selectPublicOrders,
-  selectPublicTotals,
+  selectPublicReadyNumbers,
+  selectPublicPendingNumbers,
+  selectPublicTotal,
+  selectPublicTotalToday,
 } from '../../services/orders/publicOrders.slice';
 import { OrdersListUI, FeedInfoUI, Preloader } from '@ui';
-import type { TOrder } from '@utils-types';
 
 const WS_PUBLIC = 'wss://norma.nomoreparties.space/orders/all';
 
@@ -16,9 +18,6 @@ export const Feed: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const orders = useAppSelector(selectPublicOrders);
-  const totals = useAppSelector(selectPublicTotals);
-
   useEffect(() => {
     dispatch(publicOrdersActions.connect(WS_PUBLIC));
     return () => {
@@ -26,29 +25,27 @@ export const Feed: FC = () => {
     };
   }, [dispatch]);
 
+  const orders = useAppSelector(selectPublicOrders);
+  const readyOrders = useAppSelector(selectPublicReadyNumbers);
+  const pendingOrders = useAppSelector(selectPublicPendingNumbers);
+  const total = useAppSelector(selectPublicTotal);
+  const totalToday = useAppSelector(selectPublicTotalToday);
+
   const openOrder = (num: number | string) => {
     navigate(`/feed/${num}`, { state: { background: location } });
   };
 
-  if (!orders) return <Preloader />;
-
-  // Prepare data for FeedInfoUI
-  const readyOrders = orders
-    .filter((o: TOrder) => o.status === 'done')
-    .map((o: TOrder) => o.number)
-    .slice(0, 10);
-
-  const pendingOrders = orders
-    .filter((o: TOrder) => o.status === 'pending')
-    .map((o: TOrder) => o.number)
-    .slice(0, 10);
-
-  const feed = { total: totals.total, totalToday: totals.totalToday };
+  // Optional: show loader until we have at least some data
+  if (!orders || orders.length === 0) return <Preloader />;
 
   return (
     <main style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 40 }}>
       <OrdersListUI orders={orders} onClick={openOrder} />
-      <FeedInfoUI feed={feed} readyOrders={readyOrders} pendingOrders={pendingOrders} />
+      <FeedInfoUI
+        feed={{ total, totalToday }}
+        readyOrders={readyOrders}
+        pendingOrders={pendingOrders}
+      />
     </main>
   );
 };

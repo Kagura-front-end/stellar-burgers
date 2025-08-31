@@ -1,50 +1,83 @@
-import type { Middleware } from '@reduxjs/toolkit';
+import { Middleware } from '@reduxjs/toolkit';
 
-export type SocketActions = {
-  connect: string; // payload: string (wsUrl)
+type WSConfig = {
+  connect: string;
   disconnect: string;
   onOpen: string;
   onClose: string;
-  onError: string; // payload: string
-  onMessage: string; // payload: any (JSON parsed)
+  onError: string;
+  onMessage: string;
 };
 
-export const createSocketMiddleware =
-  (actions: SocketActions): Middleware =>
-  (store) => {
-    let socket: WebSocket | null = null;
+export const createSocketMiddleware = (types: WSConfig): Middleware => {
+  let socket: WebSocket | null = null;
+  let shouldCloseWhenOpen = false;
 
-    return (next) => (action) => {
-      const { dispatch } = store;
+  return (store) => (next) => (action: unknown) => {
+    const result = next(action as any);
 
-      // 👇 Narrow the action (RTK/Redux types this as unknown)
-      const a = action as { type: string; payload?: any };
+    // Small helper to read an action.type safely
+    const type = (action as any)?.type as string | undefined;
 
-      if (a.type === actions.connect) {
-        const url: string = a.payload;
-        if (socket) socket.close();
-        socket = new WebSocket(url);
-
-        socket.onopen = () => dispatch({ type: actions.onOpen });
-        socket.onerror = () => dispatch({ type: actions.onError, payload: 'WebSocket error' });
-        socket.onclose = () => dispatch({ type: actions.onClose });
-        socket.onmessage = (e) => {
-          try {
-            const data = JSON.parse(e.data);
-            dispatch({ type: actions.onMessage, payload: data });
-          } catch {
-            dispatch({ type: actions.onError, payload: 'Bad JSON in WS message' });
-          }
-        };
+    if (type === types.connect) {
+      // If we already have a socket that is OPEN or CONNECTING, do nothing
+      if (
+        socket &&
+        (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)
+      ) {
+        return result;
       }
 
-      if (a.type === actions.disconnect) {
-        if (socket) {
+      // Decide URL: allow payload override, else use defaults per slice
+      const urlFromAction = (action as any)?.payload as string | undefined;
+      if (!urlFromAction) {
+        // If your slice hardcodes a URL, you can construct it there and pass here via payload.
+        // Without a URL, skip creating a socket.
+        return result;
+      }
+
+      socket = new WebSocket(urlFromAction);
+
+      socket.onopen = () => {
+        store.dispatch({ type: types.onOpen });
+        if (shouldCloseWhenOpen && socket?.readyState === WebSocket.OPEN) {
           socket.close();
-          socket = null;
         }
-      }
+        shouldCloseWhenOpen = false;
+      };
 
-      return next(action);
-    };
+      socket.onclose = () => {
+        store.dispatch({ type: types.onClose });
+        socket = null;
+        shouldCloseWhenOpen = false;
+      };
+
+      socket.onerror = () => {
+        store.dispatch({ type: types.onError, payload: 'WebSocket error' });
+      };
+
+      socket.onmessage = (event: MessageEvent) => {
+        try {
+          const data = JSON.parse(event.data);
+          store.dispatch({ type: types.onMessage, payload: data });
+        } catch {
+          store.dispatch({ type: types.onError, payload: 'Bad message' });
+        }
+      };
+    }
+
+    if (type === types.disconnect) {
+      if (!socket) return result;
+
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.close();
+      } else if (socket.readyState === WebSocket.CONNECTING) {
+        // Delay the close until it opens to avoid the warning
+        shouldCloseWhenOpen = true;
+      }
+      // Keep `socket` reference; it will be nulled in onclose
+    }
+
+    return result;
   };
+};

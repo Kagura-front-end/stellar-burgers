@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 import type { TOrder } from '@utils-types';
 
@@ -47,10 +47,38 @@ const publicOrdersSlice = createSlice({
 
 export const { reducer: publicOrdersReducer, actions: publicOrdersActions } = publicOrdersSlice;
 
-export const selectPublicOrders = (s: RootState) => s.publicOrders.orders;
-export const selectPublicTotals = (s: RootState) => ({
-  total: s.publicOrders.total,
-  totalToday: s.publicOrders.totalToday,
-});
+// --- SELECTORS (memoized) ---
+export const selectPublicOrdersState = (s: RootState) => s.publicOrders;
+
+// Orders array (stable reference)
+export const selectPublicOrders = createSelector(
+  [selectPublicOrdersState],
+  (state) => state.orders,
+);
+
+// Numbers for the right column (primitives: no rerender issues)
+export const selectPublicTotal = createSelector([selectPublicOrdersState], (state) => state.total);
+
+export const selectPublicTotalToday = createSelector(
+  [selectPublicOrdersState],
+  (state) => state.totalToday,
+);
+
+// Combined totals object (memoized)
+export const selectPublicTotals = createSelector(
+  [selectPublicTotal, selectPublicTotalToday],
+  (total, totalToday) => ({ total, totalToday }),
+);
+
+// Ready/pending number lists (arrays, but memoized)
+export const selectPublicReadyNumbers = createSelector([selectPublicOrders], (orders) =>
+  orders.filter((o: TOrder) => o.status === 'done').map((o) => o.number),
+);
+
+export const selectPublicPendingNumbers = createSelector([selectPublicOrders], (orders) =>
+  orders.filter((o: TOrder) => o.status === 'pending').map((o) => o.number),
+);
+
+// Connection status and error
 export const selectPublicConnected = (s: RootState) => s.publicOrders.connected;
 export const selectPublicError = (s: RootState) => s.publicOrders.error;
