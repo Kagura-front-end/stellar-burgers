@@ -75,10 +75,22 @@ const slice = createSlice({
       state.bun = null;
       state.items = [];
     },
+    // Добавлен новый редьюсер для очистки
+    clear: (state) => {
+      state.bun = null;
+      state.items = [];
+    },
   },
 });
 
-export const { setBun, addItem, removeItem, moveItem, reset } = slice.actions;
+export const {
+  setBun,
+  addItem,
+  removeItem,
+  moveItem,
+  reset,
+  clear: clearConstructor,
+} = slice.actions;
 export default slice.reducer;
 
 export const selectConstructor = (s: RootState) => s.burgerConstructor;

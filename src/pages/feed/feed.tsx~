@@ -1,8 +1,8 @@
 import { FC, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../services/store';
+import { publicOrdersActions } from '../../services/orders/publicOrders.slice';
 import {
-  publicOrdersActions,
   selectPublicOrders,
   selectPublicReadyNumbers,
   selectPublicPendingNumbers,
@@ -11,42 +11,31 @@ import {
   selectPublicConnected,
 } from '../../services/orders/publicOrders.slice';
 import { OrdersListUI, FeedInfoUI, Preloader } from '@ui';
-
-const WS_PUBLIC = 'wss://norma.nomoreparties.space/orders/all';
-const HTTP_PUBLIC = 'https://norma.nomoreparties.space/api/orders/all';
+import { fetchPublicFeedOnce } from '../../services/orders/publicOrders.slice';
 
 export const Feed: FC = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Connect WS on mount, disconnect on unmount
+  // Build WS URL based on page protocol (avoids mixed content in some setups)
+  const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  const WS_PUBLIC = `${wsProto}://norma.nomoreparties.space/orders/all`;
+
   useEffect(() => {
+    // 1) Try live WS
     dispatch(publicOrdersActions.connect(WS_PUBLIC));
+
+    // 2) Fallback: if no connection yet after 1500ms, fetch once via HTTP
+    const t = setTimeout(() => {
+      dispatch(fetchPublicFeedOnce());
+    }, 1500);
+
     return () => {
+      clearTimeout(t);
       dispatch(publicOrdersActions.disconnect());
     };
   }, [dispatch]);
-
-  // If WS doesn’t come up quickly, hydrate via HTTP once
-  const connected = useAppSelector(selectPublicConnected);
-  useEffect(() => {
-    let timer: number | undefined;
-    if (!connected) {
-      timer = window.setTimeout(async () => {
-        try {
-          const res = await fetch(HTTP_PUBLIC);
-          const data = await res.json(); // { success, orders, total, totalToday }
-          dispatch(publicOrdersActions.hydrate(data));
-        } catch {
-          // ignore one-off fetch errors
-        }
-      }, 800);
-    }
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
-  }, [connected, dispatch]);
 
   const orders = useAppSelector(selectPublicOrders);
   const readyOrders = useAppSelector(selectPublicReadyNumbers);
@@ -58,20 +47,17 @@ export const Feed: FC = () => {
     navigate(`/feed/${num}`, { state: { background: location } });
   };
 
-  // Show spinner only before we have *any* data
-  const isEmpty = !orders || orders.length === 0;
-  if (isEmpty && !connected) return <Preloader />;
+  // While nothing received yet show loader (null/undefined only)
+  if (!orders) return <Preloader />;
 
   return (
     <main style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 40 }}>
       <OrdersListUI orders={orders} onClick={openOrder} />
       <FeedInfoUI
-        feed={{ total, totalToday }}
+        feed={{ total, totalToday }} // << FeedInfoUI expects "feed"
         readyOrders={readyOrders}
         pendingOrders={pendingOrders}
       />
     </main>
   );
 };
-
-export default Feed;

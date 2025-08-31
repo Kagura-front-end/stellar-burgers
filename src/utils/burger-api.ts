@@ -19,6 +19,7 @@ type TUserResponse = TServerResponse<{ user: TUser }>;
 type TAuthResponse = TServerResponse<{ user: TUser; accessToken: string; refreshToken: string }>;
 type TIngredientsResponse = TServerResponse<{ data: TIngredient[] }>;
 type TNewOrderResponse = TServerResponse<{ order: TOrder; name: string }>;
+type TFeedsResponse = TServerResponse<{ orders: TOrder[]; total: number; totalToday: number }>;
 
 const withBearer = (token?: string | null) => {
   if (!token) return '';
@@ -85,6 +86,15 @@ export const getIngredientsApi = (): Promise<TIngredient[]> =>
   fetch(`${URL}/ingredients`).then((res) =>
     checkResponse<TIngredientsResponse>(res).then((d) => d.data),
   );
+
+// Quick snapshot of public feed via REST (no auth)
+export const getFeedsApi = (): Promise<TFeedsResponse> =>
+  fetch(`${URL}/orders/all`)
+    .then((res) => checkResponse<TFeedsResponse>(res))
+    .then((data) => {
+      if (data?.success) return data;
+      return Promise.reject(data);
+    });
 
 // ---------- auth ----------
 export const registerUserApi = (data: { name: string; email: string; password: string }) =>

@@ -1,29 +1,38 @@
 import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
-import type { RootState } from '../store';
 import type { TOrder } from '@utils-types';
+import type { RootState } from '../store';
 
-type PublicOrdersState = {
-  connected: boolean;
+type FeedPayload = {
+  success?: boolean;
   orders: TOrder[];
   total: number;
   totalToday: number;
-  error?: string | null;
 };
 
-const initialState: PublicOrdersState = {
-  connected: false,
+type State = {
+  orders: TOrder[];
+  total: number;
+  totalToday: number;
+  connected: boolean;
+  error: string | null;
+};
+
+const initialState: State = {
   orders: [],
   total: 0,
   totalToday: 0,
+  connected: false,
   error: null,
 };
 
-const publicOrdersSlice = createSlice({
+const slice = createSlice({
   name: 'publicOrders',
   initialState,
   reducers: {
-    connect: (_s, _a: PayloadAction<string>) => {},
-    disconnect: () => {},
+    // websocket control
+    connect: (state, _action: PayloadAction<string>) => state,
+    disconnect: (state) => state,
+
     onOpen: (state) => {
       state.connected = true;
       state.error = null;
@@ -31,54 +40,47 @@ const publicOrdersSlice = createSlice({
     onClose: (state) => {
       state.connected = false;
     },
-    onError: (state, action: PayloadAction<string>) => {
-      state.error = action.payload;
+    onError: (state, action: PayloadAction<string | undefined>) => {
+      state.error = action.payload ?? 'ws error';
     },
-    onMessage: (
-      state,
-      action: PayloadAction<{ orders: TOrder[]; total: number; totalToday: number }>,
-    ) => {
-      state.orders = action.payload.orders ?? [];
-      state.total = action.payload.total ?? 0;
-      state.totalToday = action.payload.totalToday ?? 0;
+
+    // main update (WS or HTTP fallback both dispatch this)
+    onMessage: (state, action: PayloadAction<FeedPayload>) => {
+      const { orders, total, totalToday } = action.payload;
+      state.orders = orders ?? [];
+      state.total = total ?? 0;
+      state.totalToday = totalToday ?? 0;
+    },
+
+    // explicit hydrate for HTTP fallback (same as onMessage, kept for clarity)
+    hydrate: (state, action: PayloadAction<FeedPayload>) => {
+      const { orders, total, totalToday } = action.payload;
+      state.orders = orders ?? [];
+      state.total = total ?? 0;
+      state.totalToday = totalToday ?? 0;
     },
   },
 });
 
-export const { reducer: publicOrdersReducer, actions: publicOrdersActions } = publicOrdersSlice;
+export const publicOrdersReducer = slice.reducer;
+export const publicOrdersActions = slice.actions;
 
-// --- SELECTORS (memoized) ---
-export const selectPublicOrdersState = (s: RootState) => s.publicOrders;
-
-// Orders array (stable reference)
-export const selectPublicOrders = createSelector(
-  [selectPublicOrdersState],
-  (state) => state.orders,
-);
-
-// Numbers for the right column (primitives: no rerender issues)
-export const selectPublicTotal = createSelector([selectPublicOrdersState], (state) => state.total);
-
-export const selectPublicTotalToday = createSelector(
-  [selectPublicOrdersState],
-  (state) => state.totalToday,
-);
-
-// Combined totals object (memoized)
-export const selectPublicTotals = createSelector(
-  [selectPublicTotal, selectPublicTotalToday],
-  (total, totalToday) => ({ total, totalToday }),
-);
-
-// Ready/pending number lists (arrays, but memoized)
-export const selectPublicReadyNumbers = createSelector([selectPublicOrders], (orders) =>
-  orders.filter((o: TOrder) => o.status === 'done').map((o) => o.number),
-);
-
-export const selectPublicPendingNumbers = createSelector([selectPublicOrders], (orders) =>
-  orders.filter((o: TOrder) => o.status === 'pending').map((o) => o.number),
-);
-
-// Connection status and error
+/* ---------- Selectors ---------- */
+export const selectPublicOrders = (s: RootState) => s.publicOrders.orders;
+export const selectPublicTotal = (s: RootState) => s.publicOrders.total;
+export const selectPublicTotalToday = (s: RootState) => s.publicOrders.totalToday;
 export const selectPublicConnected = (s: RootState) => s.publicOrders.connected;
-export const selectPublicError = (s: RootState) => s.publicOrders.error;
+
+export const selectPublicReadyNumbers = createSelector(selectPublicOrders, (orders) =>
+  orders
+    .filter((o) => o.status === 'done')
+    .slice(0, 10)
+    .map((o) => o.number),
+);
+
+export const selectPublicPendingNumbers = createSelector(selectPublicOrders, (orders) =>
+  orders
+    .filter((o) => o.status !== 'done')
+    .slice(0, 10)
+    .map((o) => o.number),
+);

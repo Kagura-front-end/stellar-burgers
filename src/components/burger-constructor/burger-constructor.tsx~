@@ -68,7 +68,7 @@ const BurgerConstructor: FC = () => {
       price={price}
       orderRequest={orderRequest}
       constructorItems={constructorItems}
-      orderNumber={orderNumber}
+      orderNumber={orderNumber} // ✅ use the new prop
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
     />

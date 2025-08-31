@@ -33,12 +33,13 @@ export default function App() {
   const checked = useAppSelector((s) => s.user.isAuthChecked);
 
   useEffect(() => {
-    const hasTokens =
-      Boolean(getCookie('accessToken')) || Boolean(localStorage.getItem('refreshToken'));
+    const hasAccess = getCookie('accessToken');
+    const hasRefresh = localStorage.getItem('refreshToken');
 
-    if (hasTokens) {
+    if (hasAccess || hasRefresh) {
       dispatch(fetchUser());
     } else {
+      // mark auth as checked so the app can render
       dispatch(userActions.resetUser());
     }
   }, [dispatch]);

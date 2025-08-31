@@ -1,0 +1,97 @@
+import { createAsyncThunk, createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
+import type { RootState } from '../store';
+import type { TOrder } from '@utils-types';
+import { getFeedsApi } from '../../utils/burger-api';
+
+export const fetchPublicFeedOnce = createAsyncThunk('publicOrders/fetchOnce', async () => {
+  const data = await getFeedsApi(); // {orders,total,totalToday}
+  return data;
+});
+
+type PublicOrdersState = {
+  connected: boolean;
+  orders: TOrder[];
+  total: number;
+  totalToday: number;
+  error: string | null;
+};
+
+const initialState: PublicOrdersState = {
+  connected: false,
+  orders: [],
+  total: 0,
+  totalToday: 0,
+  error: null,
+};
+
+const publicOrdersSlice = createSlice({
+  name: 'publicOrders',
+  initialState,
+  reducers: {
+    connect: (state, _action: PayloadAction<string>) => state,
+    disconnect: (state) => state,
+    onOpen: (state) => {
+      state.connected = true;
+      state.error = null;
+    },
+    onClose: (state) => {
+      state.connected = false;
+    },
+    onError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
+    onMessage: (
+      state,
+      action: PayloadAction<{
+        success: boolean;
+        orders: TOrder[];
+        total: number;
+        totalToday: number;
+      }>,
+    ) => {
+      state.orders = action.payload.orders ?? [];
+      state.total = action.payload.total ?? 0;
+      state.totalToday = action.payload.totalToday ?? 0;
+    },
+  },
+  extraReducers: (builder) => {
+    // HTTP fallback
+    builder.addCase(fetchPublicFeedOnce.fulfilled, (state, action) => {
+      state.orders = action.payload.orders ?? [];
+      state.total = action.payload.total ?? 0;
+      state.totalToday = action.payload.totalToday ?? 0;
+    });
+  },
+});
+
+export const publicOrdersReducer = publicOrdersSlice.reducer;
+export const publicOrdersActions = publicOrdersSlice.actions;
+
+/** Base selectors */
+const selectSelf = (s: RootState) => s.publicOrders;
+export const selectPublicConnected = (s: RootState) => selectSelf(s).connected;
+export const selectPublicOrders = (s: RootState) => selectSelf(s).orders;
+export const selectPublicTotal = (s: RootState) => selectSelf(s).total;
+export const selectPublicTotalToday = (s: RootState) => selectSelf(s).totalToday;
+
+/** Memoized derived selectors (prevents that "returned different result" warning) */
+export const selectPublicReadyNumbers = createSelector(selectPublicOrders, (orders) =>
+  orders
+    .filter((o) => o.status === 'done')
+    .map((o) => o.number)
+    .slice(0, 30),
+);
+
+export const selectPublicPendingNumbers = createSelector(selectPublicOrders, (orders) =>
+  orders
+    .filter((o) => o.status === 'pending')
+    .map((o) => o.number)
+    .slice(0, 30),
+);
+
+/** Tiny shape FeedInfoUI expects */
+export const selectPublicFeedForUI = createSelector(
+  selectPublicTotal,
+  selectPublicTotalToday,
+  (total, totalToday) => ({ total, totalToday }),
+);
