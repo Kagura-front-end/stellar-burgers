@@ -5,31 +5,54 @@ import {
   useSelector as useReduxSelector,
 } from 'react-redux';
 
+// Slices
 import ingredientsReducer from './ingredients/ingredients.slice';
 import { userReducer } from './user/user.slice';
 import constructorReducer from './constructor/constructor.slice';
-import { createSocketMiddleware } from './realtime/socketMiddleware';
+
 import { publicOrdersReducer, publicOrdersActions } from './orders/publicOrders.slice';
 import { profileOrdersReducer, profileOrdersActions } from './orders/profileOrders.slice';
 import { placeOrderReducer } from './orders/placeOrder.slice';
 import { currentOrderReducer } from './orders/currentOrder.slice';
 
-// IMPORTANT: do NOT import RootState from './store' here – it causes a circular reference.
+// WS middleware factory
+import { createSocketMiddleware } from './realtime/socketMiddleware';
 
+// ---------------- Root reducer ----------------
 const rootReducer = combineReducers({
   ingredients: ingredientsReducer,
   user: userReducer,
   burgerConstructor: constructorReducer,
+
   publicOrders: publicOrdersReducer,
   profileOrders: profileOrdersReducer,
+
   placeOrder: placeOrderReducer,
   currentOrder: currentOrderReducer,
 });
 
-// A local type we can use *before* the store exists (avoids circular typing)
-type RootStateDraft = ReturnType<typeof rootReducer>;
+// ---------------- Persist constructor ----------------
+const CONSTRUCTOR_STORAGE_KEY = 'sb_constructor';
 
-// Create WebSocket middlewares
+// keep types super-forgiving to avoid TS friction
+const persistConstructorMiddleware: Middleware = (store) => (next) => (action) => {
+  const result = next(action as any);
+
+  try {
+    const type = (action as any)?.type as string | undefined;
+    if (type && type.startsWith('burgerConstructor/')) {
+      const state = (store as any).getState();
+      const { bun, items } = state.burgerConstructor;
+      localStorage.setItem(CONSTRUCTOR_STORAGE_KEY, JSON.stringify({ bun, items }));
+    }
+  } catch {
+    // ignore storage errors
+  }
+
+  return result;
+};
+
+// ---------------- WebSocket middlewares ----------------
 const publicOrdersWS = createSocketMiddleware({
   connect: publicOrdersActions.connect.type,
   disconnect: publicOrdersActions.disconnect.type,
@@ -48,43 +71,18 @@ const profileOrdersWS = createSocketMiddleware({
   onMessage: profileOrdersActions.onMessage.type,
 });
 
-// --- Constructor persist middleware ---
-const CONSTRUCTOR_STORAGE_KEY = 'sb_constructor';
-
-// small type guard
-const hasType = (a: unknown): a is { type: string } => !!a && typeof (a as any).type === 'string';
-
-const persistConstructorMiddleware: Middleware<{}, RootStateDraft> =
-  (store) => (next) => (action: unknown) => {
-    // pass through (action is unknown, so cast for next)
-    const result = next(action as any);
-
-    // Only persist on constructor-slice actions
-    if (hasType(action) && action.type.startsWith('burgerConstructor/')) {
-      try {
-        const state = store.getState();
-        const { bun, items } = state.burgerConstructor;
-        localStorage.setItem(CONSTRUCTOR_STORAGE_KEY, JSON.stringify({ bun, items }));
-      } catch {
-        // ignore storage errors
-      }
-    }
-
-    return result;
-  };
-
+// ---------------- Store ----------------
 export const store = configureStore({
   reducer: rootReducer,
   devTools: process.env.NODE_ENV !== 'production',
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(publicOrdersWS, profileOrdersWS, persistConstructorMiddleware),
+  middleware: (getDefault) =>
+    getDefault().concat(publicOrdersWS, profileOrdersWS, persistConstructorMiddleware),
 });
 
-// Export the real RootState – safe now that the store exists
+// Exported types/hooks used across the app
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-// typed hooks
 export const useAppSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
 export const useAppDispatch = () => useReduxDispatch<AppDispatch>();
 

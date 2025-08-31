@@ -1,35 +1,100 @@
-import { configureStore, combineReducers, Middleware, AnyAction } from '@reduxjs/toolkit';
+import { configureStore, combineReducers, Middleware } from '@reduxjs/toolkit';
+// ... другие импорты
+import { createSocketMiddleware } from './realtime/socketMiddleware';
+import { publicOrdersReducer, publicOrdersActions } from './orders/publicOrders.slice';
+import { profileOrdersReducer, profileOrdersActions } from './orders/profileOrders.slice';
+// ... другие импорты
+
+const rootReducer = combineReducers({
+  ingredients: ingredientsReducer,
+  user: userReducer,
+  burgerConstructor: constructorReducer,
+  publicOrders: publicOrdersReducer, // ✅ Public orders reducer подключен
+  profileOrders: profileOrdersReducer, // ✅ Profile orders reducer подключен
+  // ... другие редьюсеры
+});
+
+// WebSocket middleware для public orders
+const publicOrdersWS = createSocketMiddleware({
+  connect: publicOrdersActions.connect.type,
+  disconnect: publicOrdersActions.disconnect.type,
+  onOpen: publicOrdersActions.onOpen.type,
+  onClose: publicOrdersActions.onClose.type,
+  onError: publicOrdersActions.onError.type,
+  onMessage: publicOrdersActions.onMessage.type,
+});
+
+// WebSocket middleware для profile orders
+const profileOrdersWS = createSocketMiddleware({
+  connect: profileOrdersActions.connect.type,
+  disconnect: profileOrdersActions.disconnect.type,
+  onOpen: profileOrdersActions.onOpen.type,
+  onClose: profileOrdersActions.onClose.type,
+  onError: profileOrdersActions.onError.type,
+  onMessage: profileOrdersActions.onMessage.type,
+});
+import {
+  configureStore,
+  combineReducers,
+  Middleware,
+  MiddlewareAPI,
+  AnyAction,
+} from '@reduxjs/toolkit';
 import {
   TypedUseSelectorHook,
   useDispatch as useReduxDispatch,
   useSelector as useReduxSelector,
 } from 'react-redux';
 
+// slices
 import ingredientsReducer from './ingredients/ingredients.slice';
 import { userReducer } from './user/user.slice';
 import constructorReducer from './constructor/constructor.slice';
-import { createSocketMiddleware } from './realtime/socketMiddleware';
+
 import { publicOrdersReducer, publicOrdersActions } from './orders/publicOrders.slice';
 import { profileOrdersReducer, profileOrdersActions } from './orders/profileOrders.slice';
 import { placeOrderReducer } from './orders/placeOrder.slice';
 import { currentOrderReducer } from './orders/currentOrder.slice';
 
-// IMPORTANT: do NOT import RootState from './store' here – it causes a circular reference.
+// ws middleware
+import { createSocketMiddleware } from './realtime/socketMiddleware';
 
+// ---------- root reducer ----------
 const rootReducer = combineReducers({
   ingredients: ingredientsReducer,
   user: userReducer,
   burgerConstructor: constructorReducer,
+
   publicOrders: publicOrdersReducer,
   profileOrders: profileOrdersReducer,
+
   placeOrder: placeOrderReducer,
   currentOrder: currentOrderReducer,
 });
 
-// A local type we can use *before* the store exists (avoids circular typing)
+// Use this local type while creating middleware (avoids circular typing)
 type RootStateDraft = ReturnType<typeof rootReducer>;
 
-// Create WebSocket middlewares
+// ---------- persist constructor ----------
+const CONSTRUCTOR_STORAGE_KEY = 'sb_constructor';
+
+const persistConstructorMiddleware: Middleware<{}, RootStateDraft> =
+  (store) => (next) => (action: AnyAction) => {
+    const result = next(action);
+
+    if (typeof action.type === 'string' && action.type.startsWith('burgerConstructor/')) {
+      try {
+        const state = store.getState();
+        const { bun, items } = state.burgerConstructor;
+        localStorage.setItem(CONSTRUCTOR_STORAGE_KEY, JSON.stringify({ bun, items }));
+      } catch {
+        // ignore storage errors
+      }
+    }
+    return result;
+  };
+
+// ---------- websocket middlewares ----------
 const publicOrdersWS = createSocketMiddleware({
   connect: publicOrdersActions.connect.type,
   disconnect: publicOrdersActions.disconnect.type,
@@ -48,26 +113,25 @@ const profileOrdersWS = createSocketMiddleware({
   onMessage: profileOrdersActions.onMessage.type,
 });
 
-// --- Constructor persist middleware ---
-const CONSTRUCTOR_STORAGE_KEY = 'sb_constructor';
+// ---------- store ----------
+export const store = configureStore({
+  reducer: rootReducer,
+  devTools: process.env.NODE_ENV !== 'production',
+  middleware: (getDefault) =>
+    getDefault().concat(publicOrdersWS, profileOrdersWS, persistConstructorMiddleware),
+});
 
-const persistConstructorMiddleware: Middleware<{}, RootStateDraft> =
-  (store) => (next) => (action: AnyAction) => {
-    const result = next(action);
+// types the rest of the app imports from "../../services/store"
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 
-    // Actions from the constructor slice start with 'burgerConstructor/'
-    if (typeof action.type === 'string' && action.type.startsWith('burgerConstructor/')) {
-      try {
-        const state = store.getState();
-        const { bun, items } = state.burgerConstructor;
-        localStorage.setItem(CONSTRUCTOR_STORAGE_KEY, JSON.stringify({ bun, items }));
-      } catch {
-        // ignore storage errors
-      }
-    }
+// typed hooks (re-exported for compatibility)
+export const useAppSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
+export const useAppDispatch = () => useReduxDispatch<AppDispatch>();
 
-    return result;
-  };
+export default store;
+
+// ... persistConstructorMiddleware
 
 export const store = configureStore({
   reducer: rootReducer,
@@ -75,13 +139,3 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(publicOrdersWS, profileOrdersWS, persistConstructorMiddleware),
 });
-
-// Export the real RootState – safe now that the store exists
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-
-// typed hooks
-export const useAppSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
-export const useAppDispatch = () => useReduxDispatch<AppDispatch>();
-
-export default store;

@@ -3,7 +3,8 @@ import styles from './feed-info.module.css';
 import { FeedInfoUIProps, HalfColumnProps, TColumnProps } from './type';
 
 export const FeedInfoUI: FC<FeedInfoUIProps> = memo(({ feed, readyOrders, pendingOrders }) => {
-  const { total, totalToday } = feed;
+  const total = feed?.total ?? 0;
+  const totalToday = feed?.totalToday ?? 0;
 
   return (
     <section>
@@ -40,3 +41,5 @@ const Column: FC<TColumnProps> = ({ title, content }) => (
     <p className={`text text_type_digits-large ${styles.content}`}>{content}</p>
   </>
 );
+
+export default FeedInfoUI;

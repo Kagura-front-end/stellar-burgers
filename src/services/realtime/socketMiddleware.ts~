@@ -1,0 +1,63 @@
+import type { Middleware, MiddlewareAPI, Dispatch, UnknownAction } from '@reduxjs/toolkit';
+
+type SocketActions = {
+  connect: string;     // payload: string (WS URL)
+  disconnect: string;
+  onOpen: string;
+  onClose: string;
+  onError: string;     // payload?: string
+  onMessage: string;   // payload: unknown (parsed JSON)
+};
+
+// Return a Middleware whose generics match RTK's expectations
+export const createSocketMiddleware = (actions: SocketActions): Middleware<{}, any, Dispatch<UnknownAction>> => {
+  let socket: WebSocket | null = null;
+
+  return (store: MiddlewareAPI<Dispatch<UnknownAction>>) =>
+    (next: Dispatch<UnknownAction>) =>
+      (action: UnknownAction) => {
+        const type = (action as any)?.type as string;
+        const payload = (action as any)?.payload as unknown;
+
+        if (type === actions.connect) {
+          const url = String(payload);
+
+          // Always replace existing socket to avoid “already open”
+          if (socket) {
+            try { socket.close(1000, 'reconnect'); } catch {}
+            socket = null;
+          }
+
+          socket = new WebSocket(url);
+
+          socket.onopen = () => store.dispatch({ type: actions.onOpen } as UnknownAction);
+
+          socket.onclose = () => {
+            store.dispatch({ type: actions.onClose } as UnknownAction);
+            socket = null;
+          };
+
+          socket.onerror = () => {
+            store.dispatch({ type: actions.onError, payload: 'ws error' } as UnknownAction);
+          };
+
+          socket.onmessage = (event: MessageEvent<string>) => {
+            try {
+              const data = JSON.parse(event.data);
+              store.dispatch({ type: actions.onMessage, payload: data } as UnknownAction);
+            } catch {
+              // ignore malformed frames
+            }
+          };
+        }
+
+        if (type === actions.disconnect) {
+          if (socket) {
+            try { socket.close(1000, 'manual disconnect'); } catch {}
+            socket = null;
+          }
+        }
+
+        return next(action);
+      };
+};

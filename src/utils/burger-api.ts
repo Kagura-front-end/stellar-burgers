@@ -171,6 +171,16 @@ export const resetPasswordApi = ({ password, token }: { password: string; token:
     body: JSON.stringify({ password, token }),
   }).then((res) => checkResponse<TServerResponse<{ message: string }>>(res));
 
+// Public feed via HTTP (fallback/prefill for WS)
+export const getPublicFeedApi = (): Promise<{
+  orders: TOrder[];
+  total: number;
+  totalToday: number;
+}> =>
+  fetch(`${URL}/orders/all`)
+    .then((res) => checkResponse<TFeedsResponse>(res))
+    .then((d) => ({ orders: d.orders, total: d.total, totalToday: d.totalToday }));
+
 // ---------- orders ----------
 export const makeOrderApi = (ingredients: string[]) =>
   fetchWithRefresh<TNewOrderResponse>(`${URL}/orders`, {

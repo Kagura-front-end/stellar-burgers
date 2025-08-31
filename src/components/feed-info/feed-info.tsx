@@ -1,22 +1,14 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
+import { FeedInfoUI } from '../ui/feed-info/feed-info';
+import type { FeedInfoUIProps } from '../ui/feed-info/type';
 
-import { TOrder } from '@utils-types';
-import { FeedInfoUI } from '../ui/feed-info';
+/**
+ * Thin wrapper around the UI component to preserve old import paths:
+ *   import { FeedInfo } from '@components'
+ */
+export const FeedInfo: FC<FeedInfoUIProps> = (props) => <FeedInfoUI {...props} />;
 
-const getOrders = (orders: TOrder[], status: string): number[] =>
-  orders
-    .filter((item) => item.status === status)
-    .map((item) => item.number)
-    .slice(0, 20);
+export default FeedInfo;
 
-export const FeedInfo: FC = () => {
-  /** TODO: взять переменные из стора */
-  const orders: TOrder[] = [];
-  const feed = {};
-
-  const readyOrders = getOrders(orders, 'done');
-
-  const pendingOrders = getOrders(orders, 'pending');
-
-  return <FeedInfoUI readyOrders={readyOrders} pendingOrders={pendingOrders} feed={feed} />;
-};
+// Re-export types for convenience if someone imports from this path
+export type { FeedInfoUIProps } from '../ui/feed-info/type';
