@@ -1,39 +1,42 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { TOrder } from '@utils-types';
-import { createSelector } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
+import type { TOrder } from '../../utils/types';
+import { getPublicFeedApi } from '../../utils/burger-api';
 
-type WsPayload = {
-  success: boolean;
+// ---- Types ----
+export type PublicOrdersState = {
   orders: TOrder[];
   total: number;
   totalToday: number;
-};
-
-export type PublicOrdersState = {
   connected: boolean;
+  hasFirstPayload: boolean; // ⬅ NEW
+  loading: boolean;
   error: string | null;
-  orders: TOrder[]; // newest-first for UI
-  total: number;
-  totalToday: number;
 };
 
 const initialState: PublicOrdersState = {
-  connected: false,
-  error: null,
   orders: [],
   total: 0,
   totalToday: 0,
+  connected: false,
+  hasFirstPayload: false, // ⬅ NEW
+  loading: false,
+  error: null,
 };
 
-const publicOrdersSlice = createSlice({
+// HTTP fallback (also used to prefill UI)
+export const loadPublicFeed = createAsyncThunk(
+  'publicOrders/load',
+  async () => await getPublicFeedApi(),
+);
+
+// ---- Slice ----
+const slice = createSlice({
   name: 'publicOrders',
   initialState,
   reducers: {
-    // middleware listens to these types only
     connect: (_state, _action: PayloadAction<string>) => {},
-    disconnect: (_state) => {},
-
+    disconnect: () => {},
     onOpen: (state) => {
       state.connected = true;
       state.error = null;
@@ -44,41 +47,71 @@ const publicOrdersSlice = createSlice({
     onError: (state, action: PayloadAction<string | undefined>) => {
       state.error = action.payload ?? 'ws error';
     },
-    onMessage: (state, action: PayloadAction<WsPayload>) => {
-      const { orders, total, totalToday } = action.payload || ({} as WsPayload);
-      // reverse: API gives oldest->newest; we want newest first
-      state.orders = Array.isArray(orders) ? [...orders].reverse() : [];
-      state.total = total ?? 0;
-      state.totalToday = totalToday ?? 0;
+    // WS message payload: { success, orders, total, totalToday }
+    onMessage: (
+      state,
+      action: PayloadAction<{ orders?: TOrder[]; total?: number; totalToday?: number } | any>,
+    ) => {
+      const p = action.payload ?? {};
+      if (Array.isArray(p.orders)) state.orders = p.orders;
+      if (typeof p.total === 'number') state.total = p.total;
+      if (typeof p.totalToday === 'number') state.totalToday = p.totalToday;
+      state.loading = false;
+      state.hasFirstPayload = true; // ⬅ flip once we got anything
     },
-    clear: () => initialState,
+
+    // ⬅ allow HTTP snapshot as a one-off fallback
+    applySnapshot: (
+      state,
+      action: PayloadAction<{ orders: TOrder[]; total: number; totalToday: number }>,
+    ) => {
+      state.orders = action.payload.orders ?? [];
+      state.total = action.payload.total ?? 0;
+      state.totalToday = action.payload.totalToday ?? 0;
+      state.hasFirstPayload = true;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loadPublicFeed.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loadPublicFeed.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders = action.payload.orders;
+        state.total = action.payload.total;
+        state.totalToday = action.payload.totalToday;
+        state.hasFirstPayload = true;
+      })
+      .addCase(loadPublicFeed.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error?.message ?? 'Failed to load feed';
+      });
   },
 });
 
-export const publicOrdersActions = publicOrdersSlice.actions;
-export const publicOrdersReducer = publicOrdersSlice.reducer;
+export const publicOrdersReducer = slice.reducer;
+export const publicOrdersActions = slice.actions;
 
-// ---------- selectors ----------
-export const selectPublicSlice = (s: RootState) => s.publicOrders;
+// ---- Selectors ----
+export const selectPublicOrders = (s: RootState) => s.publicOrders.orders;
+export const selectPublicTotal = (s: RootState) => s.publicOrders.total;
+export const selectPublicTotalToday = (s: RootState) => s.publicOrders.totalToday;
+export const selectPublicConnected = (s: RootState) => s.publicOrders.connected;
+export const selectPublicLoading = (s: RootState) => s.publicOrders.loading;
+export const selectPublicLoaded = (s: RootState) => s.publicOrders.hasFirstPayload; // ⬅ NEW
 
-export const selectPublicConnected = createSelector(selectPublicSlice, (s) => s.connected);
-
-export const selectPublicOrders = createSelector(selectPublicSlice, (s) => s.orders);
-
-export const selectPublicTotal = createSelector(selectPublicSlice, (s) => s.total);
-
-export const selectPublicTotalToday = createSelector(selectPublicSlice, (s) => s.totalToday);
-
-export const selectPublicReadyNumbers = createSelector(selectPublicOrders, (orders) =>
+export const selectPublicReadyNumbers = createSelector([selectPublicOrders], (orders) =>
   orders
     .filter((o) => o.status === 'done')
-    .slice(0, 10)
-    .map((o) => o.number),
+    .map((o) => o.number)
+    .slice(0, 20),
 );
 
-export const selectPublicPendingNumbers = createSelector(selectPublicOrders, (orders) =>
+export const selectPublicPendingNumbers = createSelector([selectPublicOrders], (orders) =>
   orders
     .filter((o) => o.status === 'pending')
-    .slice(0, 10)
-    .map((o) => o.number),
+    .map((o) => o.number)
+    .slice(0, 20),
 );

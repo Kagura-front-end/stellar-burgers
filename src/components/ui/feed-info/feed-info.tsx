@@ -41,5 +41,3 @@ const Column: FC<TColumnProps> = ({ title, content }) => (
     <p className={`text text_type_digits-large ${styles.content}`}>{content}</p>
   </>
 );
-
-export default FeedInfoUI;

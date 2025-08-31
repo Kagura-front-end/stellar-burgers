@@ -9,7 +9,6 @@ import {
   selectPublicPendingNumbers,
 } from '../../services/orders/publicOrders.slice';
 
-const WS_PUBLIC = 'wss://norma.nomoreparties.space/orders/all';
 const FEED_WS = 'wss://norma.nomoreparties.space/orders/all';
 
 const FeedPage: React.FC = () => {

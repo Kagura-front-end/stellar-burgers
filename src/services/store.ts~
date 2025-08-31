@@ -1,52 +1,11 @@
 import { configureStore, combineReducers, Middleware } from '@reduxjs/toolkit';
-// ... другие импорты
-import { createSocketMiddleware } from './realtime/socketMiddleware';
-import { publicOrdersReducer, publicOrdersActions } from './orders/publicOrders.slice';
-import { profileOrdersReducer, profileOrdersActions } from './orders/profileOrders.slice';
-// ... другие импорты
-
-const rootReducer = combineReducers({
-  ingredients: ingredientsReducer,
-  user: userReducer,
-  burgerConstructor: constructorReducer,
-  publicOrders: publicOrdersReducer, // ✅ Public orders reducer подключен
-  profileOrders: profileOrdersReducer, // ✅ Profile orders reducer подключен
-  // ... другие редьюсеры
-});
-
-// WebSocket middleware для public orders
-const publicOrdersWS = createSocketMiddleware({
-  connect: publicOrdersActions.connect.type,
-  disconnect: publicOrdersActions.disconnect.type,
-  onOpen: publicOrdersActions.onOpen.type,
-  onClose: publicOrdersActions.onClose.type,
-  onError: publicOrdersActions.onError.type,
-  onMessage: publicOrdersActions.onMessage.type,
-});
-
-// WebSocket middleware для profile orders
-const profileOrdersWS = createSocketMiddleware({
-  connect: profileOrdersActions.connect.type,
-  disconnect: profileOrdersActions.disconnect.type,
-  onOpen: profileOrdersActions.onOpen.type,
-  onClose: profileOrdersActions.onClose.type,
-  onError: profileOrdersActions.onError.type,
-  onMessage: profileOrdersActions.onMessage.type,
-});
-import {
-  configureStore,
-  combineReducers,
-  Middleware,
-  MiddlewareAPI,
-  AnyAction,
-} from '@reduxjs/toolkit';
 import {
   TypedUseSelectorHook,
   useDispatch as useReduxDispatch,
   useSelector as useReduxSelector,
 } from 'react-redux';
 
-// slices
+// Slices
 import ingredientsReducer from './ingredients/ingredients.slice';
 import { userReducer } from './user/user.slice';
 import constructorReducer from './constructor/constructor.slice';
@@ -56,10 +15,10 @@ import { profileOrdersReducer, profileOrdersActions } from './orders/profileOrde
 import { placeOrderReducer } from './orders/placeOrder.slice';
 import { currentOrderReducer } from './orders/currentOrder.slice';
 
-// ws middleware
+// WS middleware factory
 import { createSocketMiddleware } from './realtime/socketMiddleware';
 
-// ---------- root reducer ----------
+// ---------------- Root reducer ----------------
 const rootReducer = combineReducers({
   ingredients: ingredientsReducer,
   user: userReducer,
@@ -72,48 +31,32 @@ const rootReducer = combineReducers({
   currentOrder: currentOrderReducer,
 });
 
-// Use this local type while creating middleware (avoids circular typing)
-type RootStateDraft = ReturnType<typeof rootReducer>;
-
-// ---------- persist constructor ----------
+// ---------------- Persist constructor ----------------
 const CONSTRUCTOR_STORAGE_KEY = 'sb_constructor';
 
-const persistConstructorMiddleware: Middleware<{}, RootStateDraft> =
-  (store) => (next) => (action: AnyAction) => {
-    const result = next(action);
+// keep types super-forgiving to avoid TS friction
+const persistConstructorMiddleware: Middleware = (store) => (next) => (action) => {
+  const result = next(action as any);
 
-    if (typeof action.type === 'string' && action.type.startsWith('burgerConstructor/')) {
-      try {
-        const state = store.getState();
-        const { bun, items } = state.burgerConstructor;
-        localStorage.setItem(CONSTRUCTOR_STORAGE_KEY, JSON.stringify({ bun, items }));
-      } catch {
-        // ignore storage errors
-      }
+  try {
+    const type = (action as any)?.type as string | undefined;
+    if (type && type.startsWith('burgerConstructor/')) {
+      const state = (store as any).getState();
+      const { bun, items } = state.burgerConstructor;
+      localStorage.setItem(CONSTRUCTOR_STORAGE_KEY, JSON.stringify({ bun, items }));
     }
-    return result;
-  };
+  } catch {
+    // ignore storage errors
+  }
 
-// ---------- websocket middlewares ----------
-const publicOrdersWS = createSocketMiddleware({
-  connect: publicOrdersActions.connect.type,
-  disconnect: publicOrdersActions.disconnect.type,
-  onOpen: publicOrdersActions.onOpen.type,
-  onClose: publicOrdersActions.onClose.type,
-  onError: publicOrdersActions.onError.type,
-  onMessage: publicOrdersActions.onMessage.type,
-});
+  return result;
+};
 
-const profileOrdersWS = createSocketMiddleware({
-  connect: profileOrdersActions.connect.type,
-  disconnect: profileOrdersActions.disconnect.type,
-  onOpen: profileOrdersActions.onOpen.type,
-  onClose: profileOrdersActions.onClose.type,
-  onError: profileOrdersActions.onError.type,
-  onMessage: profileOrdersActions.onMessage.type,
-});
+// ---------------- WebSocket middlewares ----------------
+const publicOrdersWS = createSocketMiddleware(publicOrdersActions);
+const profileOrdersWS = createSocketMiddleware(profileOrdersActions);
 
-// ---------- store ----------
+// ---------------- Store ----------------
 export const store = configureStore({
   reducer: rootReducer,
   devTools: process.env.NODE_ENV !== 'production',
@@ -121,21 +64,11 @@ export const store = configureStore({
     getDefault().concat(publicOrdersWS, profileOrdersWS, persistConstructorMiddleware),
 });
 
-// types the rest of the app imports from "../../services/store"
+// Exported types/hooks used across the app
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-// typed hooks (re-exported for compatibility)
 export const useAppSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
 export const useAppDispatch = () => useReduxDispatch<AppDispatch>();
 
 export default store;
-
-// ... persistConstructorMiddleware
-
-export const store = configureStore({
-  reducer: rootReducer,
-  devTools: process.env.NODE_ENV !== 'production',
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(publicOrdersWS, profileOrdersWS, persistConstructorMiddleware),
-});
