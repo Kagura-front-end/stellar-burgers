@@ -87,19 +87,13 @@ export const getIngredientsApi = (): Promise<TIngredient[]> =>
     checkResponse<TIngredientsResponse>(res).then((d) => d.data),
   );
 
-// ---------- feeds (public) ----------
-export const getFeedsApi = (): Promise<{ orders: TOrder[]; total: number; totalToday: number }> =>
+// Quick snapshot of public feed via REST (no auth)
+export const getFeedsApi = (): Promise<TFeedsResponse> =>
   fetch(`${URL}/orders/all`)
     .then((res) => checkResponse<TFeedsResponse>(res))
-    .then((d) => {
-      if (d?.success) {
-        return {
-          orders: d.orders,
-          total: d.total,
-          totalToday: d.totalToday,
-        };
-      }
-      return Promise.reject(new Error('Failed to fetch feeds'));
+    .then((data) => {
+      if (data?.success) return data;
+      return Promise.reject(data);
     });
 
 // ---------- auth ----------
@@ -178,4 +172,5 @@ export const makeOrderApi = (ingredients: string[]) =>
     body: JSON.stringify({ ingredients }),
   });
 
+// keep starter-kit name for backward compatibility
 export const orderBurgerApi = makeOrderApi;

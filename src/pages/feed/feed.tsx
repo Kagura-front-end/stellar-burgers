@@ -1,66 +1,75 @@
-import { FC, useEffect } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../services/store';
-import {
-  publicOrdersActions,
-  selectPublicOrders,
-  selectPublicReadyNumbers,
-  selectPublicPendingNumbers,
-  selectPublicTotal,
-  selectPublicTotalToday,
-  selectPublicConnected,
-} from '../../services/orders/publicOrders.slice';
 import { OrdersListUI, FeedInfoUI, Preloader } from '@ui';
+import { getFeedsApi } from '../../utils/burger-api';
+import type { TOrder } from '../../utils/types';
 
-const WS_PUBLIC = 'wss://norma.nomoreparties.space/orders/all';
-const HTTP_PUBLIC = 'https://norma.nomoreparties.space/api/orders/all';
+const POLL_MS = 3000;
 
 export const Feed: FC = () => {
-  const dispatch = useAppDispatch();
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Connect WS on mount, disconnect on unmount
-  useEffect(() => {
-    dispatch(publicOrdersActions.connect(WS_PUBLIC));
-    return () => {
-      dispatch(publicOrdersActions.disconnect());
-    };
-  }, [dispatch]);
+  const [orders, setOrders] = useState<TOrder[] | null>(null);
+  const [total, setTotal] = useState(0);
+  const [totalToday, setTotalToday] = useState(0);
 
-  // If WS doesn’t come up quickly, hydrate via HTTP once
-  const connected = useAppSelector(selectPublicConnected);
+  // HTTP polling (fallback to canonical)
   useEffect(() => {
+    let cancelled = false;
     let timer: number | undefined;
-    if (!connected) {
-      timer = window.setTimeout(async () => {
-        try {
-          const res = await fetch(HTTP_PUBLIC);
-          const data = await res.json(); // { success, orders, total, totalToday }
-          dispatch(publicOrdersActions.hydrate(data));
-        } catch {
-          // ignore one-off fetch errors
-        }
-      }, 800);
-    }
-    return () => {
-      if (timer) clearTimeout(timer);
+
+    const load = async () => {
+      try {
+        const data = await getFeedsApi();
+        if (cancelled) return;
+        setOrders(data.orders);
+        setTotal(data.total);
+        setTotalToday(data.totalToday);
+      } catch {
+        // keep previous values on error
+      }
     };
-  }, [connected, dispatch]);
 
-  const orders = useAppSelector(selectPublicOrders);
-  const readyOrders = useAppSelector(selectPublicReadyNumbers);
-  const pendingOrders = useAppSelector(selectPublicPendingNumbers);
-  const total = useAppSelector(selectPublicTotal);
-  const totalToday = useAppSelector(selectPublicTotalToday);
+    load();
+    timer = window.setInterval(load, POLL_MS);
 
-  const openOrder = (num: number | string) => {
-    navigate(`/feed/${num}`, { state: { background: location } });
-  };
+    return () => {
+      cancelled = true;
+      if (timer) window.clearInterval(timer);
+    };
+  }, []);
 
-  // Show spinner only before we have *any* data
-  const isEmpty = !orders || orders.length === 0;
-  if (isEmpty && !connected) return <Preloader />;
+  const readyOrders = useMemo(
+    () =>
+      orders
+        ? orders
+            .filter((o) => o.status === 'done')
+            .slice(0, 20)
+            .map((o) => o.number)
+        : [],
+    [orders],
+  );
+
+  const pendingOrders = useMemo(
+    () =>
+      orders
+        ? orders
+            .filter((o) => o.status !== 'done')
+            .slice(0, 20)
+            .map((o) => o.number)
+        : [],
+    [orders],
+  );
+
+  const openOrder = useCallback(
+    (num: number | string) => {
+      navigate(`/feed/${num}`, { state: { background: location } });
+    },
+    [navigate, location],
+  );
+
+  if (!orders) return <Preloader />;
 
   return (
     <main style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 40 }}>
