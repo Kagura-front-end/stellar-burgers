@@ -9,7 +9,34 @@ type ConstructorState = {
   items: TConstructorIngredient[];
 };
 
-const initialState: ConstructorState = { bun: null, items: [] };
+// --- persistence helpers ---
+const CONSTRUCTOR_STORAGE_KEY = 'sb_constructor';
+
+type PersistedConstructor = {
+  bun: any | null;
+  items: any[]; // TConstructorIngredient[]
+};
+
+function loadConstructorFromStorage(): PersistedConstructor {
+  try {
+    const raw = localStorage.getItem(CONSTRUCTOR_STORAGE_KEY);
+    if (!raw) return { bun: null, items: [] };
+    const parsed = JSON.parse(raw);
+    return {
+      bun: parsed?.bun ?? null,
+      items: Array.isArray(parsed?.items) ? parsed.items : [],
+    };
+  } catch {
+    return { bun: null, items: [] };
+  }
+}
+
+const persisted = loadConstructorFromStorage();
+
+const initialState: ConstructorState = {
+  bun: persisted.bun,
+  items: persisted.items,
+};
 
 const slice = createSlice({
   name: 'burgerConstructor',
@@ -75,5 +102,34 @@ export const selectTotalCount = createSelector(
 
 export const selectTotalPrice = createSelector(
   [selectConstructorBun, selectConstructorItems],
-  (bun, items): number => (bun ? bun.price * 2 : 0) + items.reduce((sum, it) => sum + it.price, 0),
+  (bun, items): number => {
+    const bunPrice = bun ? bun.price * 2 : 0;
+    const itemsTotal = items.reduce<number>(
+      (sum: number, it: { price: number }) => sum + (typeof it.price === 'number' ? it.price : 0),
+      0,
+    );
+    return bunPrice + itemsTotal;
+  },
 );
+
+// --- Auto-save middleware ---
+export const constructorPersistMiddleware = (store: any) => (next: any) => (action: any) => {
+  const result = next(action);
+
+  if (action.type?.startsWith('burgerConstructor/')) {
+    const state = store.getState().burgerConstructor;
+    try {
+      localStorage.setItem(
+        CONSTRUCTOR_STORAGE_KEY,
+        JSON.stringify({
+          bun: state.bun,
+          items: state.items,
+        }),
+      );
+    } catch (error) {
+      console.warn('Failed to save constructor to localStorage:', error);
+    }
+  }
+
+  return result;
+};

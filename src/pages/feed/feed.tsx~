@@ -35,12 +35,12 @@ export const Feed: FC = () => {
   // Prepare data for FeedInfoUI
   const readyOrders = orders
     .filter((o: TOrder) => o.status === 'done')
-    .map((o: TOrder) => o.number)
+    .map((o) => o.number)
     .slice(0, 10);
 
   const pendingOrders = orders
     .filter((o: TOrder) => o.status === 'pending')
-    .map((o: TOrder) => o.number)
+    .map((o) => o.number)
     .slice(0, 10);
 
   const feed = { total: totals.total, totalToday: totals.totalToday };

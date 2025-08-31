@@ -16,6 +16,7 @@ import {
   selectOrderNumber,
   selectOrderRequest,
 } from '../../services/orders/currentOrder.slice';
+import type { TConstructorIngredient as TConstructorItem } from '../../services/constructor/constructor.slice';
 
 const BurgerConstructor: FC = () => {
   const dispatch = useAppDispatch();
@@ -46,7 +47,7 @@ const BurgerConstructor: FC = () => {
     }
 
     // API expects bun twice: at start and end
-    const ingredientIds = [bun._id, ...items.map((i) => i._id), bun._id];
+    const ingredientIds = [bun._id, ...items.map((i: TConstructorItem) => i._id), bun._id];
     await dispatch(placeOrderThunk(ingredientIds));
     // Feed (/feed) will update via WS automatically.
   };

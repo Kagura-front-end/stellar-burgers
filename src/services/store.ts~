@@ -1,4 +1,4 @@
-import { configureStore, combineReducers, Middleware } from '@reduxjs/toolkit';
+import { configureStore, combineReducers, Middleware, AnyAction } from '@reduxjs/toolkit';
 import {
   TypedUseSelectorHook,
   useDispatch as useReduxDispatch,
@@ -51,16 +51,12 @@ const profileOrdersWS = createSocketMiddleware({
 // --- Constructor persist middleware ---
 const CONSTRUCTOR_STORAGE_KEY = 'sb_constructor';
 
-// small type guard
-const hasType = (a: unknown): a is { type: string } => !!a && typeof (a as any).type === 'string';
-
 const persistConstructorMiddleware: Middleware<{}, RootStateDraft> =
-  (store) => (next) => (action: unknown) => {
-    // pass through (action is unknown, so cast for next)
-    const result = next(action as any);
+  (store) => (next) => (action: AnyAction) => {
+    const result = next(action);
 
-    // Only persist on constructor-slice actions
-    if (hasType(action) && action.type.startsWith('burgerConstructor/')) {
+    // Actions from the constructor slice start with 'burgerConstructor/'
+    if (typeof action.type === 'string' && action.type.startsWith('burgerConstructor/')) {
       try {
         const state = store.getState();
         const { bun, items } = state.burgerConstructor;
