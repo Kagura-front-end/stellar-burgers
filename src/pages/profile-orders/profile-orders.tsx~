@@ -1,6 +1,6 @@
 // src/pages/profile-orders/profile-orders.tsx
 import { FC, useEffect, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../services/store';
 import {
   profileOrdersActions,
@@ -20,8 +20,10 @@ export const ProfileOrders: FC = () => {
   const connected = useAppSelector(selectProfileConnected);
   const error = useAppSelector(selectProfileError);
 
-  // ✅ Removed auth guard - let route guards handle authentication
-  // The route guard will prevent unauthorized access to this page
+  // Simple auth guard
+  const raw = localStorage.getItem('accessToken') || '';
+  const hasToken = Boolean(raw);
+  if (!hasToken) return <Navigate to='/login' replace state={{ from: location }} />;
 
   // Connect once
   const didInit = useRef(false);
