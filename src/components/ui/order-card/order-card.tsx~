@@ -25,7 +25,7 @@ export const OrderCardUI: FC<OrderCardUIProps> = ({ order }) => {
       <OrderStatus status={order.status} />
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        {/* This ul/li is OK — it's inside <article>, not inside a <li> */}
+        {/* This ul/li is OK — it’s inside <article>, not inside a <li> */}
         <ul className={styles.ingredients}>
           {shown.map((id, i) => (
             <li key={`${id}-${i}`} className={styles.img} style={{ zIndex: 6 - i }}>

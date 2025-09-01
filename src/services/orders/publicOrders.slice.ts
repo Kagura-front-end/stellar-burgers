@@ -39,15 +39,6 @@ const slice = createSlice({
       s.connected = false;
     },
     onMessage: (s, a: PayloadAction<WSFeed>) => {
-      // ✅ Added temporary log to verify reducer is firing
-      console.log(
-        '[slice:onMessage] got',
-        a.payload.orders.length,
-        a.payload.total,
-        a.payload.totalToday,
-      );
-
-      // Replace state from server payload (do not append)
       s.list = a.payload.orders;
       s.total = a.payload.total;
       s.totalToday = a.payload.totalToday;
