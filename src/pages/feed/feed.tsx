@@ -30,10 +30,6 @@ const FeedPage: React.FC = () => {
   const ready = useAppSelector(selectPublicReadyNumbers);
   const pending = useAppSelector(selectPublicPendingNumbers);
 
-  // ✅ Sanity check logs
-  console.log('[ui] totals', totals);
-  console.log('[ui] orders', orders.length);
-
   const location = useLocation();
   const navigate = useNavigate();
   const openOrder = (num: number | string) =>

@@ -27,6 +27,5 @@ const sampleOrder: TOrder = {
 export const Default: Story = {
   args: {
     order: sampleOrder,
-    // onClick: () => console.log('clicked'), // optional
   },
 };

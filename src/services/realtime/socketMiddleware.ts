@@ -20,7 +20,7 @@ export const socketMiddleware = (): Middleware => {
             try {
               socket.close(1000, 'reconnect');
             } catch {}
-            socket = null; // recreate below
+            socket = null;
           }
         }
 
@@ -28,9 +28,7 @@ export const socketMiddleware = (): Middleware => {
           currentUrl = url;
           socket = new WebSocket(url);
 
-          socket.addEventListener('open', (ev) => {
-            const ws = ev.currentTarget as WebSocket | null;
-            console.log('[WS] open', ws?.url ?? currentUrl ?? '(unknown)');
+          socket.addEventListener('open', () => {
             dispatch(publicOrdersActions.onOpen());
           });
 
@@ -41,9 +39,6 @@ export const socketMiddleware = (): Middleware => {
               else if (e.data instanceof Blob) raw = await e.data.text();
               else if (e.data instanceof ArrayBuffer) raw = new TextDecoder().decode(e.data);
               else return;
-
-              console.log('[WS] frame', raw.slice(0, 120) + '…'); // <-- watch frames
-
               const data = JSON.parse(raw);
               if (Array.isArray(data.orders)) {
                 dispatch(
@@ -59,21 +54,18 @@ export const socketMiddleware = (): Middleware => {
             }
           });
 
-          socket.addEventListener('close', (e) => {
-            console.log('[WS] close', e.code, e.reason);
+          socket.addEventListener('close', () => {
             socket = null;
             currentUrl = null;
             dispatch(publicOrdersActions.onClose());
           });
 
           socket.addEventListener('error', () => {
-            console.warn('[WS] error');
             dispatch(publicOrdersActions.onError());
           });
         }
       }
 
-      // DISCONNECT — also cancels a connecting socket
       if (publicOrdersActions.disconnect.match(action)) {
         if (socket) {
           try {
