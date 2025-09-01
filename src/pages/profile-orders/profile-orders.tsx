@@ -1,4 +1,3 @@
-// src/pages/profile-orders/profile-orders.tsx
 import { FC, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../services/store';
@@ -16,48 +15,43 @@ export const ProfileOrders: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const orders = useAppSelector(selectProfileOrders);
-  const connected = useAppSelector(selectProfileConnected);
-  const error = useAppSelector(selectProfileError);
-
-  // ✅ Removed auth guard - let route guards handle authentication
-  // The route guard will prevent unauthorized access to this page
-
-  // Connect once
   const didInit = useRef(false);
   useEffect(() => {
     if (didInit.current) return;
     didInit.current = true;
 
-    dispatch(profileOrdersActions.connect()); // ← no args
+    dispatch(profileOrdersActions.connect());
+
     return () => {
       dispatch(profileOrdersActions.disconnect());
     };
   }, [dispatch]);
 
+  const orders = useAppSelector(selectProfileOrders);
+  const connected = useAppSelector(selectProfileConnected);
+  const error = useAppSelector(selectProfileError);
+
   const openOrder = (num: number | string) =>
     navigate(`/profile/orders/${num}`, { state: { background: location } });
 
-  if (!connected && !error) return <Preloader />;
-  if (error) return <p className='text text_type_main-default'>Ошибка: {error}</p>;
-  if (!orders || orders.length === 0)
-    return (
-      <main style={{ maxWidth: 1240, margin: '0 auto' }}>
-        <h1 className='text text_type_main-large' style={{ margin: '40px 0 20px' }}>
-          Мои заказы
-        </h1>
-        <p className='text text_type_main-default text_color_inactive'>У вас пока нет заказов.</p>
-      </main>
-    );
+  // Still initializing the socket and we have no data nor errors yet
+  if (!connected && !error && orders.length === 0) {
+    return <Preloader />;
+  }
 
-  return (
-    <main style={{ maxWidth: 1240, margin: '0 auto' }}>
-      <h1 className='text text_type_main-large' style={{ margin: '40px 0 20px' }}>
-        Мои заказы
-      </h1>
-      <OrdersList orders={orders} onClick={openOrder} />
-    </main>
+  if (error === 'no-token') {
+    return (
+      <p className='text text_type_main-default' style={{ padding: 24 }}>
+        Не удалось открыть поток заказов: отсутствует токен авторизации.
+      </p>
+    );
+  }
+
+  return orders.length ? (
+    <OrdersList orders={orders} onClick={openOrder} />
+  ) : (
+    <p className='text text_type_main-default' style={{ padding: 24 }}>
+      Заказов пока нет.
+    </p>
   );
 };
-
-export default ProfileOrders;

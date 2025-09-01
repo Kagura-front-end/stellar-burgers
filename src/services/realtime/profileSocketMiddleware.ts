@@ -2,32 +2,35 @@
 import type { Middleware } from '@reduxjs/toolkit';
 import { profileOrdersActions } from '../orders/profileOrders.slice';
 
-// One WS connection per module
 let socket: WebSocket | null = null;
 let currentUrl: string | null = null;
 
-// Read access token (starter kit usually stores "Bearer ..." either in LS or cookie)
+const readCookie = (name: string): string | null => {
+  const m = document.cookie.match(
+    new RegExp('(?:^|; )' + name.replace(/([$()*+./?[\\\]^{|}])/g, '\\$1') + '=([^;]*)'),
+  );
+  return m ? m[1] : null;
+};
+
 const getAccessToken = (): string | null => {
-  const ls = localStorage.getItem('accessToken') ?? '';
-  const ck =
-    document.cookie
-      .split('; ')
-      .find((c) => c.startsWith('accessToken='))
-      ?.split('=')[1] ?? '';
+  // LS may contain "Bearer ...", cookie is usually URL-encoded "Bearer%20..."
+  const ls = localStorage.getItem('accessToken') || '';
+  const ckRaw = readCookie('accessToken') || '';
+  const ck = ckRaw ? decodeURIComponent(ckRaw) : '';
   const raw = ls || ck;
   if (!raw) return null;
-  return raw.startsWith('Bearer ') ? raw.slice(7) : raw;
+  // strip optional "Bearer "
+  return raw.replace(/^Bearer\s+/i, '');
 };
 
 export const profileSocketMiddleware: Middleware =
   ({ dispatch }) =>
   (next) =>
   (action) => {
-    // CONNECT (no URL needed; we’ll build it from the token)
     if (profileOrdersActions.connect.match(action)) {
       const token = getAccessToken();
       if (!token) {
-        // Not logged in -> do nothing (route should be protected anyway)
+        dispatch(profileOrdersActions.onError('no-token'));
         return next(action);
       }
 
@@ -36,7 +39,6 @@ export const profileSocketMiddleware: Middleware =
       if (socket) {
         const same = currentUrl === url;
         const st = socket.readyState;
-        // don't close a CONNECTING/OPEN socket if it's the same url
         if (!(same && (st === WebSocket.OPEN || st === WebSocket.CONNECTING))) {
           try {
             socket.close(1000, 'reconnect');
@@ -77,13 +79,11 @@ export const profileSocketMiddleware: Middleware =
         });
 
         socket.addEventListener('error', () => {
-          // keep console quiet in dev; optionally set an error flag:
-          // dispatch(profileOrdersActions.onError('ws error'));
+          dispatch(profileOrdersActions.onError('ws-error'));
         });
       }
     }
 
-    // DISCONNECT
     if (profileOrdersActions.disconnect.match(action)) {
       if (socket) {
         try {
@@ -94,7 +94,7 @@ export const profileSocketMiddleware: Middleware =
             socket.close(1000, 'manual');
           }
         } catch {}
-        // 'close' listener will null refs
+        // onClose will null refs
       }
     }
 

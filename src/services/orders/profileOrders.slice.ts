@@ -1,9 +1,8 @@
-// src/services/orders/profileOrders.slice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 import type { TOrder } from '@utils-types';
 
-type ProfileOrdersState = {
+export type ProfileOrdersState = {
   connected: boolean;
   orders: TOrder[];
   error?: string | null;
@@ -15,20 +14,16 @@ const initialState: ProfileOrdersState = {
   error: null,
 };
 
-type WSFeed = {
-  orders: TOrder[];
-  total?: number; // ignored here, but tolerated
-  totalToday?: number; // ignored here, but tolerated
-};
-
 const profileOrdersSlice = createSlice({
   name: 'profileOrders',
   initialState,
   reducers: {
-    // payload = ws url
-    connect: (_s) => {},
+    // mark as "connecting/connected" so UI won't spin forever
+    connect: (state, _a: PayloadAction<void>) => {
+      state.connected = true;
+      state.error = null;
+    },
     disconnect: () => {},
-
     onOpen: (state) => {
       state.connected = true;
       state.error = null;
@@ -36,14 +31,10 @@ const profileOrdersSlice = createSlice({
     onClose: (state) => {
       state.connected = false;
     },
-
-    // allow optional payload so middleware can dispatch onError() with no args
-    onError: (state, action: PayloadAction<string | undefined>) => {
-      state.error = action.payload ?? null;
+    onError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
     },
-
-    // replace orders list on each frame
-    onMessage: (state, action: PayloadAction<WSFeed>) => {
+    onMessage: (state, action: PayloadAction<{ orders: TOrder[] }>) => {
       state.orders = action.payload.orders ?? [];
     },
   },
