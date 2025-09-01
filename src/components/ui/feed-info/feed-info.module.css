@@ -1,11 +1,13 @@
 .columns {
   display: flex;
-  justify-content: left;
+  justify-content: flex-start;
   align-items: flex-start;
+  column-gap: 24px;
 }
+
 .column {
-  display: inline;
-  min-width: 50%;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .list {
@@ -26,7 +28,7 @@
 
 .list_item {
   text-align: left;
-  min-width: 50%;
+  flex: 0 0 50%;
 }
 
 .content {

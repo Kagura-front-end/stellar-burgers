@@ -27,8 +27,7 @@
 }
 
 .columnInfo {
-  flex: 1 1 auto;
- max-width: 580px;
-  min-width: 0;
-  overflow: visible;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 580px;
 }

@@ -9,18 +9,20 @@ export const socketMiddleware = (): Middleware => {
   return ({ dispatch }) =>
     (next) =>
     (action) => {
-      // CONNECT — always replace anything that's not the same OPEN socket
+      // CONNECT
       if (publicOrdersActions.connect.match(action)) {
         const url = action.payload as string;
 
+        // If a socket exists, close it unless it's the same URL and already OPEN
         if (socket) {
           const sameUrl = currentUrl === url;
           const state = socket.readyState;
+
           if (!(sameUrl && state === WebSocket.OPEN)) {
             try {
               socket.close(1000, 'reconnect');
             } catch {}
-            socket = null; // recreate below
+            socket = null; // we'll recreate below
           }
         }
 
@@ -42,8 +44,6 @@ export const socketMiddleware = (): Middleware => {
               else if (e.data instanceof ArrayBuffer) raw = new TextDecoder().decode(e.data);
               else return;
 
-              console.log('[WS] frame', raw.slice(0, 120) + '…'); // <-- watch frames
-
               const data = JSON.parse(raw);
               if (Array.isArray(data.orders)) {
                 dispatch(
@@ -54,9 +54,7 @@ export const socketMiddleware = (): Middleware => {
                   }),
                 );
               }
-            } catch (err) {
-              console.warn('[WS] parse error', err);
-            }
+            } catch {}
           });
 
           socket.addEventListener('close', (e) => {
@@ -67,13 +65,12 @@ export const socketMiddleware = (): Middleware => {
           });
 
           socket.addEventListener('error', () => {
-            console.warn('[WS] error');
             dispatch(publicOrdersActions.onError());
           });
         }
       }
 
-      // DISCONNECT — also cancels a connecting socket
+      // DISCONNECT
       if (publicOrdersActions.disconnect.match(action)) {
         if (socket) {
           try {
@@ -84,7 +81,7 @@ export const socketMiddleware = (): Middleware => {
               socket.close(1000, 'manual');
             }
           } catch {}
-          // let 'close' null the refs
+          // let the 'close' handler null out refs
         }
       }
 
