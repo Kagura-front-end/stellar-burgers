@@ -1,0 +1,76 @@
+// src/services/realtime/profileSocketMiddleware.ts
+import type { Middleware } from '@reduxjs/toolkit';
+import { profileOrdersActions } from '../orders/profileOrders.slice';
+
+// One WS connection per module
+let socket: WebSocket | null = null;
+let currentUrl: string | null = null;
+
+// Read access token (starter kit usually stores "Bearer ..." either in LS or cookie)
+const getAccessToken = (): string | null => {
+  const ls = localStorage.getItem('accessToken') ?? '';
+  const ck =
+    document.cookie.split('; ').find((c) => c.startsWith('accessToken='))?.split('=')[1] ?? '';
+  const raw = ls || ck;
+  if (!raw) return null;
+  return raw.startsWith('Bearer ') ? raw.slice(7) : raw;
+};
+
+export const profileSocketMiddleware: Middleware =
+  ({ dispatch }) =>
+    (next) =>
+      (action) => {
+        // CONNECT (no URL needed; we’ll build it from the token)
+        if (profileOrdersActions.connect.match(action)) {
+          const token = getAccessToken();
+          if (!token) {
+            // Not logged in -> do nothing (route should be protected anyway)
+            return next(action);
+          }
+
+          const url = `wss://norma.nomoreparties.space/orders?token=${token}`;
+
+          if (socket) {
+            const same = currentUrl === url;
+            const st = socket.readyState;
+            // don't close a CONNECTING/OPEN socket if it's the same url
+            if (!(same && (st === WebSocket.OPEN || st === WebSocket.CONNECTING))) {
+              try {
+                socket.close(1000, 'reconnect');
+              } catch {}
+              socket = null;
+            }
+          }
+
+          if (!socket) {
+            currentUrl = url;
+            socket = new WebSocket(url);
+
+            socket.addEventListener('open', () => {
+              dispatch(profileOrdersActions.onOpen());
+            });
+
+            socket.addEventListener('message', async (e: MessageEvent) => {
+              try {
+                let raw: string;
+                if (typeof e.data === 'string') raw = e.data;
+                else if (e.data instanceof Blob) raw = await e.data.text();
+                else if (e.data instanceof ArrayBuffer) raw = new TextDecoder().decode(e.data);
+                else return;
+
+                const data = JSON.parse(raw);
+                if (Array.isArray(data.orders)) {
+                  dispatch(profileOrdersActions.onMessage({ orders: data.orders }));
+                }
+              } catch {
+                // ignore malformed frames
+              }
+            });
+
+            socket.addEventListener('close', () => {
+              socket = null;
+              currentUrl = null;
+              dispatch(profileOrdersActions.onClose());
+            });
+
+            socket.addEventListener('error', () => {

@@ -26,7 +26,7 @@ const profileOrdersSlice = createSlice({
   initialState,
   reducers: {
     // payload = ws url
-    connect: (_s) => {},
+    connect: (_s, _a: PayloadAction<string>) => {},
     disconnect: () => {},
 
     onOpen: (state) => {

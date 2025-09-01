@@ -58,7 +58,11 @@ export const store = configureStore({
   reducer: rootReducer,
   devTools: process.env.NODE_ENV !== 'production',
   middleware: (getDefault) =>
-    getDefault().concat(socketMiddleware(), profileSocketMiddleware, persistConstructorMiddleware),
+    getDefault().concat(
+      socketMiddleware(),
+      profileSocketMiddleware(),
+      persistConstructorMiddleware,
+    ),
 });
 
 // Exported types/hooks used across the app
@@ -67,3 +71,5 @@ export type AppDispatch = typeof store.dispatch;
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
 export const useAppDispatch = () => useReduxDispatch<AppDispatch>();
+
+export default store;
