@@ -12,7 +12,8 @@ import constructorReducer from './constructor/constructor.slice';
 
 // Public orders slice and middleware
 import { publicOrdersReducer } from './orders/publicOrders.slice';
-import { userOrdersReducer } from './orders/userOrders.slice';
+import { profileOrdersReducer } from './orders/profileOrders.slice';
+import { userOrdersReducer } from './orders/userOrders.slice'; // ✅ Added userOrders reducer
 import { placeOrderReducer } from './orders/placeOrder.slice';
 import { currentOrderReducer } from './orders/currentOrder.slice';
 
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   burgerConstructor: constructorReducer,
 
   publicOrders: publicOrdersReducer,
+  profileOrders: profileOrdersReducer,
   userOrders: userOrdersReducer,
 
   placeOrder: placeOrderReducer,
