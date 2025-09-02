@@ -19,3 +19,11 @@
   height: 100%;
   overflow: hidden;
 }
+
+.content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 600px;
+    column-gap: 50px;
+    align-items: start;
+    min-height: 0;
+}

@@ -8,6 +8,7 @@ import styles from './burger-constructor.module.css';
 import { BurgerConstructorUIProps } from './type';
 import { BurgerConstructorElement, Modal } from '@components';
 import { Preloader, OrderDetailsUI } from '@ui';
+import type { TConstructorIngredient } from '@utils-types';
 
 export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   constructorItems,
@@ -17,8 +18,8 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   onOrderClick,
   closeOrderModal,
 }) => {
-  // one continuous list (mains + sauces), as in the canonical version
-  const middle = constructorItems.ingredients;
+  const middle: TConstructorIngredient[] = constructorItems.ingredients;
+  const hasMiddle = middle.length > 0; // ← added
 
   return (
     <section className={styles.burger_constructor}>
@@ -41,17 +42,29 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         </div>
       )}
 
-      {/* Scrollable middle list */}
+      {/* Middle (scrollable) */}
       <ul className={styles.elements}>
-        {middle.length > 0 ? (
-          middle.map((item, index) => (
-            <BurgerConstructorElement
-              ingredient={item}
-              index={index}
-              totalItems={middle.length}
-              key={item.uuid ?? item._id ?? item.id ?? `${item.type}-${index}`}
-            />
-          ))
+        {hasMiddle ? (
+          middle.map((item: TConstructorIngredient, index: number) => {
+            const key =
+              (item as any)?.uuid ??
+              (item as any)?._id ??
+              (item as any)?.id ??
+              `${item.type}-${index}`;
+
+            return (
+              // ⬇️ wrapper <li> gets the grip via CSS (::before)
+              <li key={key} className={`${styles.element} ${styles.gripItem} mb-4 mr-5`}>
+                <div className={styles.element_fullwidth}>
+                  <BurgerConstructorElement
+                    ingredient={item}
+                    index={index}
+                    totalItems={middle.length}
+                  />
+                </div>
+              </li>
+            );
+          })
         ) : (
           <li className={`${styles.noItems} ml-8 mb-4 mr-5 text text_type_main-default`}>
             Выберите начинку и соусы
@@ -61,7 +74,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
 
       {/* Bottom bun */}
       {constructorItems.bun ? (
-        <div className={`${styles.element} mt-4 mr-4`}>
+        <div className={`${styles.element} ${hasMiddle ? styles.bottomGap : ''} mr-4`}>
           <ConstructorElement
             type='bottom'
             isLocked
@@ -72,7 +85,9 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         </div>
       ) : (
         <div
-          className={`${styles.noBuns} ${styles.noBunsBottom} ml-8 mb-4 mr-5 text text_type_main-default`}
+          className={`${styles.noBuns} ${styles.noBunsBottom} ${
+            hasMiddle ? styles.bottomGap : ''
+          } ml-8 mr-5 text text_type_main-default`}
         >
           Выберите булки
         </div>
@@ -89,7 +104,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
       </div>
 
       {orderRequest && (
-        <Modal onClose={closeOrderModal} title={'Оформляем заказ...'}>
+        <Modal onClose={closeOrderModal} title='Оформляем заказ...'>
           <Preloader />
         </Modal>
       )}

@@ -19,6 +19,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   closeOrderModal,
 }) => {
   const middle: TConstructorIngredient[] = constructorItems.ingredients;
+  const hasMiddle = middle.length > 0; // ← added
 
   return (
     <section className={styles.burger_constructor}>
@@ -43,21 +44,27 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
 
       {/* Middle (scrollable) */}
       <ul className={styles.elements}>
-        {middle.length > 0 ? (
-          middle.map((item: TConstructorIngredient, index: number) => (
-            <BurgerConstructorElement
-              ingredient={item}
-              index={index}
-              totalItems={middle.length}
-              key={
-                // robust key with fallbacks; use `as any` to allow optional uuid/id
-                (item as any)?.uuid ??
-                (item as any)?._id ??
-                (item as any)?.id ??
-                `${item.type}-${index}`
-              }
-            />
-          ))
+        {hasMiddle ? (
+          middle.map((item: TConstructorIngredient, index: number) => {
+            const key =
+              (item as any)?.uuid ??
+              (item as any)?._id ??
+              (item as any)?.id ??
+              `${item.type}-${index}`;
+
+            return (
+              // ⬇️ wrapper <li> gets the grip via CSS (::before)
+              <li key={key} className={`${styles.element} ${styles.gripItem} mb-4 mr-5`}>
+                <div className={styles.element_fullwidth}>
+                  <BurgerConstructorElement
+                    ingredient={item}
+                    index={index}
+                    totalItems={middle.length}
+                  />
+                </div>
+              </li>
+            );
+          })
         ) : (
           <li className={`${styles.noItems} ml-8 mb-4 mr-5 text text_type_main-default`}>
             Выберите начинку и соусы
@@ -67,7 +74,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
 
       {/* Bottom bun */}
       {constructorItems.bun ? (
-        <div className={`${styles.element} mt-4 mr-4`}>
+        <div className={`${styles.element} ${hasMiddle ? styles.bottomGap : ''} mr-4`}>
           <ConstructorElement
             type='bottom'
             isLocked
@@ -78,7 +85,9 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         </div>
       ) : (
         <div
-          className={`${styles.noBuns} ${styles.noBunsBottom} ml-8 mb-4 mr-5 text text_type_main-default`}
+          className={`${styles.noBuns} ${styles.noBunsBottom} ${
+            hasMiddle ? styles.bottomGap : ''
+          } ml-8 mr-5 text text_type_main-default`}
         >
           Выберите булки
         </div>

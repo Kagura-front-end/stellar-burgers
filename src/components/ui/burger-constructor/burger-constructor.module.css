@@ -8,8 +8,7 @@
 
 .elements {
   min-height: 100px;
-
-  overflow-y: auto;
+  overflow-y: hidden;
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -89,4 +88,64 @@
     line-height: 24px;
     color: #f2f2f3;
     margin-left: 44px;
+}
+
+/* ===== Grip (2×3 dots) next to fillings ===== */
+
+/* We know the layout:
+   - .burger_constructor width = 600px
+   - card (.element_fullwidth) max-width = 536px
+   - free space at the left of the card = 600 - 536 = 64px
+   - grip width = 24px, required gap to card = 8px
+   => grip left offset inside the row: 64 - 24 - 8 = 32px
+*/
+:root{
+    --grip-left-offset: 0;
+    --grip-w: 24px;
+    --grip-h: 25px;
+    --grip-color: #F2F2F3;
+    --page-bg: #131316;
+}
+
+.elements { overflow-x: visible; }
+
+.gripItem { position: relative; }
+
+/* MASK: cover only the far-left strip (where old arrows were),
+   stop well BEFORE the dots and the card edge so we never clip the rounded corner */
+.gripItem::before{
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0; /* left strip */
+    /* cover left area up to just before the dots */
+    width: calc(var(--grip-left-offset) - 4px);  /* was larger – now it won’t touch the tab */
+    background: var(--page-bg);
+    pointer-events: none;
+    z-index: 1; /* below dots, above any legacy arrows */
+}
+
+/* DOTS: unchanged, draw them on top */
+.gripItem::after{
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: var(--grip-left-offset);
+    width: var(--grip-w);
+    height: var(--grip-h);
+    pointer-events: none;
+    z-index: 2;
+
+    background:
+            radial-gradient(circle 3px at 6px  5px,  var(--grip-color) 99%, transparent 0) no-repeat,
+            radial-gradient(circle 3px at 18px 5px,  var(--grip-color) 99%, transparent 0) no-repeat,
+            radial-gradient(circle 3px at 6px  12.5px,var(--grip-color) 99%, transparent 0) no-repeat,
+            radial-gradient(circle 3px at 18px 12.5px,var(--grip-color) 99%, transparent 0) no-repeat,
+            radial-gradient(circle 3px at 6px  20px, var(--grip-color) 99%, transparent 0) no-repeat,
+            radial-gradient(circle 3px at 18px 20px, var(--grip-color) 99%, transparent 0) no-repeat;
+}
+
+
+.bottomGap {
+    margin-top: 16px;
 }

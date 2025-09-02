@@ -1,0 +1,36 @@
+:root{
+    --grip-gap: 8px;   /* distance between grip and card */
+    --grip-w: 24px;
+    --grip-h: 25px;
+    --grip-color: #F2F2F3;
+}
+
+.constructorList { overflow: visible; }  /* so the grip can sit outside */
+
+.gripItem { position: relative; }
+
+/* show grip only for fillings: we don't add .gripItem to buns */
+.gripItem::before{
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: calc(-1 * var(--grip-w) - var(--grip-gap)); /* 8px gap */
+
+    width: var(--grip-w);
+    height: var(--grip-h);
+    pointer-events: none;
+
+    /* 2×3 dots via CSS; uses the exact size/colors you gave */
+    background:
+            radial-gradient(circle 3px at 6px  5px,  var(--grip-color) 99%, transparent 0),
+            radial-gradient(circle 3px at 18px 5px,  var(--grip-color) 99%, transparent 0),
+            radial-gradient(circle 3px at 6px  12.5px,var(--grip-color) 99%, transparent 0),
+            radial-gradient(circle 3px at 18px 12.5px,var(--grip-color) 99%, transparent 0),
+            radial-gradient(circle 3px at 6px  20px, var(--grip-color) 99%, transparent 0),
+            radial-gradient(circle 3px at 18px 20px, var(--grip-color) 99%, transparent 0);
+    background-repeat: no-repeat;
+}
+
+/* buns are rendered without .gripItem */
+.bunItem { position: relative; }

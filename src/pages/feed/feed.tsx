@@ -1,3 +1,4 @@
+// src/pages/feed/feed.tsx
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
@@ -12,8 +13,8 @@ import {
 } from '../../services/orders/publicOrders.slice';
 import { fetchIngredients } from '../../services/ingredients/ingredients.slice';
 import { OrdersList } from '../../components/orders-list/orders-list';
-import { FeedInfoUI } from '../../components/ui/feed-info/feed-info';
 import { Preloader } from '@ui';
+import styles from './feed.module.css';
 
 const FeedPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -39,18 +40,66 @@ const FeedPage: React.FC = () => {
   if (error) return <p className='text text_type_main-default'>Ошибка: {error}</p>;
 
   return (
-    <main style={{ display: 'flex', gap: 40, maxWidth: 1240, margin: '0 auto' }}>
-      <section style={{ flex: '0 0 608px', minWidth: 0 }}>
-        <h1 className='text text_type_main-large' style={{ margin: '40px 0 20px' }}>
-          Лента заказов
-        </h1>
-        <OrdersList orders={orders} onClick={openOrder} />
-      </section>
+    <div className={styles.container}>
+      {/* NEW: viewport wrapper to clip page height */}
+      <div className={styles.viewport}>
+        <h1 className={`${styles.title} text text_type_main-large`}>Лента заказов</h1>
 
-      <section style={{ flex: '1 1 auto', maxWidth: 580, minWidth: 0 }}>
-        <FeedInfoUI feed={totals} readyOrders={ready} pendingOrders={pending} />
-      </section>
-    </main>
+        <div className={styles.layout}>
+          <section className={styles.left}>
+            <OrdersList orders={orders} onClick={openOrder} />
+          </section>
+
+          <div className={styles.separatorCol}>
+            <div className={styles.separator} aria-hidden />
+          </div>
+
+          <aside className={styles.right}>
+            <div className={styles.cols}>
+              <div>
+                <p className='text text_type_main-medium mb-4'>Готовы:</p>
+                <ul className={styles.colList}>
+                  {ready.map((n) => (
+                    <li
+                      key={n}
+                      className={`${styles.num} text text_type_digits-default ${styles.ready}`}
+                    >
+                      {n}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className='text text_type_main-medium mb-4'>В работе:</p>
+                <ul className={styles.colList}>
+                  {pending.map((n) => (
+                    <li key={n} className={`${styles.num} text text_type_digits-default`}>
+                      {n}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Блоки «Выполнено за все время / сегодня» */}
+            <div className={styles.totals}>
+              <div className={styles.statBlock}>
+                <p className='text text_type_main-medium'>Выполнено за все время:</p>
+                <p className={`text text_type_digits-large ${styles.totalDigits}`}>
+                  {totals.total}
+                </p>
+              </div>
+              <div className={styles.statBlock}>
+                <p className='text text_type_main-medium'>Выполнено за сегодня:</p>
+                <p className={`text text_type_digits-large ${styles.totalDigits}`}>
+                  {totals.totalToday}
+                </p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
   );
 };
 

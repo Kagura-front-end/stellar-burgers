@@ -1,0 +1,103 @@
+/* src/pages/feed/feed.module.css */
+.container {
+    max-width: 1240px;          /* keep in sync with header's container width */
+    margin-left: 365px;
+}
+
+/* viewport below header: prevents page scroll */
+.viewport {
+    /* Set your header height here (measure in DevTools). 88px works for most setups. */
+    --header-h: 88px;
+    height: calc(100vh - var(--header-h));
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    min-height: 0;              /* allow inner scroll areas to shrink */
+}
+
+/* 40px from header, 20px above feed grid */
+.title {
+    margin: 40px 0 20px;
+    flex: 0 0 auto;
+}
+
+/* three columns: left / 56px / right */
+.layout {
+    display: grid;
+    grid-template-columns: 608px 56px minmax(320px, 1fr);
+    align-items: start;
+    flex: 1 1 auto;             /* fill viewport height */
+    min-height: 0;              /* critical for inner scroll */
+}
+
+/* left column can shrink so its child scrolls */
+.left {
+    min-height: 0;
+}
+
+/* middle separator fills viewport height */
+.separatorCol {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+}
+
+/*.separator {
+    width: 2px;
+    height: 100%;               !* was 812px – now follows viewport *!
+    background: #4c4cff33;      !* your token *!
+    border-radius: 2px;
+}*/
+
+/* right column: no page scroll */
+.right {
+    overflow: hidden;           /* ensure right side never triggers body scroll */
+}
+
+/* Two narrow columns for numbers with gaps */
+.cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 24px;
+    align-items: start;
+}
+
+/* numbers list layout */
+.colList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-auto-rows: max-content;
+    grid-template-columns: repeat(2, max-content); /* numbers not glued */
+    gap: 8px 16px;                                  /* row / column gaps */
+}
+
+/* number chip (we add color via .ready; font comes from the digits class in TSX) */
+.num {
+    /* Базовые стили для номеров */
+}
+
+/* teal for "готовы" (done) */
+.ready {
+    color: #00cccc;
+}
+
+/* 60px gap above each metrics block */
+.statBlock {
+    margin-top: 60px;
+}
+
+/* Totals blocks container */
+.totals {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Style for the digits in totals */
+.totalDigits {
+    text-shadow: 0px 0px 16px rgba(51, 51, 255, 0.25),
+    0px 0px 8px rgba(51, 51, 255, 0.25),
+    0px 4px 32px rgba(51, 51, 255, 0.5);
+}

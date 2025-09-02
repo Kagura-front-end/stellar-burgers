@@ -59,7 +59,7 @@ const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
     </div>
 
     <div className={styles.content} ref={scrollRef} onScroll={onScroll}>
-      <IngredientsCategoryUI title='Булки' titleRef={titleBunRef} ref={listBunsRef}>
+      <IngredientsCategoryUI title='Булки' titleRef={titleBunRef} ref={listBunsRef} id='buns'>
         {buns.map((ingredient) => (
           <BurgerIngredientUI
             key={ingredient._id}
@@ -71,7 +71,7 @@ const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
         ))}
       </IngredientsCategoryUI>
 
-      <IngredientsCategoryUI title='Соусы' titleRef={titleSauceRef} ref={listSaucesRef}>
+      <IngredientsCategoryUI title='Соусы' titleRef={titleSauceRef} ref={listSaucesRef} id='sauces'>
         {sauces.map((ingredient) => (
           <BurgerIngredientUI
             key={ingredient._id}
@@ -83,7 +83,7 @@ const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
         ))}
       </IngredientsCategoryUI>
 
-      <IngredientsCategoryUI title='Начинки' titleRef={titleMainRef} ref={listMainsRef}>
+      <IngredientsCategoryUI title='Начинки' titleRef={titleMainRef} ref={listMainsRef} id='mains'>
         {mains.map((ingredient) => (
           <BurgerIngredientUI
             key={ingredient._id}

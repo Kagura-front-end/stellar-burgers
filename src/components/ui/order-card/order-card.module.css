@@ -1,67 +1,134 @@
 .ingredients {
-  display: flex;
-  padding: 0;
-  margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0;
+    margin: 0;
+    list-style: none;
 }
 
 .order {
-  display: block;
-  text-decoration: none;
-  color: unset;
-  background-color: #1c1c21;
-  border-radius: 40px;
-  min-width: 576px;
-  box-sizing: border-box;
+    display: block;
+    text-decoration: none;
+    color: unset;
+    background-color: #1c1c21;
+    border-radius: 40px;
+    min-width: 576px;
+    box-sizing: border-box;
 }
 
 .order_info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .order_name {
-  text-align: left;
+    text-align: left;
 }
 
 .order_content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .order_total {
-  vertical-align: top;
+display: inline-flex;
+align-items: center;
+gap: 10px;
+vertical-align: middle;
+line-height: 1;
+}
+
+.order_total > svg,
+.order_total img {
+    display: block;
 }
 
 .img_wrap {
-  width: 62px;
-  height: 62px;
-  border-radius: 50%;
-  border: #801ab3 solid 2px;
-  background-color: #1c1c21;
-  position: relative;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    border: #801ab3 solid 2px;
+    background-color: #1c1c21;
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
 }
 
-.img_wrap:nth-child(n + 2) {
-  position: relative;
-  right: 25px;
+.img_wrap + .img_wrap {
+    margin-left: -16px;
 }
 
 .img {
-  position: relative;
-  right: 25px;
-  width: 112px;
-  height: 56px;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.remains {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+.stack {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0;
+    margin: 0;
+    list-style: none;
 }
 
+.stack .img_wrap:nth-child(n + 2) {
+    right: 0;
+}
+
+.stack .img {
+    position: static;
+    right: auto;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.more {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* затемнение поверх картинки (а не чёрная заливка) */
+.more::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.45); /* подстрой 0.35–0.55 по вкусу */
+}
+
+/* текст поверх затемнения — строго по центру кружка */
+.moreText {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1;
+    color: #fff;
+}
+/*
+
+.more .remains {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1;
+}*/

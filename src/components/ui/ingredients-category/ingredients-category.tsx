@@ -4,13 +4,14 @@ import styles from './ingredients-category.module.css';
 export type IngredientsCategoryUIProps = {
   title: string;
   titleRef?: RefObject<HTMLHeadingElement>;
+  id?: string;
   children: ReactNode;
 };
 
 const IngredientsCategoryUI = forwardRef<HTMLDivElement, IngredientsCategoryUIProps>(
-  ({ title, titleRef, children }, ref) => (
+  ({ title, titleRef, id, children }, ref) => (
     <section className={styles.section}>
-      <h2 ref={titleRef} className='text text_type_main-medium'>
+      <h2 ref={titleRef} id={id} className={`${styles.sectionTitle} text text_type_main-medium`}>
         {title}
       </h2>
       {/* Scrollable grid with proper items wrapper */}
@@ -20,5 +21,7 @@ const IngredientsCategoryUI = forwardRef<HTMLDivElement, IngredientsCategoryUIPr
     </section>
   ),
 );
+
+IngredientsCategoryUI.displayName = 'IngredientsCategoryUI';
 
 export default IngredientsCategoryUI;

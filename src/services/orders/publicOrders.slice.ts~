@@ -94,14 +94,14 @@ export const selectPublicTotals = createSelector([selectPublicOrdersState], (st)
 export const selectPublicReadyNumbers = createSelector([selectOrders], (orders) =>
   orders
     .filter((o) => o.status === 'done')
-    .slice(0, 5)
+    .slice(0, 10)
     .map((o) => o.number),
 );
 
 export const selectPublicPendingNumbers = createSelector([selectOrders], (orders) =>
   orders
     .filter((o) => o.status !== 'done')
-    .slice(0, 5)
+    .slice(0, 10)
     .map((o) => o.number),
 );
 

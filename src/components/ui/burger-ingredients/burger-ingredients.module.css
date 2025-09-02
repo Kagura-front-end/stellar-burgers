@@ -1,72 +1,8 @@
-/*.burger_ingredients {
-  font-family: 'Jet Brains Mono';
-  color: #f2f2f3;
-  max-width: 600px;
 
-  display: flex;
-  flex-direction: column;
-}*/
-
-/*
-p {
-  margin: 0;
-}
-
-.tab {
-  width: 120px;
-}
-*/
-
-/*.content {
-  overflow-y: scroll;
-}*/
-
-/*.menu {
-  display: flex;
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-}*/
-
-/*.categories {
-  font-style: normal;
-  font-weight: bold;
-  font-size: 24px;
-  line-height: 30px;
-}*/
-/*
-.grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
-}*/
-
-/*.scrollableContainer {
-    height: 100%;
-    max-height: calc(100vh - 260px);
-    overflow-y: auto;
-    padding-right: 8px;
-}*/
-
-/*.scrollArea {
-    height: 600px;
-    overflow-y: auto;
-    scroll-behavior: smooth;
-}*/
-/*
-
-.content {
-    height: calc(100vh - 220px);
-    overflow-y: auto;
-    scroll-behavior: smooth;
-}
-*/
-
-.section { display:flex; flex-direction:column; max-width:600px; color:#f2f2f3; font-family:'Jet Brains Mono'; }
+.section { display:flex; flex-direction:column; max-width:600px; color:#f2f2f3; font-family:'Jet Brains Mono'; padding-right: 50px; }
 
 .tabs { display:flex; margin-bottom:16px; }
-.tabs > * { flex:1 1 0; }        /* equal-width tabs */
+.tabs > * { flex:1 1 0; }
 
 .content {
     height: calc(100vh - 220px);
@@ -75,4 +11,7 @@ p {
     padding-right: 8px;
 }
 
+.sectionTitle {
+    margin: 40px 0 24px;
+}
 
