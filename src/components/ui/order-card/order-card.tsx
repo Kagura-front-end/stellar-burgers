@@ -1,15 +1,20 @@
 import React, { FC } from 'react';
 import { CurrencyIcon, FormattedDate } from '@zlden/react-developer-burger-ui-components';
 import styles from './order-card.module.css';
-import type { TOrder } from '@utils-types';
+import type { TOrder, TIngredient } from '@utils-types';
 import { OrderStatus } from '@components';
 
-export type OrderCardUIProps = { order: TOrder };
+export type OrderCardUIProps = {
+  order: TOrder;
+  ingredients: TIngredient[];
+};
 
-export const OrderCardUI: FC<OrderCardUIProps> = ({ order }) => {
-  const shown = order.ingredients.slice(0, 6);
-  const remains = Math.max(0, order.ingredients.length - shown.length);
-  const total = 0; // TODO: compute from ingredients if needed
+export const OrderCardUI: FC<OrderCardUIProps> = ({ order, ingredients }) => {
+  const shownIngredients = ingredients.slice(0, 6);
+  const remains = Math.max(0, ingredients.length - shownIngredients.length);
+
+  // Calculate total price from ingredients
+  const total = ingredients.reduce((sum, ingredient) => sum + ingredient.price, 0);
 
   return (
     <article className={`${styles.order} p-6`}>
@@ -25,10 +30,16 @@ export const OrderCardUI: FC<OrderCardUIProps> = ({ order }) => {
       <OrderStatus status={order.status} />
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        {/* This ul/li is OK — it's inside <article>, not inside a <li> */}
         <ul className={styles.ingredients}>
-          {shown.map((id, i) => (
-            <li key={`${id}-${i}`} className={styles.img} style={{ zIndex: 6 - i }}>
+          {shownIngredients.map((ingredient, i) => (
+            <li key={`${ingredient._id}-${i}`} className={styles.img} style={{ zIndex: 6 - i }}>
+              <img
+                src={ingredient.image_mobile || ingredient.image}
+                alt={ingredient.name}
+                width={64}
+                height={64}
+                style={{ borderRadius: '50%', objectFit: 'cover' }}
+              />
               {i === 5 && remains > 0 && (
                 <span className={`text text_type_main-default ${styles.remains}`}>+{remains}</span>
               )}

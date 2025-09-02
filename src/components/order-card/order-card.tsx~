@@ -1,2 +1,0 @@
-export { default } from '../ui/order-card/order-card';
-export * from '../ui/order-card/order-card';

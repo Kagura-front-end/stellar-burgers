@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 import type { TOrder } from '../../utils/types';
 import { getFeedsApi } from '../../utils/burger-api';
@@ -74,31 +74,37 @@ const slice = createSlice({
 
 export const { reducer: publicOrdersReducer, actions: publicOrdersActions } = slice;
 
-// Selectors (names unchanged to minimize refactors)
-export const selectPublicOrders = (s: RootState) => s.publicOrders.orders;
+// Base selectors (pure reads, no allocation)
+const selectPublicOrdersState = (s: RootState) => s.publicOrders;
+const selectOrders = (s: RootState) => s.publicOrders.orders;
+
+// Selectors
+export const selectPublicOrders = selectOrders;
 export const selectPublicConnected = (s: RootState) => !s.publicOrders.loading;
-export const selectPublicTotals = (s: RootState) => ({
-  total: s.publicOrders.total,
-  totalToday: s.publicOrders.totalToday,
-});
 export const selectFeedLoading = (s: RootState) => s.publicOrders.loading;
 export const selectFeedError = (s: RootState) => s.publicOrders.error;
 
-// For /feed/:number details
-export const makeSelectFeedOrderByNumber =
-  (num: number | string) =>
-  (s: RootState): TOrder | undefined =>
-    s.publicOrders.orders.find((o: TOrder) => o.number === Number(num));
+// ✅ MEMOIZED: returns the same object ref until totals change
+export const selectPublicTotals = createSelector([selectPublicOrdersState], (st) => ({
+  total: st.total,
+  totalToday: st.totalToday,
+}));
 
-// Memoized selectors for ready/pending numbers
-export const selectPublicReadyNumbers = (s: RootState): number[] =>
-  s.publicOrders.orders
-    .filter((o: TOrder) => o.status === 'done')
+// ✅ MEMOIZED: returns the same array ref until orders array identity changes
+export const selectPublicReadyNumbers = createSelector([selectOrders], (orders) =>
+  orders
+    .filter((o) => o.status === 'done')
     .slice(0, 10)
-    .map((o: TOrder) => o.number);
+    .map((o) => o.number),
+);
 
-export const selectPublicPendingNumbers = (s: RootState): number[] =>
-  s.publicOrders.orders
-    .filter((o: TOrder) => o.status !== 'done')
+export const selectPublicPendingNumbers = createSelector([selectOrders], (orders) =>
+  orders
+    .filter((o) => o.status !== 'done')
     .slice(0, 10)
-    .map((o: TOrder) => o.number);
+    .map((o) => o.number),
+);
+
+// ✅ MEMOIZED: selector factory for order by number
+export const makeSelectFeedOrderByNumber = (num: number | string) =>
+  createSelector([selectOrders], (orders) => orders.find((o) => o.number === Number(num)));

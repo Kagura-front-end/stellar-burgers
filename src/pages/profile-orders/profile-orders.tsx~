@@ -9,7 +9,6 @@ import {
   fetchUserOrders,
   selectUserOrders,
   selectUserOrdersLoading,
-  selectUserOrdersError,
   userOrdersActions,
 } from '../../services/orders/userOrders.slice';
 
@@ -18,10 +17,6 @@ export const ProfileOrders: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const orders = useAppSelector(selectUserOrders);
-  const loading = useAppSelector(selectUserOrdersLoading);
-  const error = useAppSelector(selectUserOrdersError);
-
   // Load once on mount
   useEffect(() => {
     dispatch(userOrdersActions.clear());
@@ -29,24 +24,19 @@ export const ProfileOrders: FC = () => {
     void Promise.all([dispatch(fetchIngredients()), dispatch(fetchUserOrders())]);
   }, [dispatch]);
 
+  const orders = useAppSelector(selectUserOrders);
+  const loading = useAppSelector(selectUserOrdersLoading);
+
   const openOrder = (n: number | string) =>
     navigate(`/profile/orders/${n}`, { state: { background: location } });
 
-  if (loading) return <Preloader />;
+  if (loading || orders === null) return <Preloader />;
 
-  if (error)
-    return (
-      <p className='text text_type_main-default' style={{ padding: 24 }}>
-        Ошибка загрузки заказов: {error}
-      </p>
-    );
-
-  if (!orders || orders.length === 0)
-    return (
-      <p className='text text_type_main-default' style={{ padding: 24 }}>
-        Заказов пока нет.
-      </p>
-    );
-
-  return <OrdersList orders={orders} onClick={openOrder} />;
+  return orders.length ? (
+    <OrdersList orders={orders} onClick={openOrder} />
+  ) : (
+    <p className='text text_type_main-default' style={{ padding: 24 }}>
+      Заказов пока нет.
+    </p>
+  );
 };

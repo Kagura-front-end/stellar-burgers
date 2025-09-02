@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { OrderCard } from '../components/order-card/order-card';
+import { OrderCard } from '../components/order-card';
 import type { TOrder } from '@utils-types';
 
 const meta: Meta<typeof OrderCard> = {
