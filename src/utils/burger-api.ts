@@ -1,8 +1,8 @@
-// src/utils/burger-api.ts
 import { setCookie, getCookie } from './cookie';
 import type { TIngredient, TOrder, TUser } from './types';
 
 const URL = (process.env.BURGER_API_URL as string) || 'https://norma.nomoreparties.space/api';
+
 const checkResponse = <T>(res: Response): Promise<T> =>
   res.ok ? res.json() : res.json().then((err) => Promise.reject({ ...err, status: res.status }));
 
@@ -17,10 +17,11 @@ type TUserResponse = TServerResponse<{ user: TUser }>;
 type TAuthResponse = TServerResponse<{ user: TUser; accessToken: string; refreshToken: string }>;
 type TIngredientsResponse = TServerResponse<{ data: TIngredient[] }>;
 type TNewOrderResponse = TServerResponse<{ order: TOrder; name: string }>;
-const withBearer = (token?: string | null) => {
-  if (!token) return '';
-  return token.startsWith('Bearer ') ? token : `Bearer ${token}`;
-};
+export type TFeedsResponse = TServerResponse<{
+  orders: TOrder[];
+  total: number;
+  totalToday: number;
+}>;
 
 // ---------- token refresh + authed fetch ----------
 export const refreshToken = (): Promise<TRefreshResponse> =>
@@ -33,20 +34,29 @@ export const refreshToken = (): Promise<TRefreshResponse> =>
 export const fetchWithRefresh = async <T>(url: string, options: RequestInit = {}): Promise<T> => {
   const accessToken = getCookie('accessToken');
   const baseHeaders = (options.headers as Record<string, string>) || {};
-  const res = await fetch(url, {
-    ...options,
-    headers: {
-      ...baseHeaders,
-      'Content-Type': 'application/json;charset=utf-8',
-      authorization: withBearer(accessToken),
-    } as HeadersInit,
-  });
+
+  // Did caller already set Authorization (any casing)?
+  const hasAuthHeader = Object.keys(baseHeaders).some((k) => k.toLowerCase() === 'authorization');
+
+  // Build headers for the first request
+  const headers: Record<string, string> = {
+    ...baseHeaders,
+    'Content-Type': 'application/json;charset=utf-8',
+  };
+  if (!hasAuthHeader && accessToken) {
+    headers.Authorization = accessToken.startsWith('Bearer ')
+      ? accessToken
+      : `Bearer ${accessToken}`;
+  }
+
+  const res = await fetch(url, { ...options, headers: headers as HeadersInit });
 
   try {
     return await checkResponse<T>(res);
   } catch (err: any) {
     const message = err?.message || err?.error?.message;
     const status = err?.status;
+
     if (
       message === 'jwt expired' ||
       message === 'Token is invalid' ||
@@ -55,24 +65,28 @@ export const fetchWithRefresh = async <T>(url: string, options: RequestInit = {}
     ) {
       // try refresh
       const rt = await refreshToken();
-      // store new tokens
-      // API returns: accessToken = "Bearer XXX"
+
+      // API returns accessToken like "Bearer XXX" — store raw token in cookie
       const rawAccess = rt.accessToken.startsWith('Bearer ')
         ? rt.accessToken.slice('Bearer '.length)
         : rt.accessToken;
+
       setCookie('accessToken', rawAccess);
       localStorage.setItem('refreshToken', rt.refreshToken);
 
-      const retry = await fetch(url, {
-        ...options,
-        headers: {
-          ...baseHeaders,
-          'Content-Type': 'application/json;charset=utf-8',
-          authorization: `Bearer ${rawAccess}`,
-        } as HeadersInit,
-      });
+      // Retry with fresh token (and only add Authorization if caller didn't set it)
+      const retryHeaders: Record<string, string> = {
+        ...baseHeaders,
+        'Content-Type': 'application/json;charset=utf-8',
+      };
+      if (!hasAuthHeader && rawAccess) {
+        retryHeaders.Authorization = `Bearer ${rawAccess}`;
+      }
+
+      const retry = await fetch(url, { ...options, headers: retryHeaders as HeadersInit });
       return checkResponse<T>(retry);
     }
+
     throw err;
   }
 };
@@ -159,3 +173,18 @@ export const makeOrderApi = (ingredients: string[]) =>
   });
 
 export const orderBurgerApi = makeOrderApi;
+
+// ---------- user orders (REST) ----------
+export const getOrdersApi = (): Promise<TOrder[]> =>
+  fetchWithRefresh<TFeedsResponse>(`${URL}/orders`, {
+    method: 'GET',
+  }).then((data) => {
+    if (data?.success) return data.orders;
+    return Promise.reject(data);
+  });
+
+// ---------- public feeds (REST) ----------
+export const getFeedsApi = (): Promise<TFeedsResponse> =>
+  fetch(`${URL}/orders/all`)
+    .then((res) => checkResponse<TFeedsResponse>(res))
+    .then((data) => (data?.success ? data : Promise.reject(data)));

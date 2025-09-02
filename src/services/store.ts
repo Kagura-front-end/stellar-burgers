@@ -11,14 +11,11 @@ import { userReducer } from './user/user.slice';
 import constructorReducer from './constructor/constructor.slice';
 
 // Public orders slice and middleware
-import publicOrdersReducer from './orders/publicOrders.slice';
+import { publicOrdersReducer } from './orders/publicOrders.slice';
 import { profileOrdersReducer } from './orders/profileOrders.slice';
+import { userOrdersReducer } from './orders/userOrders.slice'; // ✅ Added userOrders reducer
 import { placeOrderReducer } from './orders/placeOrder.slice';
 import { currentOrderReducer } from './orders/currentOrder.slice';
-
-// Socket middlewares
-import { socketMiddleware } from './realtime/socketMiddleware';
-import { profileSocketMiddleware } from './realtime/profileSocketMiddleware';
 
 // ---------------- Root reducer ----------------
 const rootReducer = combineReducers({
@@ -28,6 +25,7 @@ const rootReducer = combineReducers({
 
   publicOrders: publicOrdersReducer,
   profileOrders: profileOrdersReducer,
+  userOrders: userOrdersReducer,
 
   placeOrder: placeOrderReducer,
   currentOrder: currentOrderReducer,
@@ -57,13 +55,12 @@ const persistConstructorMiddleware: Middleware = (store) => (next) => (action) =
 export const store = configureStore({
   reducer: rootReducer,
   devTools: process.env.NODE_ENV !== 'production',
-  middleware: (getDefault) =>
-    getDefault().concat(socketMiddleware(), profileSocketMiddleware, persistConstructorMiddleware),
 });
 
-// Exported types/hooks used across the app
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
 export const useAppDispatch = () => useReduxDispatch<AppDispatch>();
+
+export default store;

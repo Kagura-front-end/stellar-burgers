@@ -2,41 +2,38 @@ import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import {
-  fetchFeeds,
+  publicOrdersActions,
   selectPublicOrders,
   selectPublicTotals,
   selectPublicReadyNumbers,
   selectPublicPendingNumbers,
-  selectFeedLoading,
-  selectFeedError,
 } from '../../services/orders/publicOrders.slice';
-import { fetchIngredients } from '../../services/ingredients/ingredients.slice';
 import { OrdersList } from '../../components/orders-list/orders-list';
 import { FeedInfoUI } from '../../components/ui/feed-info/feed-info';
-import { Preloader } from '@ui';
+
+const FEED_WS = 'wss://norma.nomoreparties.space/orders/all';
 
 const FeedPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const location = useLocation();
-  const navigate = useNavigate();
 
-  // Load ingredients + feed once, like canonical
   useEffect(() => {
-    void Promise.all([dispatch(fetchIngredients()), dispatch(fetchFeeds())]);
-  }, [dispatch]);
+    dispatch(publicOrdersActions.connect(FEED_WS));
 
+    return () => {
+      dispatch(publicOrdersActions.disconnect());
+    };
+  }, []);
+
+  // ✅ memoized selectors (no warnings)
   const orders = useAppSelector(selectPublicOrders);
   const totals = useAppSelector(selectPublicTotals);
   const ready = useAppSelector(selectPublicReadyNumbers);
   const pending = useAppSelector(selectPublicPendingNumbers);
-  const loading = useAppSelector(selectFeedLoading);
-  const error = useAppSelector(selectFeedError);
 
+  const location = useLocation();
+  const navigate = useNavigate();
   const openOrder = (num: number | string) =>
     navigate(`/feed/${num}`, { state: { background: location } });
-
-  if (loading) return <Preloader />;
-  if (error) return <p className='text text_type_main-default'>Ошибка: {error}</p>;
 
   return (
     <main style={{ display: 'flex', gap: 40, maxWidth: 1240, margin: '0 auto' }}>
