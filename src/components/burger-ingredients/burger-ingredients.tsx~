@@ -79,10 +79,10 @@ export const BurgerIngredients: FC = () => {
       },
     );
 
-    const nodes = [titleBunRef.current, titleSauceRef.current, titleMainRef.current];
-    nodes.forEach((el) => {
-      if (el) io.observe(el);
-    });
+    const heads = [titleBunRef.current, titleSauceRef.current, titleMainRef.current].filter(
+      (n): n is HTMLElement => Boolean(n),
+    );
+    heads.forEach((h) => io.observe(h));
 
     return () => io.disconnect();
   }, []);

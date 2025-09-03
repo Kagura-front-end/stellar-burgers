@@ -1,48 +1,39 @@
-
 .section {
+    inline-size: 600px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    max-width: 600px;
     color: #f2f2f3;
     font-family: 'Jet Brains Mono';
-    padding-right: 30px;
+    margin-right: 30px;
 }
 
 .tabs {
     display: flex;
+    inline-size: 600px;
     margin-bottom: 16px;
 }
-
 .tabs > * {
     flex: 1 1 0;
+    min-inline-size: 0;
 }
 
 .content {
     height: calc(100vh - 220px);
     overflow-y: auto;
+    overflow-x: hidden;
     scroll-behavior: smooth;
     padding-right: 8px;
+    min-height: 0;
 }
 
-.section {
-    margin-top: 40px;
-}
-
-.section:first-of-type {
-    margin-top: 0;
-}
-
-.sectionTitle {
-    margin: 0 0 24px;
-}
-
+.section { margin-top: 40px; }
+.section:first-of-type { margin-top: 0; }
+.sectionTitle { margin: 0 0 24px; }
 
 :global(h2#sauces),
-:global(h2#mains) {
-    margin-top: 40px;
-}
+:global(h2#mains) { margin-top: 40px; }
 
-/* 24px под каждым заголовком */
 :global(h2#buns),
 :global(h2#sauces),
 :global(h2#mains) {
@@ -50,35 +41,8 @@
     margin-bottom: 24px;
 }
 
-.tile {
-    position: relative;
-    display: block;
-    border-radius: 0;
-}
-
-.tile::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: transparent;
-    transition: background .15s ease, box-shadow .15s ease;
-    z-index: 0;
-}
-
-.tile:hover::before {
-    background: rgba(255, 255, 255, 0.04);
-    box-shadow: none;
-    cursor: pointer;
-}
-
-.tile:focus-visible::before {
-    background: rgba(255, 255, 255, 0.10);
-    outline: 2px solid rgba(255, 255, 255, 0.25);
-    outline-offset: -2px;
-}
-
-.tile > * {
-    position: relative;
-    z-index: 1;
-}
+.tile { position: relative; display: block; border-radius: 0; }
+.tile::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: transparent; transition: background .15s ease, box-shadow .15s ease; z-index: 0; }
+.tile:hover::before { background: rgba(255, 255, 255, 0.04); box-shadow: none; cursor: pointer; }
+.tile:focus-visible::before { background: rgba(255, 255, 255, 0.10); outline: 2px solid rgba(255, 255, 255, 0.25); outline-offset: -2px; }
+.tile > * { position: relative; z-index: 1; }

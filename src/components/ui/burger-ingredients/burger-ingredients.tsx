@@ -6,24 +6,20 @@ import { BurgerIngredientUI } from '../burger-ingredient';
 import { type Location } from 'react-router-dom';
 import styles from './burger-ingredients.module.css';
 
-type TabKey = 'bun' | 'sauce' | 'main';
+type TabValue = 'buns' | 'fillings';
 
 export type BurgerIngredientsUIProps = {
-  currentTab: TabKey;
+  currentTab: TabValue;
   buns: TIngredient[];
   sauces: TIngredient[];
   mains: TIngredient[];
   titleBunRef: RefObject<HTMLHeadingElement>;
   titleSauceRef: RefObject<HTMLHeadingElement>;
   titleMainRef: RefObject<HTMLHeadingElement>;
-  listBunsRef: RefObject<HTMLDivElement>;
-  listSaucesRef: RefObject<HTMLDivElement>;
-  listMainsRef: RefObject<HTMLDivElement>;
-  onTabClick: (t: TabKey) => void;
-  scrollRef?: RefObject<HTMLDivElement>;
-  onScroll?: React.UIEventHandler<HTMLDivElement>;
+  scrollRef: RefObject<HTMLDivElement>;
   countsMap: Record<string, number>;
   handleAdd: (i: TIngredient) => void;
+  onTabClick: (t: TabValue) => void;
   locationState?: { background: Location } | undefined;
 };
 
@@ -35,31 +31,30 @@ const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
   titleBunRef,
   titleSauceRef,
   titleMainRef,
-  listBunsRef,
-  listSaucesRef,
-  listMainsRef,
-  onTabClick,
   scrollRef,
-  onScroll,
   countsMap,
   handleAdd,
+  onTabClick,
   locationState,
 }) => (
   <section className={styles.section}>
+    <h1 className={styles.title}>Соберите бургер</h1>
+
     <div className={styles.tabs}>
-      <Tab value='bun' active={currentTab === 'bun'} onClick={() => onTabClick('bun')}>
+      <Tab value='buns' active={currentTab === 'buns'} onClick={() => onTabClick('buns')}>
         Булки
       </Tab>
-      <Tab value='sauce' active={currentTab === 'sauce'} onClick={() => onTabClick('sauce')}>
-        Соусы
-      </Tab>
-      <Tab value='main' active={currentTab === 'main'} onClick={() => onTabClick('main')}>
+      <Tab
+        value='fillings'
+        active={currentTab === 'fillings'}
+        onClick={() => onTabClick('fillings')}
+      >
         Начинки
       </Tab>
     </div>
 
-    <div className={styles.content} ref={scrollRef} onScroll={onScroll}>
-      <IngredientsCategoryUI title='Булки' titleRef={titleBunRef} ref={listBunsRef} id='buns'>
+    <div className={styles.content} ref={scrollRef}>
+      <IngredientsCategoryUI title='Булки' titleRef={titleBunRef} id='buns' data-section='bun'>
         {buns.map((ingredient) => (
           <BurgerIngredientUI
             key={ingredient._id}
@@ -72,7 +67,12 @@ const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
         ))}
       </IngredientsCategoryUI>
 
-      <IngredientsCategoryUI title='Соусы' titleRef={titleSauceRef} ref={listSaucesRef} id='sauces'>
+      <IngredientsCategoryUI
+        title='Соусы'
+        titleRef={titleSauceRef}
+        id='sauces'
+        data-section='sauce'
+      >
         {sauces.map((ingredient) => (
           <BurgerIngredientUI
             key={ingredient._id}
@@ -85,7 +85,7 @@ const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
         ))}
       </IngredientsCategoryUI>
 
-      <IngredientsCategoryUI title='Начинки' titleRef={titleMainRef} ref={listMainsRef} id='mains'>
+      <IngredientsCategoryUI title='Начинки' titleRef={titleMainRef} id='mains' data-section='main'>
         {mains.map((ingredient) => (
           <BurgerIngredientUI
             key={ingredient._id}
