@@ -7,7 +7,6 @@ import {
   selectConstructorItems,
   selectTotalPrice,
   clearConstructor,
-  removeItem,
 } from '../../services/constructor/constructor.slice';
 import { BurgerConstructorUI } from '../ui/burger-constructor/burger-constructor';
 
@@ -48,11 +47,6 @@ const BurgerConstructor: FC = () => {
   const orderNumber = useAppSelector(selectOrderNumber);
   const orderRequest = useAppSelector(selectOrderRequest);
 
-  const handleRemove = (item: { uuid: string } | any) => {
-    const id = item?.uuid ?? item?._id ?? String(item);
-    if (id) dispatch(removeItem(id));
-  };
-
   const onOrderClick = async () => {
     if (!bun || items.length === 0) return;
 
@@ -82,7 +76,6 @@ const BurgerConstructor: FC = () => {
       orderNumber={orderNumber}
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
-      handleRemove={handleRemove}
     />
   );
 };

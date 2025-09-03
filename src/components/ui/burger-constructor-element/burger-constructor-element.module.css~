@@ -1,21 +1,20 @@
 .element {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+    display: contents;
 }
 
 .element:last-child {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .element_fullwidth {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 536px;
+    display: flex;
+    flex-direction: column;
+    inline-size: 536px;
+    min-block-size: 80px;
+    box-sizing: border-box;
 }
 
-
-.move_button {
-    fill: transparent;
+:global(.move_button) svg {
+    opacity: 0;
+    pointer-events: none;
 }

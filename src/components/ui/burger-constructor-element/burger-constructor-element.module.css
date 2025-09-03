@@ -1,19 +1,12 @@
 .element {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+    display: contents;
 }
 
 .element:last-child {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
-.element_fullwidth {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 536px;
+:global(.move_button) svg {
+    opacity: 0;
+    pointer-events: none;
 }
-
-:global(.move_button) svg { opacity: 0; pointer-events: none; }
-

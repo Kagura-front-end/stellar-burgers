@@ -1,0 +1,16 @@
+import React, { FC, memo } from 'react';
+import { ConstructorElement } from '@zlden/react-developer-burger-ui-components';
+import { BurgerConstructorElementUIProps } from './type';
+
+export const BurgerConstructorElementUI: FC<BurgerConstructorElementUIProps> = memo(
+  ({ ingredient, handleClose }) => (
+    <ConstructorElement
+      text={ingredient.name}
+      price={ingredient.price}
+      thumbnail={ingredient.image}
+      handleClose={handleClose}
+    />
+  ),
+);
+
+BurgerConstructorElementUI.displayName = 'BurgerConstructorElementUI';

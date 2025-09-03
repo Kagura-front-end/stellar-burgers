@@ -19,12 +19,18 @@
 .scrollArea{
     inline-size: calc(var(--rail) + var(--tab-w) + var(--gap) + var(--gutter));
     max-block-size: 420px;
-    overflow-y: auto;
+    overflow-y: scroll;
     overflow-x: hidden;
     padding-inline-end: var(--gutter);
     box-sizing: border-box;
     scrollbar-gutter: stable both-edges;
 }
+
+.scrollArea{ scrollbar-width: thin; scrollbar-color: #7A6EF6 #1B1C21; }
+.scrollArea::-webkit-scrollbar{ width: 12px; }
+.scrollArea::-webkit-scrollbar-track{ background:#1B1C21; border-radius:8px; }
+.scrollArea::-webkit-scrollbar-thumb{ background:#7A6EF6; border-radius:8px; }
+.scrollArea::-webkit-scrollbar-thumb:hover{ background:#9A90FF; }
 
 .list{
     inline-size: calc(var(--rail) + var(--tab-w) + var(--gap));
@@ -50,7 +56,6 @@
     border: 0;
     background: none;
 }
-
 .rowHandle::before{
     content: "";
     inline-size: 16px;

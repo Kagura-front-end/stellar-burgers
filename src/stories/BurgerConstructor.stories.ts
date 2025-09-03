@@ -1,67 +1,28 @@
-import { BurgerConstructorUI } from '@ui';
 import type { Meta, StoryObj } from '@storybook/react';
+import { BurgerConstructorUI } from '../components/ui/burger-constructor/burger-constructor';
 
-const meta = {
-  title: 'Example/BurgerConstructor',
+const meta: Meta<typeof BurgerConstructorUI> = {
+  title: 'Burger/BurgerConstructor',
   component: BurgerConstructorUI,
-  tags: ['autodocs'],
-  parameters: {
-    layout: 'fullscreen',
-  },
-} satisfies Meta<typeof BurgerConstructorUI>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const DefaultConstructor: Story = {
-  args: {
-    constructorItems: { bun: null, ingredients: [] },
-    orderRequest: false,
-    price: 0,
-    orderNumber: null,
-    onOrderClick: () => {},
-    closeOrderModal: () => {},
-  },
 };
+export default meta;
 
-export const WithOrderNumber: Story = {
+type Story = StoryObj<typeof BurgerConstructorUI>;
+
+export const Default: Story = {
   args: {
+    price: 2349,
+    orderRequest: false,
+    orderNumber: null,
+    onOrderClick: async () => {},
+    closeOrderModal: () => {},
     constructorItems: {
-      bun: {
-        _id: '1',
-        name: 'Краторная булка',
-        type: 'bun',
-        proteins: 80,
-        fat: 24,
-        carbohydrates: 53,
-        calories: 420,
-        price: 1255,
-        image: '',
-        image_large: '',
-        image_mobile: '',
-      },
-      ingredients: [
-        {
-          _id: '2',
-          name: 'Соус фирменный',
-          type: 'sauce',
-          proteins: 0,
-          fat: 0,
-          carbohydrates: 0,
-          calories: 0,
-          price: 50,
-          image: '',
-          image_large: '',
-          image_mobile: '',
-          // if your constructor item type requires it:
-          uuid: 'sample-uuid-2',
-        },
+      bun: { name: 'Краторная булка N-200i', price: 20, image: 'https://via.placeholder.com/64' },
+      middle: [
+        { uuid: '1', name: 'Соус традиционный', price: 30, image: 'https://via.placeholder.com/64' },
+        { uuid: '2', name: 'Мясо Protostomia', price: 300, image: 'https://via.placeholder.com/64' },
       ],
     },
-    orderRequest: false,
-    price: 2555,
-    orderNumber: 34567,
-    onOrderClick: () => {},
-    closeOrderModal: () => {},
+    handleRemove: () => {},
   },
 };

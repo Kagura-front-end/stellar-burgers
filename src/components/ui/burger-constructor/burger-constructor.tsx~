@@ -1,31 +1,16 @@
-import { FC } from 'react';
 import { ConstructorElement } from '@zlden/react-developer-burger-ui-components';
 import { BurgerConstructorElementUI } from '../burger-constructor-element/burger-constructor-element';
 import styles from './burger-constructor.module.css';
 
-export type BurgerConstructorUIProps = {
+type Props = {
   constructorItems: {
     bun: { name: string; price: number; image: string } | null;
     middle: Array<{ uuid: string; name: string; price: number; image: string }>;
   };
   handleRemove: (item: { uuid: string }) => void;
-
-  price: number;
-  orderRequest: boolean;
-  orderNumber: number | null;
-  onOrderClick: () => void | Promise<void>;
-  closeOrderModal: () => void;
 };
 
-export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
-  constructorItems,
-  handleRemove,
-  price,
-  orderRequest,
-  orderNumber,
-  onOrderClick,
-  closeOrderModal,
-}) => {
+export const BurgerConstructorUI = ({ constructorItems, handleRemove }: Props) => {
   const hasMiddle = constructorItems.middle.length > 0;
 
   return (
@@ -79,5 +64,3 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
     </section>
   );
 };
-
-export { BurgerConstructorUI as default };
