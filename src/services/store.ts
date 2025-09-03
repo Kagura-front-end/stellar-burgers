@@ -16,6 +16,38 @@ import { userOrdersReducer } from './orders/userOrders.slice';
 import { placeOrderReducer } from './orders/placeOrder.slice';
 import { currentOrderReducer } from './orders/currentOrder.slice';
 
+// --- LS helpers (локально в этом файле) ---
+const CONSTRUCTOR_LS_KEY = 'sb:constructor';
+
+function loadConstructorFromLS() {
+  try {
+    const raw = localStorage.getItem(CONSTRUCTOR_LS_KEY);
+    return raw ? JSON.parse(raw) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function saveConstructorToLS(state: any) {
+  try {
+    localStorage.setItem(CONSTRUCTOR_LS_KEY, JSON.stringify(state));
+  } catch {
+    /* ignore */
+  }
+}
+
+// простая «дросселирующая» обёртка, чтобы не писать слишком часто
+function throttle<T extends (...args: any[]) => void>(fn: T, wait = 300): T {
+  let last = 0;
+  return function (this: any, ...args: any[]) {
+    const now = Date.now();
+    if (now - last >= wait) {
+      last = now;
+      fn.apply(this, args);
+    }
+  } as T;
+}
+
 // ---------------- Root reducer ----------------
 const rootReducer = combineReducers({
   ingredients: ingredientsReducer,
@@ -29,31 +61,23 @@ const rootReducer = combineReducers({
   currentOrder: currentOrderReducer,
 });
 
-// ---------------- Persist constructor ----------------
-const CONSTRUCTOR_STORAGE_KEY = 'sb_constructor';
-
-const persistConstructorMiddleware: Middleware = (store) => (next) => (action) => {
-  const result = next(action as any);
-
-  try {
-    const type = (action as any)?.type as string | undefined;
-    if (type && type.startsWith('burgerConstructor/')) {
-      const state = (store as any).getState();
-      const { bun, items } = state.burgerConstructor;
-      localStorage.setItem(CONSTRUCTOR_STORAGE_KEY, JSON.stringify({ bun, items }));
-    }
-  } catch {
-    // ignore storage errors
-  }
-
-  return result;
-};
-
 // ---------------- Store ----------------
 export const store = configureStore({
   reducer: rootReducer,
+  preloadedState: {
+    // имя среза берём из твоего редьюсера конструктора
+    burgerConstructor: loadConstructorFromLS(),
+  } as any,
   devTools: process.env.NODE_ENV !== 'production',
 });
+
+// Подписка на изменения для сохранения конструктора
+store.subscribe(
+  throttle(() => {
+    const { burgerConstructor } = store.getState() as any;
+    saveConstructorToLS(burgerConstructor);
+  }, 300),
+);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

@@ -1,0 +1,72 @@
+
+.section { display:flex; flex-direction:column; max-width:600px; color:#f2f2f3; font-family:'Jet Brains Mono'; padding-right: 50px; }
+
+.tabs { display:flex; margin-bottom:16px;
+overflow-y: scroll;
+}
+
+.tabs > * { flex:1 1 0; }
+
+.content {
+    height: calc(100vh - 220px);
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding-right: 8px;
+}
+/* 40px before every section except the first one */
+.section { margin-top: 40px; }
+.section:first-of-type { margin-top: 0; }
+
+/* 24px below each heading */
+.sectionTitle { margin: 0 0 24px; }
+
+
+/* 40px между секциями (через следующий за заголовком ID — работает даже без .section) */
+:global(h2#sauces),
+:global(h2#mains) {
+    margin-top: 40px;
+}
+
+/* 24px под каждым заголовком */
+:global(h2#buns),
+:global(h2#sauces),
+:global(h2#mains) {
+    display: block;     /* чтобы точно не схлопывалось */
+    margin-bottom: 24px;
+}
+.tile {
+    position: relative;
+    display: block;
+    border-radius: 0;                 /* ← без скругления */
+}
+
+/* слой-фон под контентом */
+.tile::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;           /* = 0 */
+    background: transparent;
+    transition: background .15s ease, box-shadow .15s ease;
+    z-index: 0;
+}
+
+/* hover: белый с большой прозрачностью, без фиолетовой рамки */
+.tile:hover::before {
+    background: rgba(255, 255, 255, 0.04); /* подстрой: 0.06–0.12 */
+    box-shadow: none;
+    cursor: pointer;
+}
+
+/* фокус клавиатурой (тонкий белый контур) */
+.tile:focus-visible::before {
+    background: rgba(255, 255, 255, 0.10);
+    outline: 2px solid rgba(255, 255, 255, 0.25);
+    outline-offset: -2px;             /* чтобы не «дёргал» лэйаут */
+}
+
+/* контент (картинка, цена, счётчик) всегда выше фона */
+.tile > * {
+    position: relative;
+    z-index: 1;
+}
