@@ -42,7 +42,6 @@ const ingredientsSlice = createSlice({
 
 export default ingredientsSlice.reducer;
 
-// selectors
 export const selectIngredients = (s: RootState) => s.ingredients.items;
 export const selectIngredientsLoading = (s: RootState) => s.ingredients.loading;
 export const selectIngredientsError = (s: RootState) => s.ingredients.error;

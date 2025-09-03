@@ -4,12 +4,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 const meta = {
   title: 'Example/OrderInfo',
   component: OrderInfoUI,
-  // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
   tags: ['autodocs'],
   parameters: {
     // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
-    layout: 'fullscreen',
-  },
+    layout: 'fullscreen'
+  }
 } satisfies Meta<typeof OrderInfoUI>;
 
 export default meta;
@@ -31,8 +30,8 @@ export const DefaultOrderInfo: Story = {
           image: '',
           image_large: '',
           image_mobile: '',
-          count: 2,
-        },
+          count: 2
+        }
       },
       date: new Date('2024-01-25'),
       total: 134,
@@ -42,7 +41,7 @@ export const DefaultOrderInfo: Story = {
       createdAt: '',
       updatedAt: '',
       number: 2,
-      ingredients: ['Булка', 'Начинка'],
-    },
-  },
+      ingredients: ['Булка', 'Начинка']
+    }
+  }
 };

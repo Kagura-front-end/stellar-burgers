@@ -5,18 +5,15 @@ import {
   useSelector as useReduxSelector,
 } from 'react-redux';
 
-// Slices
 import ingredientsReducer from './ingredients/ingredients.slice';
 import { userReducer } from './user/user.slice';
 import constructorReducer from './constructor/constructor.slice';
 
-// Public orders slice and middleware
 import { publicOrdersReducer } from './orders/publicOrders.slice';
 import { userOrdersReducer } from './orders/userOrders.slice';
 import { placeOrderReducer } from './orders/placeOrder.slice';
 import { currentOrderReducer } from './orders/currentOrder.slice';
 
-// --- LS helpers (локально в этом файле) ---
 const CONSTRUCTOR_LS_KEY = 'sb:constructor';
 
 function loadConstructorFromLS() {
@@ -32,11 +29,10 @@ function saveConstructorToLS(state: any) {
   try {
     localStorage.setItem(CONSTRUCTOR_LS_KEY, JSON.stringify(state));
   } catch {
-    /* ignore */
+    console.warn('Failed to save constructor to localStorage');
   }
 }
 
-// простая «дросселирующая» обёртка, чтобы не писать слишком часто
 function throttle<T extends (...args: any[]) => void>(fn: T, wait = 300): T {
   let last = 0;
   return function (this: any, ...args: any[]) {
@@ -48,7 +44,6 @@ function throttle<T extends (...args: any[]) => void>(fn: T, wait = 300): T {
   } as T;
 }
 
-// ---------------- Root reducer ----------------
 const rootReducer = combineReducers({
   ingredients: ingredientsReducer,
   user: userReducer,
@@ -61,17 +56,14 @@ const rootReducer = combineReducers({
   currentOrder: currentOrderReducer,
 });
 
-// ---------------- Store ----------------
 export const store = configureStore({
   reducer: rootReducer,
   preloadedState: {
-    // имя среза берём из твоего редьюсера конструктора
     burgerConstructor: loadConstructorFromLS(),
   } as any,
   devTools: process.env.NODE_ENV !== 'production',
 });
 
-// Подписка на изменения для сохранения конструктора
 store.subscribe(
   throttle(() => {
     const { burgerConstructor } = store.getState() as any;

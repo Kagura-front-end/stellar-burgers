@@ -9,12 +9,11 @@ type ConstructorState = {
   items: TConstructorIngredient[];
 };
 
-// --- persistence helpers ---
 const CONSTRUCTOR_STORAGE_KEY = 'sb_constructor';
 
 type PersistedConstructor = {
   bun: any | null;
-  items: any[]; // TConstructorIngredient[]
+  items: any[];
 };
 
 function loadConstructorFromStorage(): PersistedConstructor {
@@ -75,7 +74,6 @@ const slice = createSlice({
       state.bun = null;
       state.items = [];
     },
-    // Добавлен новый редьюсер для очистки
     clear: (state) => {
       state.bun = null;
       state.items = [];

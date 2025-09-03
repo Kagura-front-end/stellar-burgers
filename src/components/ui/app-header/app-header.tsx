@@ -9,13 +9,13 @@ import {
 import styles from './app-header.module.css';
 
 export type TAppHeaderUIProps = {
-  userName?: string; // ← make optional
+  userName?: string;
   profileTo?: string;
   profileState?: unknown;
 };
 
 export const AppHeaderUI: FC<TAppHeaderUIProps> = ({
-  userName = '', // ← default so it’s always a string
+  userName = '',
   profileTo = '/profile',
   profileState,
 }) => (

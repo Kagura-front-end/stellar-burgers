@@ -34,11 +34,11 @@
 }
 
 .order_total {
-display: inline-flex;
-align-items: center;
-gap: 10px;
-vertical-align: middle;
-line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    vertical-align: middle;
+    line-height: 1;
 }
 
 .order_total > svg,
@@ -98,16 +98,14 @@ line-height: 1;
     justify-content: center;
 }
 
-/* затемнение поверх картинки (а не чёрная заливка) */
 .more::after {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.45); /* подстрой 0.35–0.55 по вкусу */
+    background: rgba(0, 0, 0, 0.45);
 }
 
-/* текст поверх затемнения — строго по центру кружка */
 .moreText {
     position: absolute;
     left: 50%;
@@ -119,16 +117,3 @@ line-height: 1;
     line-height: 1;
     color: #fff;
 }
-/*
-
-.more .remains {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    color: #fff;
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 1;
-}*/

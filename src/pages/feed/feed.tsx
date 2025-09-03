@@ -1,4 +1,3 @@
-// src/pages/feed/feed.tsx
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
@@ -21,7 +20,6 @@ const FeedPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Load ingredients + feed once, like canonical
   useEffect(() => {
     void Promise.all([dispatch(fetchIngredients()), dispatch(fetchFeeds())]);
   }, [dispatch]);

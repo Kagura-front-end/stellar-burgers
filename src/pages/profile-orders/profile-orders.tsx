@@ -24,10 +24,8 @@ export const ProfileOrders: FC = () => {
   const loading = useAppSelector(selectUserOrdersLoading);
   const error = useAppSelector(selectUserOrdersError);
 
-  // Load once on mount
   useEffect(() => {
     dispatch(userOrdersActions.clear());
-    // Ensure ingredients and orders exist just like canonical
     void Promise.all([dispatch(fetchIngredients()), dispatch(fetchUserOrders())]);
   }, [dispatch]);
 

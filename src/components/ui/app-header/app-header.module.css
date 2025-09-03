@@ -5,9 +5,9 @@
 
 .container {
     width: 100%;
-    max-width: 1240px;         /* use the same number your main layout uses */
+    max-width: 1240px;
     margin: 0 auto;
-    padding: 0 20px;           /* same horizontal gutter as the page */
+    padding: 0 20px;
 }
 
 .nav {
@@ -37,7 +37,7 @@
 }
 
 .logoIcon {
-    display: block; /* required by the Logo typing for className, safe default */
+    display: block;
 }
 
 .link,
@@ -46,9 +46,9 @@
     align-items: center;
     gap: 8px;
     text-decoration: none;
-    color: #8585ad; /* secondary */
+    color: #8585ad;
 }
 
 .link_active {
-    color: #f2f2f3; /* primary */
+    color: #f2f2f3;
 }

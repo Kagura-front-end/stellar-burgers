@@ -20,7 +20,6 @@ export const Login: FC = () => {
   const submitting = useAppSelector(selectAuthSubmitting);
   const isAuth = useAppSelector(selectIsAuth);
 
-  // Редирект если уже авторизован
   useEffect(() => {
     if (isAuth) {
       const to = (location.state as any)?.from?.pathname ?? '/';
@@ -30,15 +29,13 @@ export const Login: FC = () => {
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    if (submitting) return; // защита от дабл-клика
+    if (submitting) return;
 
     try {
       await dispatch(loginUserThunk({ email, password })).unwrap();
       const to = (location.state as any)?.from?.pathname ?? '/';
       navigate(to, { replace: true });
-    } catch (err) {
-      // error уже попадёт в selectUserError из слайса
-    }
+    } catch (err) {}
   };
 
   return (

@@ -1,4 +1,3 @@
-// src/components/app/ProtectedRoute.tsx
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../services/store';
 import { selectIsAuth } from '../../services/user/user.slice';
@@ -13,7 +12,7 @@ export function RequireAuth() {
 
   if (!isAuthChecked) return null;
   if (!isAuth) {
-    if (location.pathname === '/login') return null; // never redirect to same path
+    if (location.pathname === '/login') return null;
     return <Navigate to='/login' replace state={{ from: location }} />;
   }
   return <Outlet />;
@@ -33,7 +32,6 @@ export function OnlyUnAuth() {
 
     if (UNAUTH_ROUTES.has(target)) target = '/';
 
-    // Avoid redirecting to the same path
     if (target === location.pathname) return <Navigate to='/' replace />;
 
     return <Navigate to={target} replace />;

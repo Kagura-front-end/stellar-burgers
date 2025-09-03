@@ -10,6 +10,7 @@ type TServerResponse<T> = { success: boolean } & T;
 
 type TRefreshResponse = TServerResponse<{
   refreshToken: string;
+
   accessToken: string;
 }>;
 
@@ -23,7 +24,6 @@ export type TFeedsResponse = TServerResponse<{
   totalToday: number;
 }>;
 
-// ---------- token refresh + authed fetch ----------
 export const refreshToken = (): Promise<TRefreshResponse> =>
   fetch(`${URL}/auth/token`, {
     method: 'POST',
@@ -35,10 +35,8 @@ export const fetchWithRefresh = async <T>(url: string, options: RequestInit = {}
   const accessToken = getCookie('accessToken');
   const baseHeaders = (options.headers as Record<string, string>) || {};
 
-  // Did caller already set Authorization (any casing)?
   const hasAuthHeader = Object.keys(baseHeaders).some((k) => k.toLowerCase() === 'authorization');
 
-  // Build headers for the first request
   const headers: Record<string, string> = {
     ...baseHeaders,
     'Content-Type': 'application/json;charset=utf-8',
@@ -63,10 +61,8 @@ export const fetchWithRefresh = async <T>(url: string, options: RequestInit = {}
       status === 401 ||
       status === 403
     ) {
-      // try refresh
       const rt = await refreshToken();
 
-      // API returns accessToken like "Bearer XXX" — store raw token in cookie
       const rawAccess = rt.accessToken.startsWith('Bearer ')
         ? rt.accessToken.slice('Bearer '.length)
         : rt.accessToken;
@@ -74,7 +70,6 @@ export const fetchWithRefresh = async <T>(url: string, options: RequestInit = {}
       setCookie('accessToken', rawAccess);
       localStorage.setItem('refreshToken', rt.refreshToken);
 
-      // Retry with fresh token (and only add Authorization if caller didn't set it)
       const retryHeaders: Record<string, string> = {
         ...baseHeaders,
         'Content-Type': 'application/json;charset=utf-8',
@@ -91,13 +86,11 @@ export const fetchWithRefresh = async <T>(url: string, options: RequestInit = {}
   }
 };
 
-// ---------- public ----------
 export const getIngredientsApi = (): Promise<TIngredient[]> =>
   fetch(`${URL}/ingredients`).then((res) =>
     checkResponse<TIngredientsResponse>(res).then((d) => d.data),
   );
 
-// ---------- auth ----------
 export const registerUserApi = (data: { name: string; email: string; password: string }) =>
   fetch(`${URL}/auth/register`, {
     method: 'POST',
@@ -151,7 +144,6 @@ export const updateUserApi = (user: Partial<TUser> & { password?: string }) =>
     body: JSON.stringify(user),
   }).then((d) => d.user);
 
-// ---------- password flow ----------
 export const forgotPasswordApi = ({ email }: { email: string }) =>
   fetch(`${URL}/password-reset`, {
     method: 'POST',
@@ -174,7 +166,6 @@ export const makeOrderApi = (ingredients: string[]) =>
 
 export const orderBurgerApi = makeOrderApi;
 
-// ---------- user orders (REST) ----------
 export const getOrdersApi = (): Promise<TOrder[]> =>
   fetchWithRefresh<TFeedsResponse>(`${URL}/orders`, {
     method: 'GET',
@@ -183,7 +174,6 @@ export const getOrdersApi = (): Promise<TOrder[]> =>
     return Promise.reject(data);
   });
 
-// ---------- public feeds (REST) ----------
 export const getFeedsApi = (): Promise<TFeedsResponse> =>
   fetch(`${URL}/orders/all`)
     .then((res) => checkResponse<TFeedsResponse>(res))

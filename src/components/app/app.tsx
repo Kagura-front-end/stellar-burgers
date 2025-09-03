@@ -1,4 +1,3 @@
-// src/components/app/app.tsx
 import { useEffect } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import type { Location } from 'react-router-dom';
@@ -40,7 +39,6 @@ export default function App() {
     if (hasAccess || hasRefresh) {
       dispatch(fetchUser());
     } else {
-      // mark auth as checked so the app can render
       dispatch(userActions.resetUser());
     }
   }, [dispatch]);

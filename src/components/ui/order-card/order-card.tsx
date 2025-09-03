@@ -14,13 +14,8 @@ export const OrderCardUI: FC<OrderCardUIProps> = ({ order, ingredients }) => {
   const visible = ingredients.slice(0, MAX);
   const rest = Math.max(ingredients.length - MAX, 0);
 
-  // use the next hidden ingredient as the background preview for the "+N" bubble
-  const nextPreview =
-    rest > 0
-      ? ingredients[MAX] ?? visible[visible.length - 1] // fallback to the last visible if needed
-      : undefined;
+  const nextPreview = rest > 0 ? ingredients[MAX] ?? visible[visible.length - 1] : undefined;
 
-  // Calculate total price from ingredients
   const total = ingredients.reduce((sum, ingredient) => sum + ingredient.price, 0);
 
   return (

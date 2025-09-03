@@ -19,7 +19,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   closeOrderModal,
 }) => {
   const middle: TConstructorIngredient[] = constructorItems.ingredients;
-  const hasMiddle = middle.length > 0; // ← added
+  const hasMiddle = middle.length > 0;
 
   return (
     <section className={styles.burger_constructor}>
@@ -53,7 +53,6 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
               `${item.type}-${index}`;
 
             return (
-              // ⬇️ wrapper <li> gets the grip via CSS (::before)
               <li key={key} className={`${styles.element} ${styles.gripItem} mb-4 mr-5`}>
                 <div className={styles.element_fullwidth}>
                   <BurgerConstructorElement

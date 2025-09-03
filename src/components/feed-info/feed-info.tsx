@@ -10,5 +10,4 @@ export const FeedInfo: FC<FeedInfoUIProps> = (props) => <FeedInfoUI {...props} /
 
 export default FeedInfo;
 
-// Re-export types for convenience if someone imports from this path
 export type { FeedInfoUIProps } from '../ui/feed-info/type';

@@ -5,7 +5,6 @@ import { RegisterUI } from '@ui-pages';
 import { registerUserThunk } from '../../services/user/user.slice';
 
 export const Register: FC = () => {
-  // NOTE: RegisterUI expects userName / setUserName
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

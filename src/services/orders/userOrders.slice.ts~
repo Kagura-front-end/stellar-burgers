@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { TOrder } from '@utils-types';
+import type { TOrder } from '@utils-types'; // same alias you use elsewhere
 import { getOrdersApi } from '../../utils/burger-api';
 import type { RootState } from '../store';
 
@@ -53,7 +53,8 @@ export const selectUserOrders = (s: RootState) => s.userOrders.orders;
 export const selectUserOrdersLoading = (s: RootState) => s.userOrders.loading;
 export const selectUserOrdersError = (s: RootState) => s.userOrders.error;
 
+// Handy for details page - fixed with proper typing
 export const makeSelectOrderByNumber =
   (num: number | string) =>
   (s: RootState): TOrder | undefined =>
-    s.userOrders.orders?.find((o: TOrder) => o.number === Number(num));
+    s.userOrders.orders?.find((o: TOrder) => o.number === Number(num)); // ✅ Added type annotation

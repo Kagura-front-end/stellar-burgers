@@ -25,11 +25,8 @@ const initialState: UserState = {
   error: null,
 };
 
-// --- HELPERS ---
 const unwrapUser = (data: unknown) =>
   (data as any)?.user ? ((data as any).user as TUser) : (data as TUser);
-
-// --- THUNKS ---
 
 export const fetchUser = createAsyncThunk('user/fetchUser', async () => {
   const data = await getUserApi();
@@ -44,26 +41,21 @@ export const updateUser = createAsyncThunk(
   },
 );
 
-// ЛОГИН
 export const loginUserThunk = createAsyncThunk(
   'user/loginUser',
   async (payload: { email: string; password: string }) => unwrapUser(await loginUserApi(payload)),
 );
 
-// РЕГИСТРАЦИЯ
 export const registerUserThunk = createAsyncThunk(
   'user/registerUser',
   async (payload: { name: string; email: string; password: string }) =>
     unwrapUser(await registerUserApi(payload)),
 );
 
-// ЛОГАУТ
 export const logoutUserThunk = createAsyncThunk('user/logoutUser', async () => {
   await logoutApi();
   return;
 });
-
-// --- SLICE ---
 
 const userSlice = createSlice({
   name: 'user',
@@ -76,7 +68,6 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // fetchUser
       .addCase(fetchUser.pending, (state) => {
         state.getUserRequest = true;
         state.error = null;
@@ -92,7 +83,6 @@ const userSlice = createSlice({
         state.error = action.error.message ?? 'Failed to load user';
       })
 
-      // updateUser
       .addCase(updateUser.pending, (state) => {
         state.updateUserRequest = true;
         state.error = null;
@@ -106,7 +96,6 @@ const userSlice = createSlice({
         state.error = action.error.message ?? 'Failed to update user';
       })
 
-      // loginUserThunk
       .addCase(loginUserThunk.pending, (state) => {
         state.getUserRequest = true;
         state.error = null;
@@ -121,7 +110,6 @@ const userSlice = createSlice({
         state.error = action.error.message ?? 'Failed to login';
       })
 
-      // registerUserThunk
       .addCase(registerUserThunk.pending, (state) => {
         state.getUserRequest = true;
         state.error = null;
@@ -136,7 +124,6 @@ const userSlice = createSlice({
         state.error = action.error.message ?? 'Failed to register';
       })
 
-      // logoutUserThunk
       .addCase(logoutUserThunk.fulfilled, (state) => {
         state.user = null;
         state.isAuthChecked = true;
@@ -146,7 +133,6 @@ const userSlice = createSlice({
 
 export const { reducer: userReducer, actions: userActions } = userSlice;
 
-// --- SELECTORS ---
 export const selectUser = (s: RootState) => s.user.user;
 export const selectIsAuth = (s: RootState) => Boolean(s.user.user);
 export const selectUserLoading = (s: RootState) => s.user.getUserRequest || !s.user.isAuthChecked;

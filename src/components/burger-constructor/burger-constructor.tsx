@@ -6,11 +6,10 @@ import {
   selectConstructorBun,
   selectConstructorItems,
   selectTotalPrice,
-  clearConstructor, // 👈 добавить импорт
+  clearConstructor,
 } from '../../services/constructor/constructor.slice';
 import BurgerConstructorUI from '../ui/burger-constructor/burger-constructor';
 
-// ⬇️ NEW: real order thunk + selectors
 import {
   placeOrderThunk,
   currentOrderActions,
@@ -28,14 +27,12 @@ const BurgerConstructor: FC = () => {
   const items = useAppSelector((s: RootState) => selectConstructorItems(s));
   const price = useAppSelector((s: RootState) => selectTotalPrice(s));
 
-  // auth check (as you already used)
   const isAuth =
     useAppSelector((s: RootState) => Boolean(s.user?.user)) ||
     Boolean(localStorage.getItem('accessToken'));
 
   const constructorItems = useMemo(() => ({ bun, ingredients: items }), [bun, items]);
 
-  // ⬇️ read order state (for modal)
   const orderNumber = useAppSelector(selectOrderNumber);
   const orderRequest = useAppSelector(selectOrderRequest);
 
@@ -47,13 +44,10 @@ const BurgerConstructor: FC = () => {
       return;
     }
 
-    // API expects bun twice: at start and end
     const ingredientIds = [bun._id, ...items.map((i: TConstructorItem) => i._id), bun._id];
 
-    // Диспатчим thunk и ждем результата
     const resultAction = await dispatch(placeOrderThunk(ingredientIds));
 
-    // Если заказ успешно создан, очищаем конструктор
     if (placeOrderThunk.fulfilled.match(resultAction)) {
       dispatch(clearConstructor());
     }

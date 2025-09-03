@@ -3,7 +3,6 @@ import { useAppSelector } from '../../services/store';
 import { selectIngredients } from '../../services/ingredients/ingredients.slice';
 import type { TIngredient } from '@utils-types';
 
-// Import the UI version and its prop types
 import UIOrderCard, {
   type OrderCardUIProps as UIOrderCardProps,
 } from '../ui/order-card/order-card';
@@ -24,5 +23,4 @@ export default function OrderCard(props: Props) {
   return <UIOrderCard {...props} ingredients={resolvedIngredients} />;
 }
 
-// (Optional) Re-export UI prop types if other code needs them:
 export type { OrderCardUIProps } from '../ui/order-card/order-card';

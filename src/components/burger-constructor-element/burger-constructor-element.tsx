@@ -11,7 +11,6 @@ export const BurgerConstructorElement: FC<BurgerConstructorElementProps> = memo(
     const handleMoveDown = () => {};
     const handleMoveUp = () => {};
 
-    // remove by uuid (expected by the slice). fallback: index as string
     const handleClose = () => {
       const id = (ingredient as any)?.uuid ?? String(index);
       dispatch(removeItem(id));

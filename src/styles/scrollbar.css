@@ -1,17 +1,15 @@
-:root{
+:root {
     --scrollbar-size: 8px;
     --scrollbar-track: var(--interface-input, #1c1c21);
     --scrollbar-thumb: var(--text-dark-grey-secondary, #8f8db8);
     --scrollbar-thumb-hover: #a09fd0;
 }
 
-/* Firefox */
 html, body, #root {
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
-/* WebKit – apply both globally and inside #root for reliability */
 *::-webkit-scrollbar,
 #root *::-webkit-scrollbar {
     width: var(--scrollbar-size);
@@ -43,11 +41,11 @@ html, body, #root {
     background-color: var(--scrollbar-thumb-hover);
 }
 
-/* стабильная полоса при появлении */
-.custom-scroll { scrollbar-gutter: stable; }
+.custom-scroll {
+    scrollbar-gutter: stable;
+}
 
 
-/* 🔒 Kill WebKit scrollbar arrow buttons everywhere */
 *::-webkit-scrollbar-button,
 *::-webkit-scrollbar-button:single-button,
 *::-webkit-scrollbar-button:start,

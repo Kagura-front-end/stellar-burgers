@@ -7,7 +7,6 @@ import { ModalOverlayUI } from '@ui';
 export const ModalUI: FC<TModalUIProps> = memo(({ title, onClose, children }) => {
   const labelId = useId();
 
-  // ESC to close + lock page scroll
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -15,14 +14,11 @@ export const ModalUI: FC<TModalUIProps> = memo(({ title, onClose, children }) =>
       }
     };
 
-    // Lock body scroll
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
-    // Add ESC listener
     document.addEventListener('keydown', handleEsc);
 
-    // Cleanup
     return () => {
       document.removeEventListener('keydown', handleEsc);
       document.body.style.overflow = prevOverflow;

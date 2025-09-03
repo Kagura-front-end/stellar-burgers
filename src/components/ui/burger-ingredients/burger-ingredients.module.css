@@ -1,10 +1,21 @@
 
-.section { display:flex; flex-direction:column; max-width:600px; color:#f2f2f3; font-family:'Jet Brains Mono'; padding-right: 50px; }
-
-.tabs { display:flex; margin-bottom:16px;
+.section {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    color: #f2f2f3;
+    font-family: 'Jet Brains Mono';
+    padding-right: 50px;
 }
 
-.tabs > * { flex:1 1 0; }
+.tabs {
+    display: flex;
+    margin-bottom: 16px;
+}
+
+.tabs > * {
+    flex: 1 1 0;
+}
 
 .content {
     height: calc(100vh - 220px);
@@ -12,15 +23,20 @@
     scroll-behavior: smooth;
     padding-right: 8px;
 }
-/* 40px before every section except the first one */
-.section { margin-top: 40px; }
-.section:first-of-type { margin-top: 0; }
 
-/* 24px below each heading */
-.sectionTitle { margin: 0 0 24px; }
+.section {
+    margin-top: 40px;
+}
+
+.section:first-of-type {
+    margin-top: 0;
+}
+
+.sectionTitle {
+    margin: 0 0 24px;
+}
 
 
-/* 40px между секциями (через следующий за заголовком ID — работает даже без .section) */
 :global(h2#sauces),
 :global(h2#mains) {
     margin-top: 40px;
@@ -30,41 +46,38 @@
 :global(h2#buns),
 :global(h2#sauces),
 :global(h2#mains) {
-    display: block;     /* чтобы точно не схлопывалось */
+    display: block;
     margin-bottom: 24px;
 }
+
 .tile {
     position: relative;
     display: block;
-    border-radius: 0;                 /* ← без скругления */
+    border-radius: 0;
 }
 
-/* слой-фон под контентом */
 .tile::before {
     content: "";
     position: absolute;
     inset: 0;
-    border-radius: inherit;           /* = 0 */
+    border-radius: inherit;
     background: transparent;
     transition: background .15s ease, box-shadow .15s ease;
     z-index: 0;
 }
 
-/* hover: белый с большой прозрачностью, без фиолетовой рамки */
 .tile:hover::before {
-    background: rgba(255, 255, 255, 0.04); /* подстрой: 0.06–0.12 */
+    background: rgba(255, 255, 255, 0.04);
     box-shadow: none;
     cursor: pointer;
 }
 
-/* фокус клавиатурой (тонкий белый контур) */
 .tile:focus-visible::before {
     background: rgba(255, 255, 255, 0.10);
     outline: 2px solid rgba(255, 255, 255, 0.25);
-    outline-offset: -2px;             /* чтобы не «дёргал» лэйаут */
+    outline-offset: -2px;
 }
 
-/* контент (картинка, цена, счётчик) всегда выше фона */
 .tile > * {
     position: relative;
     z-index: 1;

@@ -15,5 +15,4 @@ export * from './profile-menu';
 export * from './feed-info';
 export { ModalOverlayUI } from './modal-overlay';
 
-// pages (presentational pages only)
 export * from './pages/constructor-page';

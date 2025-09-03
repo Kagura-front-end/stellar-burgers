@@ -16,7 +16,7 @@ import {
   Input,
   PasswordInput,
 } from '@zlden/react-developer-burger-ui-components';
-import styles from './profile.module.css'; // add this file (see below)
+import styles from './profile.module.css';
 
 export const Profile: FC = () => {
   const dispatch = useAppDispatch();

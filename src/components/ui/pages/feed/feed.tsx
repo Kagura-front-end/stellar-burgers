@@ -4,7 +4,7 @@ import type { TOrder } from '@utils-types';
 
 type Props = {
   orders: TOrder[];
-  feed: any; // contains totals as in the kit
+  feed: any;
   readyOrders: number[];
   pendingOrders: number[];
   onClick?: (num: string | number) => void;

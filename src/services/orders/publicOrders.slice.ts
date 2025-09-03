@@ -20,7 +20,6 @@ const initialState: PublicOrdersState = {
   error: null,
 };
 
-// REST thunk (loads the whole feed once)
 export const fetchFeeds = createAsyncThunk<TFeedsResponse>(
   'publicOrders/fetchFeeds',
   async () => await getFeedsApi(),
@@ -36,7 +35,6 @@ const slice = createSlice({
       state.totalToday = 0;
       state.error = null;
     },
-    // Keep WS actions as no-op for backward compatibility (temporarily)
     connect: (_s, _a: PayloadAction<string>) => {},
     disconnect: () => {},
     onOpen: (s) => {
@@ -74,23 +72,19 @@ const slice = createSlice({
 
 export const { reducer: publicOrdersReducer, actions: publicOrdersActions } = slice;
 
-// Base selectors (pure reads, no allocation)
 const selectPublicOrdersState = (s: RootState) => s.publicOrders;
 const selectOrders = (s: RootState) => s.publicOrders.orders;
 
-// Selectors
 export const selectPublicOrders = selectOrders;
 export const selectPublicConnected = (s: RootState) => !s.publicOrders.loading;
 export const selectFeedLoading = (s: RootState) => s.publicOrders.loading;
 export const selectFeedError = (s: RootState) => s.publicOrders.error;
 
-// ✅ MEMOIZED: returns the same object ref until totals change
 export const selectPublicTotals = createSelector([selectPublicOrdersState], (st) => ({
   total: st.total,
   totalToday: st.totalToday,
 }));
 
-// ✅ MEMOIZED: returns the same array ref until orders array identity changes
 export const selectPublicReadyNumbers = createSelector([selectOrders], (orders) =>
   orders
     .filter((o) => o.status === 'done')
@@ -105,6 +99,5 @@ export const selectPublicPendingNumbers = createSelector([selectOrders], (orders
     .map((o) => o.number),
 );
 
-// ✅ MEMOIZED: selector factory for order by number
 export const makeSelectFeedOrderByNumber = (num: number | string) =>
   createSelector([selectOrders], (orders) => orders.find((o) => o.number === Number(num)));

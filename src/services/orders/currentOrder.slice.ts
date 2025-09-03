@@ -16,9 +16,7 @@ const initialState: CurrentOrderState = {
 };
 
 export const placeOrderThunk = createAsyncThunk('order/place', async (ingredientIds: string[]) => {
-  // API returns: { success, name, order: { number } }
   const res = await orderBurgerApi(ingredientIds);
-  // keep only the number for the modal
   return res.order.number as number;
 });
 
@@ -50,7 +48,6 @@ const slice = createSlice({
 
 export const { reducer: currentOrderReducer, actions: currentOrderActions } = slice;
 
-// selectors
 export const selectOrderNumber = (s: RootState) => s.currentOrder.number;
 export const selectOrderRequest = (s: RootState) => s.currentOrder.request;
 export const selectOrderError = (s: RootState) => s.currentOrder.error;

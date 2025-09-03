@@ -6,7 +6,6 @@ import { MoveButton } from '@zlden/react-developer-burger-ui-components';
 
 export const BurgerConstructorElementUI: FC<BurgerConstructorElementUIProps> = memo(
   ({ ingredient, index, totalItems, handleMoveUp, handleMoveDown, handleClose }) => {
-    // Wrap optional callbacks to ensure they're always functions
     const onMoveUp = () => handleMoveUp?.();
     const onMoveDown = () => handleMoveDown?.();
 
