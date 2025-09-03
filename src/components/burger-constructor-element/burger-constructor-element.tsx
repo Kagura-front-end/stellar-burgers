@@ -1,23 +1,22 @@
 import { FC, memo } from 'react';
 import { BurgerConstructorElementUI } from '@ui';
-import { BurgerConstructorElementProps } from './type';
 import { useAppDispatch } from '../../services/hooks';
 import { removeItem } from '../../services/constructor/constructor.slice';
+import type { TConstructorItem } from '../../services/constructor/constructor.slice';
 
-export const BurgerConstructorElement: FC<BurgerConstructorElementProps> = memo(
-  ({ ingredient, index }) => {
-    const dispatch = useAppDispatch();
+type Props = {
+  ingredient: TConstructorItem;
+  index?: number;
+};
 
-    const handleClose = () => {
-      const id =
-        (ingredient as any)?.uuid ??
-        (typeof index === 'number' ? String(index) : undefined) ??
-        (ingredient as any)?._id; // final fallback if present
-      if (id) dispatch(removeItem(id));
-    };
+export const BurgerConstructorElement: FC<Props> = memo(({ ingredient }) => {
+  const dispatch = useAppDispatch();
 
-    return <BurgerConstructorElementUI ingredient={ingredient} onClose={handleClose} />;
-  },
-);
+  const handleClose = () => {
+    dispatch(removeItem(ingredient.uuid));
+  };
+
+  return <BurgerConstructorElementUI ingredient={ingredient} onClose={handleClose} />;
+});
 
 export default BurgerConstructorElement;

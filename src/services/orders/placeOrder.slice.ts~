@@ -1,12 +1,12 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 import { orderBurgerApi } from '../../utils/burger-api';
 
-export const placeOrderThunk = createAsyncThunk<number, string[]>(
+export const placeOrderThunk = createAsyncThunk(
   'placeOrder/place',
-  async (ingredientIds) => {
+  async (ingredientIds: string[]) => {
     const data = await orderBurgerApi(ingredientIds);
-    return (data as { order: { number: number } }).order.number;
+    return (data as unknown as { order: { number: number } }).order.number;
   },
 );
 
@@ -36,7 +36,7 @@ const slice = createSlice({
       s.placing = true;
       s.error = null;
     });
-    b.addCase(placeOrderThunk.fulfilled, (s, a) => {
+    b.addCase(placeOrderThunk.fulfilled, (s, a: PayloadAction<number>) => {
       s.placing = false;
       s.orderNumber = a.payload;
     });

@@ -1,4 +1,4 @@
-import { configureStore, combineReducers, Middleware } from '@reduxjs/toolkit';
+import { configureStore, combineReducers, nanoid } from '@reduxjs/toolkit';
 import {
   TypedUseSelectorHook,
   useDispatch as useReduxDispatch,
@@ -16,10 +16,29 @@ import { currentOrderReducer } from './orders/currentOrder.slice';
 
 const CONSTRUCTOR_LS_KEY = 'sb:constructor';
 
+function normalizeConstructorState(raw: any) {
+  const bun = raw && typeof raw === 'object' && raw.bun ? raw.bun : null;
+
+  const srcItems = raw && Array.isArray(raw.ingredients) ? raw.ingredients : [];
+  const ingredients = srcItems.map((it: any, idx: number) => ({
+    ...it,
+    uuid: it?.uuid ?? (it?._id ? `m-${it._id}-${idx}` : nanoid()),
+  }));
+
+  return {
+    bun,
+    ingredients,
+    orderRequest: false,
+    orderNumber: null,
+  };
+}
+
 function loadConstructorFromLS() {
   try {
     const raw = localStorage.getItem(CONSTRUCTOR_LS_KEY);
-    return raw ? JSON.parse(raw) : undefined;
+    if (!raw) return undefined;
+    const parsed = JSON.parse(raw);
+    return normalizeConstructorState(parsed);
   } catch {
     return undefined;
   }
