@@ -7,11 +7,11 @@ import { Counter, CurrencyIcon, AddButton } from '@zlden/react-developer-burger-
 import { TBurgerIngredientUIProps } from './type';
 
 export const BurgerIngredientUI: FC<TBurgerIngredientUIProps> = memo(
-  ({ ingredient, count, handleAdd, locationState }) => {
+  ({ ingredient, count, handleAdd, locationState, className }) => {
     const { _id, image, price, name } = ingredient;
 
     return (
-      <li className={styles.container}>
+      <li className={`${styles.container} ${className || ''}`}>
         <Link to={`/ingredients/${_id}`} state={locationState} className={styles.article}>
           {count > 0 && <Counter count={count} size='default' />}
           <img src={image} alt={name} />

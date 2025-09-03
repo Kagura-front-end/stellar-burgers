@@ -67,6 +67,7 @@ const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
             count={countsMap[ingredient._id] ?? 0}
             handleAdd={() => handleAdd(ingredient)}
             locationState={locationState}
+            className={styles.tile} // ← Добавлен класс tile
           />
         ))}
       </IngredientsCategoryUI>
@@ -79,6 +80,7 @@ const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
             count={countsMap[ingredient._id] ?? 0}
             handleAdd={() => handleAdd(ingredient)}
             locationState={locationState}
+            className={styles.tile} // ← Добавлен класс tile
           />
         ))}
       </IngredientsCategoryUI>
@@ -91,6 +93,7 @@ const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
             count={countsMap[ingredient._id] ?? 0}
             handleAdd={() => handleAdd(ingredient)}
             locationState={locationState}
+            className={styles.tile} // ← Добавлен класс tile
           />
         ))}
       </IngredientsCategoryUI>

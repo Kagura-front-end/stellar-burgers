@@ -4,14 +4,16 @@
   display: flex;
   flex-direction: column;
   padding-bottom: 20px;
+    height: 664px;
 }
 
 .elements {
   min-height: 100px;
-  overflow-y: hidden;
   list-style-type: none;
   margin: 0;
   padding: 0;
+    overflow-y: auto;
+
 }
 
 .total {
