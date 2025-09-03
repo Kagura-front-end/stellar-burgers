@@ -15,5 +15,7 @@
   max-width: 536px;
 }
 
-:global(.move_button) svg { opacity: 0; pointer-events: none; }
 
+.move_button {
+    fill: transparent;
+}

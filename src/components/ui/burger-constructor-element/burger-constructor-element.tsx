@@ -6,13 +6,14 @@ import { MoveButton } from '@zlden/react-developer-burger-ui-components';
 
 export const BurgerConstructorElementUI: FC<BurgerConstructorElementUIProps> = memo(
   ({ ingredient, index, totalItems, handleMoveUp, handleMoveDown, handleClose }) => {
+    // Wrap optional callbacks to ensure they're always functions
     const onMoveUp = () => handleMoveUp?.();
     const onMoveDown = () => handleMoveDown?.();
 
-    const showMoveButtons = false;
+    const showMoveButtons = true;
 
     return (
-      <div className={`${styles.element} mb-4 mr-2`}>
+      <div className={`${styles.element} ${styles.gripItem} mb-4 mr-2`}>
         {showMoveButtons ? (
           <MoveButton
             handleMoveDown={onMoveDown}
