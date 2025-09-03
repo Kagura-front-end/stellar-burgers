@@ -34,21 +34,33 @@
 }
 
 .row{
-    display: grid;
-    grid-template-columns: var(--rail) var(--tab-w);
-    column-gap: var(--gap);
-    align-items: center;
+    position: relative;
+    padding-inline-start: calc(var(--rail) + var(--gap));
     margin-block: 8px;
+    min-block-size: var(--row-h);
+    display: flex;
+    align-items: center;
 }
 
 .rowHandle{
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block: 0;
     inline-size: var(--rail);
-    block-size: var(--row-h);
     display: grid;
     place-items: center;
-    cursor: grab;
+    padding: 0;
+    margin: 0;
     border: 0;
     background: none;
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: grab;
+}
+
+.rowHandle:disabled{
+    cursor: default;
 }
 
 .rowHandle::before{
@@ -76,10 +88,13 @@
 }
 
 .rowTab :global(.constructor-element){
+    display: block;
     inline-size: 100%;
+    margin: 0;
 }
 
-.rowTop .rowTab,
-.rowBottom .rowTab{
-    margin-inline-end: var(--gutter);
+.edgeFrame{
+    inline-size: calc(var(--rail) + var(--tab-w) + var(--gap) + var(--gutter)); /* 580 */
+    padding-inline-end: var(--gutter);  /* same gutter as the scroll area */
+    box-sizing: border-box;
 }

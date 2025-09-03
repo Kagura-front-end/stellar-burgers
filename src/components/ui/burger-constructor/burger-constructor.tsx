@@ -31,16 +31,24 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   return (
     <section className={styles.burger_constructor}>
       {constructorItems.bun && (
-        <div className={`${styles.row} ${styles.rowTop}`}>
-          <span className={styles.rowHandle} aria-hidden='true' />
-          <div className={styles.rowTab}>
-            <ConstructorElement
-              type='top'
-              isLocked
-              text={`${constructorItems.bun.name} (верх)`}
-              price={constructorItems.bun.price}
-              thumbnail={constructorItems.bun.image}
+        <div className={styles.edgeFrame}>
+          <div className={`${styles.row} ${styles.rowTop}`}>
+            <button
+              className={styles.rowHandle}
+              type='button'
+              aria-hidden='true'
+              tabIndex={-1}
+              disabled
             />
+            <div className={styles.rowTab}>
+              <ConstructorElement
+                type='top'
+                isLocked
+                text={`${constructorItems.bun.name} (верх)`}
+                price={constructorItems.bun.price}
+                thumbnail={constructorItems.bun.image}
+              />
+            </div>
           </div>
         </div>
       )}
@@ -63,16 +71,24 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
       </div>
 
       {constructorItems.bun && (
-        <div className={`${styles.row} ${styles.rowBottom}`}>
-          <span className={styles.rowHandle} aria-hidden='true' />
-          <div className={styles.rowTab}>
-            <ConstructorElement
-              type='bottom'
-              isLocked
-              text={`${constructorItems.bun.name} (низ)`}
-              price={constructorItems.bun.price}
-              thumbnail={constructorItems.bun.image}
+        <div className={styles.edgeFrame}>
+          <div className={`${styles.row} ${styles.rowBottom}`}>
+            <button
+              className={styles.rowHandle}
+              type='button'
+              aria-hidden='true'
+              tabIndex={-1}
+              disabled
             />
+            <div className={styles.rowTab}>
+              <ConstructorElement
+                type='bottom'
+                isLocked
+                text={`${constructorItems.bun.name} (низ)`}
+                price={constructorItems.bun.price}
+                thumbnail={constructorItems.bun.image}
+              />
+            </div>
           </div>
         </div>
       )}

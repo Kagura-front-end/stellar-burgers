@@ -1,23 +1,44 @@
+import { FC } from 'react';
 import { ConstructorElement } from '@zlden/react-developer-burger-ui-components';
 import { BurgerConstructorElementUI } from '../burger-constructor-element/burger-constructor-element';
 import styles from './burger-constructor.module.css';
 
-type Props = {
+export type BurgerConstructorUIProps = {
   constructorItems: {
     bun: { name: string; price: number; image: string } | null;
     middle: Array<{ uuid: string; name: string; price: number; image: string }>;
   };
   handleRemove: (item: { uuid: string }) => void;
+
+  price: number;
+  orderRequest: boolean;
+  orderNumber: number | null;
+  onOrderClick: () => void | Promise<void>;
+  closeOrderModal: () => void;
 };
 
-export const BurgerConstructorUI = ({ constructorItems, handleRemove }: Props) => {
+export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
+  constructorItems,
+  handleRemove,
+  price,
+  orderRequest,
+  orderNumber,
+  onOrderClick,
+  closeOrderModal,
+}) => {
   const hasMiddle = constructorItems.middle.length > 0;
 
   return (
     <section className={styles.burger_constructor}>
       {constructorItems.bun && (
         <div className={`${styles.row} ${styles.rowTop}`}>
-          <span className={styles.rowHandle} aria-hidden='true' />
+          <button
+            className={styles.rowHandle}
+            type='button'
+            aria-hidden='true'
+            tabIndex={-1}
+            disabled
+          />
           <div className={styles.rowTab}>
             <ConstructorElement
               type='top'
@@ -49,7 +70,13 @@ export const BurgerConstructorUI = ({ constructorItems, handleRemove }: Props) =
 
       {constructorItems.bun && (
         <div className={`${styles.row} ${styles.rowBottom}`}>
-          <span className={styles.rowHandle} aria-hidden='true' />
+          <button
+            className={styles.rowHandle}
+            type='button'
+            aria-hidden='true'
+            tabIndex={-1}
+            disabled
+          />
           <div className={styles.rowTab}>
             <ConstructorElement
               type='bottom'
@@ -64,3 +91,5 @@ export const BurgerConstructorUI = ({ constructorItems, handleRemove }: Props) =
     </section>
   );
 };
+
+export { BurgerConstructorUI as default };

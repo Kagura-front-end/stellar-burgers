@@ -19,18 +19,12 @@
 .scrollArea{
     inline-size: calc(var(--rail) + var(--tab-w) + var(--gap) + var(--gutter));
     max-block-size: 420px;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     padding-inline-end: var(--gutter);
     box-sizing: border-box;
     scrollbar-gutter: stable both-edges;
 }
-
-.scrollArea{ scrollbar-width: thin; scrollbar-color: #7A6EF6 #1B1C21; }
-.scrollArea::-webkit-scrollbar{ width: 12px; }
-.scrollArea::-webkit-scrollbar-track{ background:#1B1C21; border-radius:8px; }
-.scrollArea::-webkit-scrollbar-thumb{ background:#7A6EF6; border-radius:8px; }
-.scrollArea::-webkit-scrollbar-thumb:hover{ background:#9A90FF; }
 
 .list{
     inline-size: calc(var(--rail) + var(--tab-w) + var(--gap));
@@ -39,23 +33,39 @@
     padding: 0;
 }
 
+/* one row */
 .row{
-    display: grid;
-    grid-template-columns: var(--rail) var(--tab-w);
-    column-gap: var(--gap);
-    align-items: center;
+    position: relative;
+    padding-inline-start: calc(var(--rail) + var(--gap));
     margin-block: 8px;
+    min-block-size: var(--row-h);
+    display: flex;
+    align-items: center;
 }
 
+/* the rail with dots — purely visual, not part of flow */
 .rowHandle{
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block: 0;
     inline-size: var(--rail);
-    block-size: var(--row-h);
     display: grid;
     place-items: center;
-    cursor: grab;
+    padding: 0;
+    margin: 0;
     border: 0;
     background: none;
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: grab;
 }
+
+.rowHandle:disabled{
+    cursor: default;
+}
+
+/* dots */
 .rowHandle::before{
     content: "";
     inline-size: 16px;
@@ -71,6 +81,7 @@
     opacity: .9;
 }
 
+/* the 536px pill: sits at x = rail + gap */
 .rowTab{
     inline-size: var(--tab-w);
     min-block-size: var(--row-h);
@@ -80,11 +91,15 @@
     border-radius: 0;
 }
 
+/* make the kit element fill the pill */
 .rowTab :global(.constructor-element){
+    display: block;
     inline-size: 100%;
+    margin: 0;
 }
 
-.rowTop .rowTab,
-.rowBottom .rowTab{
-    margin-inline-end: var(--gutter);
+.edgeFrame{
+    inline-size: calc(var(--rail) + var(--tab-w) + var(--gap) + var(--gutter)); /* 580 */
+    padding-inline-end: var(--gutter);  /* same gutter as the scroll area */
+    box-sizing: border-box;
 }
