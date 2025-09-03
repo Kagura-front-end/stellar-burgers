@@ -6,19 +6,22 @@ import { MoveButton } from '@zlden/react-developer-burger-ui-components';
 
 export const BurgerConstructorElementUI: FC<BurgerConstructorElementUIProps> = memo(
   ({ ingredient, index, totalItems, handleMoveUp, handleMoveDown, handleClose }) => {
-    // Wrap optional callbacks to ensure they're always functions
     const onMoveUp = () => handleMoveUp?.();
     const onMoveDown = () => handleMoveDown?.();
 
+    const showMoveButtons = false;
+
     return (
-      <li className={`${styles.element} mb-4 mr-2`}>
-        <MoveButton
-          handleMoveDown={onMoveDown}
-          handleMoveUp={onMoveUp}
-          isUpDisabled={index === 0}
-          isDownDisabled={index === totalItems - 1}
-        />
-        <div className={`${styles.element_fullwidth} ml-2`}>
+      <div className={`${styles.element} mb-4 mr-2`}>
+        {showMoveButtons ? (
+          <MoveButton
+            handleMoveDown={onMoveDown}
+            handleMoveUp={onMoveUp}
+            isUpDisabled={index === 0}
+            isDownDisabled={index === totalItems - 1}
+          />
+        ) : null}
+        <div className={`${styles.element_fullwidth} ${showMoveButtons ? 'ml-2' : ''}`}>
           <ConstructorElement
             text={ingredient.name}
             price={ingredient.price}
@@ -26,7 +29,7 @@ export const BurgerConstructorElementUI: FC<BurgerConstructorElementUIProps> = m
             handleClose={handleClose}
           />
         </div>
-      </li>
+      </div>
     );
   },
 );

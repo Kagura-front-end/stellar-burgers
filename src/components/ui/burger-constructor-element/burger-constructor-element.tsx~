@@ -1,24 +1,31 @@
 import React, { FC, memo } from 'react';
 import styles from './burger-constructor-element.module.css';
-import { ConstructorElement } from '@zlden/react-developer-burger-ui-components';
-import { MoveButton } from '@zlden/react-developer-burger-ui-components';
-import type { BurgerConstructorElementUIProps } from './type';
+import { ConstructorElement, MoveButton } from '@zlden/react-developer-burger-ui-components';
+import { BurgerConstructorElementUIProps } from './type';
 
 export const BurgerConstructorElementUI: FC<BurgerConstructorElementUIProps> = memo(
   ({ ingredient, index, totalItems, handleMoveUp, handleMoveDown, handleClose }) => {
-    // Wrap optional callbacks to ensure they're always functions
     const onMoveUp = () => handleMoveUp?.();
     const onMoveDown = () => handleMoveDown?.();
 
+    // Кнопки перемещения нужны ТОЛЬКО для "серединных" ингредиентов (не булок)
+    const showMoveButtons = ingredient.type !== 'bun';
+
     return (
-      <li className={`${styles.element} mb-4 mr-2`}>
-        <MoveButton
-          handleMoveDown={onMoveDown}
-          handleMoveUp={onMoveUp}
-          isUpDisabled={index === 0}
-          isDownDisabled={index === totalItems - 1}
-        />
-        <div className={`${styles.element_fullwidth} ml-2`}>
+      <div className={`${styles.element} mb-4 mr-2`}>
+        {showMoveButtons && (
+          <div className={styles.gripSlot} aria-hidden={false}>
+            {/* Кнопки остаются в DOM, но их не видно — клики/фокус работают */}
+            <MoveButton
+              handleMoveDown={onMoveDown}
+              handleMoveUp={onMoveUp}
+              isUpDisabled={index === 0}
+              isDownDisabled={index === totalItems - 1}
+            />
+          </div>
+        )}
+
+        <div className={styles.element_fullwidth}>
           <ConstructorElement
             text={ingredient.name}
             price={ingredient.price}
@@ -26,7 +33,7 @@ export const BurgerConstructorElementUI: FC<BurgerConstructorElementUIProps> = m
             handleClose={handleClose}
           />
         </div>
-      </li>
+      </div>
     );
   },
 );

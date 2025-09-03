@@ -92,17 +92,9 @@
     margin-left: 44px;
 }
 
-/* ===== Grip (2×3 dots) next to fillings ===== */
 
-/* We know the layout:
-   - .burger_constructor width = 600px
-   - card (.element_fullwidth) max-width = 536px
-   - free space at the left of the card = 600 - 536 = 64px
-   - grip width = 24px, required gap to card = 8px
-   => grip left offset inside the row: 64 - 24 - 8 = 32px
-*/
 :root{
-    --grip-left-offset: 0;
+    --grip-left-offset: -2px;
     --grip-w: 24px;
     --grip-h: 25px;
     --grip-color: #F2F2F3;

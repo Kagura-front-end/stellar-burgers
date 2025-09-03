@@ -1,7 +1,9 @@
 
 .section { display:flex; flex-direction:column; max-width:600px; color:#f2f2f3; font-family:'Jet Brains Mono'; padding-right: 50px; }
 
-.tabs { display:flex; margin-bottom:16px; }
+.tabs { display:flex; margin-bottom:16px;
+}
+
 .tabs > * { flex:1 1 0; }
 
 .content {
