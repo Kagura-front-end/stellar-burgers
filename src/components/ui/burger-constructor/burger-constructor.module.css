@@ -94,7 +94,45 @@
 }
 
 .edgeFrame{
-    inline-size: calc(var(--rail) + var(--tab-w) + var(--gap) + var(--gutter)); /* 580 */
-    padding-inline-end: var(--gutter);  /* same gutter as the scroll area */
+    inline-size: calc(var(--rail) + var(--tab-w) + var(--gap) + var(--gutter));
+    padding-inline-end: var(--gutter);
     box-sizing: border-box;
+}
+
+.noBuns {
+    box-sizing: border-box;
+    min-height: 80px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--common-border-radius-s);
+    background: var(--background-element, #2f2f37);
+}
+
+.noBunsTop {
+    border-radius: var(--top-constructor-item-border-radius);
+}
+
+.noBunsBottom {
+    border-radius: var(--bottom-constructor-item-border-radius);
+}
+
+.total {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.cost {
+    display: flex;
+    align-items: center;
+}
+
+.totalText {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 36px;
 }

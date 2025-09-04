@@ -38,7 +38,7 @@ const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = ({
   locationState,
 }) => (
   <section className={styles.section}>
-    {/* УДАЛЕНО: <h1 className={styles.title}>Соберите бургер</h1> */}
+    <h1 className={styles.title}>Соберите бургер</h1>
 
     <div className={styles.tabs}>
       <Tab value='buns' active={currentTab === 'buns'} onClick={() => onTabClick('buns')}>

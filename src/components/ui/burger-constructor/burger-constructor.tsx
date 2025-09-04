@@ -1,7 +1,13 @@
 import { FC } from 'react';
-import { ConstructorElement } from '@zlden/react-developer-burger-ui-components';
+import {
+  ConstructorElement,
+  Button,
+  CurrencyIcon,
+} from '@zlden/react-developer-burger-ui-components';
 import { BurgerConstructorElementUI } from '../burger-constructor-element/burger-constructor-element';
 import styles from './burger-constructor.module.css';
+import { Modal } from '@components';
+import { Preloader, OrderDetailsUI } from '@ui';
 
 export type BurgerConstructorUIProps = {
   constructorItems: {
@@ -27,10 +33,12 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   closeOrderModal,
 }) => {
   const hasMiddle = constructorItems.middle.length > 0;
+  const canOrder = Boolean(constructorItems.bun) && hasMiddle;
 
   return (
     <section className={styles.burger_constructor}>
-      {constructorItems.bun && (
+      {/* Верхняя булка */}
+      {constructorItems.bun ? (
         <div className={styles.edgeFrame}>
           <div className={`${styles.row} ${styles.rowTop}`}>
             <button
@@ -51,11 +59,25 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
             </div>
           </div>
         </div>
+      ) : (
+        <div className={styles.edgeFrame}>
+          <div className={`${styles.row} ${styles.rowTop}`}>
+            <span className={styles.rowHandle} aria-hidden='true' />
+            <div className={styles.rowTab}>
+              <div className={`${styles.noBuns} ${styles.noBunsTop}`}>
+                <span className='text text_type_main-default text_color_inactive'>
+                  Выберите булки
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
+      {/* Начинка */}
       <div className={styles.scrollArea}>
         <ul className={styles.list}>
-          {hasMiddle &&
+          {hasMiddle ? (
             constructorItems.middle.map((item) => (
               <li key={item.uuid} className={styles.row}>
                 <button className={styles.rowHandle} aria-label='Переместить' />
@@ -66,11 +88,24 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
                   />
                 </div>
               </li>
-            ))}
+            ))
+          ) : (
+            <li className={styles.row}>
+              <span className={styles.rowHandle} aria-hidden='true' />
+              <div className={styles.rowTab}>
+                <div className={styles.noBuns}>
+                  <span className='text text_type_main-default text_color_inactive'>
+                    Выберите начинку
+                  </span>
+                </div>
+              </div>
+            </li>
+          )}
         </ul>
       </div>
 
-      {constructorItems.bun && (
+      {/* Нижняя булка */}
+      {constructorItems.bun ? (
         <div className={styles.edgeFrame}>
           <div className={`${styles.row} ${styles.rowBottom}`}>
             <button
@@ -91,6 +126,49 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
             </div>
           </div>
         </div>
+      ) : (
+        <div className={styles.edgeFrame}>
+          <div className={`${styles.row} ${styles.rowBottom}`}>
+            <span className={styles.rowHandle} aria-hidden='true' />
+            <div className={styles.rowTab}>
+              <div className={`${styles.noBuns} ${styles.noBunsBottom}`}>
+                <span className='text text_type_main-default text_color_inactive'>
+                  Выберите булки
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ====== Итог + кнопка "Оформить заказ" ====== */}
+      <div className={`${styles.total} mt-10 mr-4`} data-cy='new_order_total'>
+        <div className={`${styles.cost} mr-10`} aria-label='Итоговая стоимость'>
+          <p className={`text ${styles.totalText} mr-2`}>{price}</p>
+          <CurrencyIcon type='primary' />
+        </div>
+        <Button
+          htmlType='button'
+          type='primary'
+          size='large'
+          onClick={onOrderClick}
+          disabled={!canOrder}
+        >
+          Оформить заказ
+        </Button>
+      </div>
+
+      {/* ====== Модалки: прелоадер → детали заказа ====== */}
+      {orderRequest && (
+        <Modal onClose={closeOrderModal} title='Оформляем заказ...'>
+          <Preloader />
+        </Modal>
+      )}
+
+      {orderNumber !== null && !orderRequest && (
+        <Modal onClose={closeOrderModal} title=''>
+          <OrderDetailsUI orderNumber={orderNumber} />
+        </Modal>
       )}
     </section>
   );
