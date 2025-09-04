@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { Location } from 'react-router-dom';
 
 import { AppHeader, Modal, IngredientDetails, OrderInfo } from '@components';
@@ -14,12 +14,25 @@ import { ResetPassword } from '../../pages/reset-password/reset-password';
 import { Profile } from '../../pages/profile/profile';
 import { ProfileOrders } from '../../pages/profile-orders/profile-orders';
 
-import { RequireAuth, OnlyUnAuth } from './ProtectedRoute';
+import { RequireAuth, OnlyUnAuth } from '../protected-route/ProtectedRoute';
 
 import { useAppDispatch, useAppSelector } from '../../services/store';
 import { fetchUser, userActions } from '../../services/user/user.slice';
 import { Preloader } from '@ui';
 import { getCookie } from '../../utils/cookie';
+
+function OrderModal() {
+  const { number } = useParams<{ number: string }>();
+  const navigate = useNavigate();
+  const onClose = () => navigate(-1);
+  const title = number ? `#${number.padStart(6, '0')}` : '';
+
+  return (
+    <Modal title={title} onClose={onClose}>
+      <OrderInfo />
+    </Modal>
+  );
+}
 
 const NotFound = () => <div style={{ padding: 24 }}>Страница не найдена</div>;
 
@@ -55,13 +68,10 @@ export default function App() {
     <div className={styles.app}>
       <AppHeader />
 
-      {/* Main routes; if a background is set, render against it */}
       <Routes location={state?.background ?? location}>
-        {/* Public */}
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
 
-        {/* Only for NOT-authenticated users */}
         <Route element={<OnlyUnAuth />}>
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
@@ -69,21 +79,18 @@ export default function App() {
           <Route path='/reset-password' element={<ResetPassword />} />
         </Route>
 
-        {/* Only for authenticated users */}
         <Route element={<RequireAuth />}>
           <Route path='/profile' element={<Profile />} />
           <Route path='/profile/orders' element={<ProfileOrders />} />
           <Route path='/profile/orders/:number' element={<OrderInfo />} />
         </Route>
 
-        {/* Public details pages */}
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
         <Route path='/feed/:number' element={<OrderInfo />} />
 
         <Route path='*' element={<NotFound />} />
       </Routes>
 
-      {/* Modal routes when navigated from a background page */}
       {state?.background && (
         <Routes>
           <Route
@@ -94,23 +101,9 @@ export default function App() {
               </Modal>
             }
           />
-          <Route
-            path='/feed/:number'
-            element={
-              <Modal title='Детали заказа' onClose={onClose}>
-                <OrderInfo />
-              </Modal>
-            }
-          />
+          <Route path='/feed/:number' element={<OrderModal />} />
           <Route element={<RequireAuth />}>
-            <Route
-              path='/profile/orders/:number'
-              element={
-                <Modal title='Детали заказа' onClose={onClose}>
-                  <OrderInfo />
-                </Modal>
-              }
-            />
+            <Route path='/profile/orders/:number' element={<OrderModal />} />
           </Route>
         </Routes>
       )}

@@ -2,8 +2,7 @@ import { useEffect } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import type { Location } from 'react-router-dom';
 
-import { AppHeader, IngredientDetails, OrderInfo } from '@components';
-import { ModalUI } from '@ui';
+import { AppHeader, Modal, IngredientDetails, OrderInfo } from '@components';
 import styles from './app.module.css';
 
 import { ConstructorPage } from '../../pages/constructor-page/constructor-page';
@@ -14,9 +13,8 @@ import { ForgotPassword } from '../../pages/forgot-password/forgot-password';
 import { ResetPassword } from '../../pages/reset-password/reset-password';
 import { Profile } from '../../pages/profile/profile';
 import { ProfileOrders } from '../../pages/profile-orders/profile-orders';
-import { OrderDetails } from '../../components/order-details/order-details';
 
-import { RequireAuth, OnlyUnAuth } from './ProtectedRoute';
+import { RequireAuth, OnlyUnAuth } from '../protected-route/ProtectedRoute';
 
 import { useAppDispatch, useAppSelector } from '../../services/store';
 import { fetchUser, userActions } from '../../services/user/user.slice';
@@ -29,7 +27,7 @@ export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as { background?: Location } | undefined;
-  const onCloseModal = () => navigate(-1);
+  const onClose = () => navigate(-1);
 
   const dispatch = useAppDispatch();
   const checked = useAppSelector((s) => s.user.isAuthChecked);
@@ -57,14 +55,11 @@ export default function App() {
     <div className={styles.app}>
       <AppHeader />
 
-      {/* Базовые страницы (full-page) */}
+      {/* Main routes; if a background is set, render against it */}
       <Routes location={state?.background ?? location}>
         {/* Public */}
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
-        <Route path='/ingredients/:id' element={<IngredientDetails />} />
-        <Route path='/feed/:number' element={<OrderInfo />} />
-        <Route path='/order' element={<OrderDetails />} />
 
         {/* Only for NOT-authenticated users */}
         <Route element={<OnlyUnAuth />}>
@@ -81,44 +76,42 @@ export default function App() {
           <Route path='/profile/orders/:number' element={<OrderInfo />} />
         </Route>
 
+        {/* Public details pages */}
+        <Route path='/ingredients/:id' element={<IngredientDetails />} />
+        <Route path='/feed/:number' element={<OrderInfo />} />
+
         <Route path='*' element={<NotFound />} />
       </Routes>
 
-      {/* Модалки поверх, только если пришли из background */}
+      {/* Modal routes when navigated from a background page */}
       {state?.background && (
         <Routes>
           <Route
             path='/ingredients/:id'
             element={
-              <ModalUI title='Детали ингредиента' onClose={onCloseModal}>
+              <Modal title='Детали ингредиента' onClose={onClose}>
                 <IngredientDetails />
-              </ModalUI>
+              </Modal>
             }
           />
           <Route
             path='/feed/:number'
             element={
-              <ModalUI title='' onClose={onCloseModal}>
+              <Modal title={`#${number?.toString().padStart(6, '0')}`} onClose={onClose}>
                 <OrderInfo />
-              </ModalUI>
+              </Modal>
             }
           />
-          <Route
-            path='/profile/orders/:number'
-            element={
-              <ModalUI title='' onClose={onCloseModal}>
-                <OrderInfo />
-              </ModalUI>
-            }
-          />
-          <Route
-            path='/order'
-            element={
-              <ModalUI title='Детали заказа' onClose={onCloseModal}>
-                <OrderDetails />
-              </ModalUI>
-            }
-          />
+          <Route element={<RequireAuth />}>
+            <Route
+              path='/profile/orders/:number'
+              element={
+                <Modal title={`#${number?.toString().padStart(6, '0')}`} onClose={onClose}>
+                  <OrderInfo />
+                </Modal>
+              }
+            />
+          </Route>
         </Routes>
       )}
     </div>
