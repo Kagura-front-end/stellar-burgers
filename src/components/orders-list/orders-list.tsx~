@@ -4,7 +4,7 @@ import type { TOrder } from '@utils-types';
 
 type Props = {
   orders: TOrder[];
-  onClick?: (num: string | number) => void;
+  onClick: (num: string | number) => void;
 };
 
 export const OrdersList: FC<Props> = ({ orders, onClick }) => {

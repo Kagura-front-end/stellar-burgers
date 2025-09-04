@@ -29,9 +29,6 @@ export const ProfileOrders: FC = () => {
     void Promise.all([dispatch(fetchIngredients()), dispatch(fetchUserOrders())]);
   }, [dispatch]);
 
-  const openOrder = (n: number | string) =>
-    navigate(`/profile/orders/${n}`, { state: { background: location } });
-
   const onLogout = async () => {
     await dispatch(logoutUserThunk() as any);
     navigate('/login', { replace: true, state: { from: location } });
@@ -73,7 +70,7 @@ export const ProfileOrders: FC = () => {
         <ProfileMenuUI pathname={location.pathname} handleLogout={onLogout} />
       </aside>
       <section className={styles.content}>
-        <OrdersList orders={orders} onClick={openOrder} />
+        <OrdersList orders={orders} />
       </section>
     </div>
   );

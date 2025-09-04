@@ -4,9 +4,8 @@ import type { TOrder } from '@utils-types';
 
 type Props = {
   orders: TOrder[];
-  onClick?: (num: string | number) => void;
 };
 
-export const ProfileOrders: FC<Props> = ({ orders, onClick }) => (
-  <OrdersListUI orders={orders} onClick={onClick || (() => {})} />
-);
+export const ProfileOrders: FC<Props> = ({ orders }) => <OrdersListUI orders={orders} />;
+
+export default ProfileOrders;

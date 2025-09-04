@@ -7,11 +7,12 @@ type Props = {
   feed: any;
   readyOrders: number[];
   pendingOrders: number[];
+  onClick?: (num: string | number) => void;
 };
 
-export const Feed: FC<Props> = ({ orders, feed, readyOrders, pendingOrders }) => (
+export const Feed: FC<Props> = ({ orders, feed, readyOrders, pendingOrders, onClick }) => (
   <>
-    <OrdersListUI orders={orders} />
+    <OrdersListUI orders={orders} onClick={onClick} />
     <FeedInfoUI feed={feed} readyOrders={readyOrders} pendingOrders={pendingOrders} />
   </>
 );

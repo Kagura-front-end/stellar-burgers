@@ -6,6 +6,7 @@ import styles from './orders-list.module.css';
 
 export const OrdersList: FC<OrdersListUIProps> = ({ orders, onClick }) => {
   const location = useLocation();
+
   const isProfile = location.pathname.startsWith('/profile');
   const makeTo = (num: number | string) => (isProfile ? `/profile/orders/${num}` : `/feed/${num}`);
 
@@ -27,5 +28,4 @@ export const OrdersList: FC<OrdersListUIProps> = ({ orders, onClick }) => {
     </div>
   );
 };
-
 export default OrdersList;

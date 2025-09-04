@@ -25,10 +25,10 @@ function OrderModal() {
   const { number } = useParams<{ number: string }>();
   const navigate = useNavigate();
   const onClose = () => navigate(-1);
-  const title = number ? `#${number.padStart(6, '0')}` : '';
 
+  // Title left empty because the #number is rendered next to the burger name inside OrderInfo
   return (
-    <Modal title={title} onClose={onClose}>
+    <Modal title='' onClose={onClose}>
       <OrderInfo />
     </Modal>
   );
@@ -68,10 +68,15 @@ export default function App() {
     <div className={styles.app}>
       <AppHeader />
 
+      {/* Base routes (full pages). If a background exists, render against it. */}
       <Routes location={state?.background ?? location}>
+        {/* Public */}
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
+        <Route path='/ingredients/:id' element={<IngredientDetails />} />
+        <Route path='/feed/:number' element={<OrderInfo />} />
 
+        {/* Only for NOT-authenticated users */}
         <Route element={<OnlyUnAuth />}>
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
@@ -79,18 +84,17 @@ export default function App() {
           <Route path='/reset-password' element={<ResetPassword />} />
         </Route>
 
+        {/* Only for authenticated users */}
         <Route element={<RequireAuth />}>
           <Route path='/profile' element={<Profile />} />
           <Route path='/profile/orders' element={<ProfileOrders />} />
           <Route path='/profile/orders/:number' element={<OrderInfo />} />
         </Route>
 
-        <Route path='/ingredients/:id' element={<IngredientDetails />} />
-        <Route path='/feed/:number' element={<OrderInfo />} />
-
         <Route path='*' element={<NotFound />} />
       </Routes>
 
+      {/* Modal routes when navigated from a background page */}
       {state?.background && (
         <Routes>
           <Route

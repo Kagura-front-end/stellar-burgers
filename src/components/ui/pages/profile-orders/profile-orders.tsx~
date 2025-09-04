@@ -1,0 +1,12 @@
+import { FC } from 'react';
+import { OrdersListUI } from '@ui';
+import type { TOrder } from '@utils-types';
+
+type Props = {
+  orders: TOrder[];
+  onClick?: (num: string | number) => void;
+};
+
+export const ProfileOrders: FC<Props> = ({ orders, onClick }) => (
+  <OrdersListUI orders={orders} onClick={onClick} />
+);
