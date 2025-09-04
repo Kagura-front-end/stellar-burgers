@@ -14,7 +14,7 @@
 
 .headerGrid {
     display: grid;
-    grid-template-columns: 608px 0 minmax(320px, 1fr);
+    grid-template-columns: 608px 36px minmax(320px, 1fr);
     align-items: center;
     margin: 40px 0 20px;
 }

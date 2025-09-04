@@ -45,20 +45,18 @@ const FeedPage: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.viewport}>
-        <div className={styles.headerGrid}>
-          <h1 className={`text text_type_main-large ${styles.headerTitle}`}>Лента заказов</h1>
-          <div className={styles.headerActions}>
-            <Button
-              htmlType='button'
-              type='primary'
-              size='large'
-              onClick={handleRefresh}
-              disabled={loading}
-              data-cy='feed_refresh_button'
-            >
-              Обновить
-            </Button>
-          </div>
+        <div className={styles.headerRow}>
+          <h1 className={`text text_type_main-large`}>Лента заказов</h1>
+          <Button
+            htmlType='button'
+            type='primary'
+            size='large'
+            onClick={handleRefresh}
+            disabled={loading}
+            data-cy='feed_refresh_button'
+          >
+            Обновить
+          </Button>
         </div>
 
         <div className={styles.layout}>
