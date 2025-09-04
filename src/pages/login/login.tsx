@@ -20,12 +20,14 @@ export const Login: FC = () => {
   const submitting = useAppSelector(selectAuthSubmitting);
   const isAuth = useAppSelector(selectIsAuth);
 
+  const redirectTo =
+    (location.state as { from?: Location } | undefined)?.from?.pathname ?? '/profile';
+
   useEffect(() => {
     if (isAuth) {
-      const to = (location.state as any)?.from?.pathname ?? '/';
-      navigate(to, { replace: true });
+      navigate(redirectTo, { replace: true });
     }
-  }, [isAuth, location.state, navigate]);
+  }, [isAuth, navigate, redirectTo]);
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -33,8 +35,7 @@ export const Login: FC = () => {
 
     try {
       await dispatch(loginUserThunk({ email, password })).unwrap();
-      const to = (location.state as any)?.from?.pathname ?? '/';
-      navigate(to, { replace: true });
+      navigate(redirectTo, { replace: true });
     } catch (err) {}
   };
 
