@@ -23,7 +23,6 @@
     overflow-x: hidden;
     padding-inline-end: var(--gutter);
     box-sizing: border-box;
-    scrollbar-gutter: stable both-edges;
 }
 
 .list{
