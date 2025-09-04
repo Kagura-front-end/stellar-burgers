@@ -1,5 +1,5 @@
 .wrap {
-    max-width: 720px;        /* comfortable width for details */
+    max-width: 720px;
     margin: 0 auto;
-    padding: 40px 24px 64px; /* air + offset from header */
+    padding-top: 120px;
 }
