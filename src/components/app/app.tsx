@@ -14,6 +14,10 @@ import { ResetPassword } from '../../pages/reset-password/reset-password';
 import { Profile } from '../../pages/profile/profile';
 import { ProfileOrders } from '../../pages/profile-orders/profile-orders';
 
+import IngredientDetailsPage from '../../pages/full-screen/ingredient-details-page';
+import OrderInfoPage from '../../pages/full-screen/order-info-page';
+import ProfileOrderInfoPage from '../../pages/full-screen/profile-order-info-page';
+
 import { RequireAuth, OnlyUnAuth } from '../protected-route/ProtectedRoute';
 
 import { useAppDispatch, useAppSelector } from '../../services/store';
@@ -26,7 +30,6 @@ function OrderModal() {
   const navigate = useNavigate();
   const onClose = () => navigate(-1);
 
-  // Title left empty because the #number is rendered next to the burger name inside OrderInfo
   return (
     <Modal title='' onClose={onClose}>
       <OrderInfo />
@@ -68,15 +71,24 @@ export default function App() {
     <div className={styles.app}>
       <AppHeader />
 
-      {/* Base routes (full pages). If a background exists, render against it. */}
+      {/* Base routes (full pages). If there's a background, render against it */}
       <Routes location={state?.background ?? location}>
         {/* Public */}
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
-        <Route path='/ingredients/:id' element={<IngredientDetails />} />
-        <Route path='/feed/:number' element={<OrderInfo />} />
 
-        {/* Only for NOT-authenticated users */}
+        {/* Full-screen versions (no modal) */}
+        <Route path='/ingredients/:id' element={<IngredientDetailsPage />} />
+        <Route path='/feed/:number' element={<OrderInfoPage />} />
+
+        {/* Auth-only full-screen */}
+        <Route element={<RequireAuth />}>
+          <Route path='/profile' element={<Profile />} />
+          <Route path='/profile/orders' element={<ProfileOrders />} />
+          <Route path='/profile/orders/:number' element={<ProfileOrderInfoPage />} />
+        </Route>
+
+        {/* Auth gates for non-auth users */}
         <Route element={<OnlyUnAuth />}>
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
@@ -84,17 +96,10 @@ export default function App() {
           <Route path='/reset-password' element={<ResetPassword />} />
         </Route>
 
-        {/* Only for authenticated users */}
-        <Route element={<RequireAuth />}>
-          <Route path='/profile' element={<Profile />} />
-          <Route path='/profile/orders' element={<ProfileOrders />} />
-          <Route path='/profile/orders/:number' element={<OrderInfo />} />
-        </Route>
-
         <Route path='*' element={<NotFound />} />
       </Routes>
 
-      {/* Modal routes when navigated from a background page */}
+      {/* Background-modal routes: rendered only when navigated from a background page */}
       {state?.background && (
         <Routes>
           <Route

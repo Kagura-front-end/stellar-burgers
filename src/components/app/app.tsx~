@@ -13,6 +13,9 @@ import { ForgotPassword } from '../../pages/forgot-password/forgot-password';
 import { ResetPassword } from '../../pages/reset-password/reset-password';
 import { Profile } from '../../pages/profile/profile';
 import { ProfileOrders } from '../../pages/profile-orders/profile-orders';
+import IngredientDetailsPage from '../../pages/full-screen/ingredient-details-page';
+import OrderInfoPage from '../../pages/full-screen/order-info-page';
+import ProfileOrderInfoPage from '../../pages/full-screen/profile-order-info-page';
 
 import { RequireAuth, OnlyUnAuth } from '../protected-route/ProtectedRoute';
 
@@ -25,10 +28,9 @@ function OrderModal() {
   const { number } = useParams<{ number: string }>();
   const navigate = useNavigate();
   const onClose = () => navigate(-1);
-  const title = number ? `#${number.padStart(6, '0')}` : '';
 
   return (
-    <Modal title={title} onClose={onClose}>
+    <Modal title='' onClose={onClose}>
       <OrderInfo />
     </Modal>
   );
@@ -71,6 +73,8 @@ export default function App() {
       <Routes location={state?.background ?? location}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
+        <Route path='/ingredients/:id' element={<IngredientDetailsPage />} />
+        <Route path='/feed/:number' element={<OrderInfoPage />} />
 
         <Route element={<OnlyUnAuth />}>
           <Route path='/login' element={<Login />} />
@@ -82,11 +86,8 @@ export default function App() {
         <Route element={<RequireAuth />}>
           <Route path='/profile' element={<Profile />} />
           <Route path='/profile/orders' element={<ProfileOrders />} />
-          <Route path='/profile/orders/:number' element={<OrderInfo />} />
+          <Route path='/profile/orders/:number' element={<ProfileOrderInfoPage />} />
         </Route>
-
-        <Route path='/ingredients/:id' element={<IngredientDetails />} />
-        <Route path='/feed/:number' element={<OrderInfo />} />
 
         <Route path='*' element={<NotFound />} />
       </Routes>

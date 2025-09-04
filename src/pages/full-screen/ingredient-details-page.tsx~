@@ -1,0 +1,11 @@
+import React from 'react';
+import { IngredientDetails } from '@components';
+import styles from './centered.module.css';
+
+export default function IngredientDetailsPage() {
+  return (
+    <div className={styles.wrap}>
+      <IngredientDetails />
+    </div>
+  );
+}
