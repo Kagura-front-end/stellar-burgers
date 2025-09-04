@@ -7,6 +7,7 @@ import { store } from './services/store';
 import { router } from './components/app/routes';
 import './styles/scrollbar.css';
 import './index.css';
+import './styles/normalize.css';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('#root not found');
