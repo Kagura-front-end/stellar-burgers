@@ -167,5 +167,5 @@
 
 .cost .totalPrice {
     font-size: 30px;
-    line-height: 38px;
+    line-height: 36px;
 }
