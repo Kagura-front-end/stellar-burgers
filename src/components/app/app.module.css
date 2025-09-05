@@ -26,3 +26,13 @@
 .detailHeader {
   text-align: center;
 }
+
+.centerScreen {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+}
+
+.notFound {
+    padding: 24px;
+}

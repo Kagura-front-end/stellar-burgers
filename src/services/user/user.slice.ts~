@@ -25,76 +25,36 @@ const initialState: UserState = {
   error: null,
 };
 
-const unwrapUser = (data: unknown): TUser => {
-  if (typeof data === 'object' && data !== null && 'user' in data) {
-    return (data as { user: TUser }).user;
-  }
-  return data as TUser;
-};
+const unwrapUser = (data: unknown) =>
+  (data as any)?.user ? ((data as any).user as TUser) : (data as TUser);
 
-type UpdateUserPayload = Partial<TUser> & { password?: string };
+export const fetchUser = createAsyncThunk('user/fetchUser', async () => {
+  const data = await getUserApi();
+  return unwrapUser(data);
+});
 
-export const fetchUser = createAsyncThunk<TUser, void, { state: RootState; rejectValue: string }>(
-  'user/fetchUser',
-  async (_, { rejectWithValue }) => {
-    try {
-      const data = await getUserApi();
-      return unwrapUser(data);
-    } catch (error) {
-      return rejectWithValue('Не удалось загрузить данные пользователя');
-    }
+export const updateUser = createAsyncThunk(
+  'user/updateUser',
+  async (payload: Partial<TUser> & { password?: string }) => {
+    const data = await updateUserApi(payload);
+    return unwrapUser(data);
   },
 );
 
-export const updateUser = createAsyncThunk<
-  TUser,
-  UpdateUserPayload,
-  { state: RootState; rejectValue: string }
->('user/updateUser', async (payload, { rejectWithValue }) => {
-  try {
-    const data = await updateUserApi(payload);
-    return unwrapUser(data);
-  } catch (error) {
-    return rejectWithValue('Не удалось обновить данные пользователя');
-  }
-});
+export const loginUserThunk = createAsyncThunk(
+  'user/loginUser',
+  async (payload: { email: string; password: string }) => unwrapUser(await loginUserApi(payload)),
+);
 
-export const loginUserThunk = createAsyncThunk<
-  TUser,
-  { email: string; password: string },
-  { state: RootState; rejectValue: string }
->('user/loginUser', async (payload, { rejectWithValue }) => {
-  try {
-    const data = await loginUserApi(payload);
-    return unwrapUser(data);
-  } catch (error) {
-    return rejectWithValue('Не удалось войти в систему');
-  }
-});
+export const registerUserThunk = createAsyncThunk(
+  'user/registerUser',
+  async (payload: { name: string; email: string; password: string }) =>
+    unwrapUser(await registerUserApi(payload)),
+);
 
-export const registerUserThunk = createAsyncThunk<
-  TUser,
-  { name: string; email: string; password: string },
-  { state: RootState; rejectValue: string }
->('user/registerUser', async (payload, { rejectWithValue }) => {
-  try {
-    const data = await registerUserApi(payload);
-    return unwrapUser(data);
-  } catch (error) {
-    return rejectWithValue('Не удалось зарегистрироваться');
-  }
-});
-
-export const logoutUserThunk = createAsyncThunk<
-  void,
-  void,
-  { state: RootState; rejectValue: string }
->('user/logoutUser', async (_, { rejectWithValue }) => {
-  try {
-    await logoutApi();
-  } catch (error) {
-    return rejectWithValue('Не удалось выйти из системы');
-  }
+export const logoutUserThunk = createAsyncThunk('user/logoutUser', async () => {
+  await logoutApi();
+  return {};
 });
 
 const userSlice = createSlice({
@@ -120,7 +80,7 @@ const userSlice = createSlice({
       .addCase(fetchUser.rejected, (state, action) => {
         state.getUserRequest = false;
         state.isAuthChecked = true;
-        state.error = action.payload ?? 'Failed to load user';
+        state.error = action.error.message ?? 'Failed to load user';
       })
 
       .addCase(updateUser.pending, (state) => {
@@ -133,7 +93,7 @@ const userSlice = createSlice({
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.updateUserRequest = false;
-        state.error = action.payload ?? 'Failed to update user';
+        state.error = action.error.message ?? 'Failed to update user';
       })
 
       .addCase(loginUserThunk.pending, (state) => {
@@ -147,7 +107,7 @@ const userSlice = createSlice({
       })
       .addCase(loginUserThunk.rejected, (state, action) => {
         state.getUserRequest = false;
-        state.error = action.payload ?? 'Failed to login';
+        state.error = action.error.message ?? 'Failed to login';
       })
 
       .addCase(registerUserThunk.pending, (state) => {
@@ -161,15 +121,12 @@ const userSlice = createSlice({
       })
       .addCase(registerUserThunk.rejected, (state, action) => {
         state.getUserRequest = false;
-        state.error = action.payload ?? 'Failed to register';
+        state.error = action.error.message ?? 'Failed to register';
       })
 
       .addCase(logoutUserThunk.fulfilled, (state) => {
         state.user = null;
         state.isAuthChecked = true;
-      })
-      .addCase(logoutUserThunk.rejected, (state, action) => {
-        state.error = action.payload ?? 'Failed to logout';
       });
   },
 });

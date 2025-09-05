@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { BurgerConstructorUI } from '../components/ui/burger-constructor/burger-constructor';
+import type { TConstructorIngredient } from '@utils-types';
 
 const meta: Meta<typeof BurgerConstructorUI> = {
   title: 'Burger/BurgerConstructor',
@@ -9,14 +10,61 @@ export default meta;
 
 type Story = StoryObj<typeof BurgerConstructorUI>;
 
+const bun = {
+  _id: '60d3b41abdacab0026a733c6',
+  name: 'Краторная булка N-200i',
+  type: 'bun',
+  proteins: 80,
+  fat: 20,
+  carbohydrates: 30,
+  calories: 300,
+  price: 20,
+  image: 'https://via.placeholder.com/64',
+  image_mobile: 'https://via.placeholder.com/64',
+  image_large: 'https://via.placeholder.com/128',
+};
+
+const middle: TConstructorIngredient[] = [
+  {
+    uniqueId: 'u1',
+    _id: '60d3b41abdacab0026a733c8',
+    name: 'Соус традиционный',
+    type: 'sauce',
+    proteins: 0,
+    fat: 0,
+    carbohydrates: 5,
+    calories: 30,
+    price: 30,
+    image: 'https://via.placeholder.com/64',
+    image_mobile: 'https://via.placeholder.com/64',
+    image_large: 'https://via.placeholder.com/128',
+  },
+  {
+    uniqueId: 'u2',
+    _id: '60d3b41abdacab0026a733cd',
+    name: 'Мясо Protostomia',
+    type: 'main',
+    proteins: 20,
+    fat: 10,
+    carbohydrates: 0,
+    calories: 220,
+    price: 300,
+    image: 'https://via.placeholder.com/64',
+    image_mobile: 'https://via.placeholder.com/64',
+    image_large: 'https://via.placeholder.com/128',
+  },
+];
+
 export const Default: Story = {
   args: {
+    price: 2349,
+    orderRequest: false,
+    orderNumber: null,
+    onOrderClick: async () => {},
+    closeOrderModal: () => {},
     constructorItems: {
-      bun: { name: 'Краторная булка', price: 50, image: 'https://via.placeholder.com/64' },
-      middle: [
-        { uuid: '1', name: 'Соус фирменный', price: 10, image: 'https://via.placeholder.com/64' },
-        { uuid: '2', name: 'Котлета космическая', price: 100, image: 'https://via.placeholder.com/64' },
-      ],
+      bun,
+      middle,
     },
     handleRemove: () => {},
   },

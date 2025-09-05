@@ -1,22 +1,22 @@
+import type { RootState } from '../../services/store';
 import { FC, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { useLocation, useNavigate } from 'react-router-dom';
-import type { RootState } from '../../services/store';
 import {
   selectConstructorBun,
   selectConstructorItems,
   selectTotalPrice,
   clearConstructor,
+  removeItem,
 } from '../../services/constructor/constructor.slice';
 import { BurgerConstructorUI } from '../ui/burger-constructor/burger-constructor';
-
 import {
   placeOrderThunk,
   currentOrderActions,
   selectOrderNumber,
   selectOrderRequest,
 } from '../../services/orders/currentOrder.slice';
-import type { TConstructorIngredient as TConstructorItem } from '../../services/constructor/constructor.slice';
+import type { TConstructorIngredient } from '../../services/constructor/constructor.slice';
 
 const BurgerConstructor: FC = () => {
   const dispatch = useAppDispatch();
@@ -33,19 +33,33 @@ const BurgerConstructor: FC = () => {
 
   const constructorItems = useMemo(
     () => ({
-      bun: bun ? { name: bun.name, price: bun.price, image: bun.image } : null,
-      middle: items.map((it: TConstructorItem, idx: number) => ({
-        uuid: it.uuid ?? it._id ?? String(idx),
-        name: it.name,
-        price: it.price,
-        image: it.image,
-      })),
+      bun: bun
+        ? {
+            _id: bun._id,
+            name: bun.name,
+            price: bun.price,
+            image: bun.image,
+            type: bun.type,
+            proteins: bun.proteins,
+            fat: bun.fat,
+            carbohydrates: bun.carbohydrates,
+            calories: bun.calories,
+            image_mobile: bun.image_mobile,
+            image_large: bun.image_large,
+            uniqueId: 'bun',
+          }
+        : null,
+      middle: items,
     }),
     [bun, items],
   );
 
   const orderNumber = useAppSelector(selectOrderNumber);
   const orderRequest = useAppSelector(selectOrderRequest);
+
+  const handleRemove = (item: { uniqueId: string }) => {
+    dispatch(removeItem(item.uniqueId));
+  };
 
   const onOrderClick = async () => {
     if (!bun || items.length === 0) return;
@@ -55,7 +69,7 @@ const BurgerConstructor: FC = () => {
       return;
     }
 
-    const ingredientIds = [bun._id, ...items.map((i: TConstructorItem) => i._id), bun._id];
+    const ingredientIds = [bun._id, ...items.map((i: TConstructorIngredient) => i._id), bun._id];
 
     const resultAction = await dispatch(placeOrderThunk(ingredientIds));
 
@@ -76,6 +90,7 @@ const BurgerConstructor: FC = () => {
       orderNumber={orderNumber}
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
+      handleRemove={handleRemove}
     />
   );
 };

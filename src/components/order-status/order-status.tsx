@@ -1,25 +1,27 @@
 import React, { FC } from 'react';
-import { OrderStatusProps } from './type';
-import { OrderStatusUI } from '@ui';
 
-const statusText: { [key: string]: string } = {
-  pending: 'Готовится',
-  done: 'Выполнен',
-  created: 'Создан',
+type Props = {
+  status: string;
+  textStyle?: string;
+  className?: string;
 };
 
-export const OrderStatus: FC<OrderStatusProps> = ({ status }) => {
-  let textStyle = '';
-  switch (status) {
-    case 'pending':
-      textStyle = '#E52B1A';
-      break;
-    case 'done':
-      textStyle = '#00CCCC';
-      break;
-    default:
-      textStyle = '#F2F2F3';
-  }
-
-  return <OrderStatusUI textStyle={textStyle} text={statusText[textStyle]} />;
+const statusMap: Record<string, { text: string; className: string }> = {
+  done: { text: 'Выполнен', className: 'status_done' },
+  pending: { text: 'Готовится', className: 'status_pending' },
+  created: { text: 'Готовится', className: 'status_pending' },
+  canceled: { text: 'Отменён', className: 'status_canceled' },
 };
+
+export const OrderStatus: FC<Props> = ({ status, textStyle, className }) => {
+  const { text, className: statusClass } = statusMap[status] ?? {
+    text: status,
+    className: 'status_pending',
+  };
+
+  const textCls = textStyle ?? 'text text_type_main-default';
+
+  return <div className={`${textCls} ${statusClass} ${className ?? ''}`.trim()}>{text}</div>;
+};
+
+export default OrderStatus;

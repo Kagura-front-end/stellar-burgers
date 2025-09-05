@@ -3,21 +3,14 @@ import type { TIngredient, TOrder, TUser } from './types';
 
 const URL = (process.env.BURGER_API_URL as string) || 'https://norma.nomoreparties.space/api';
 
-interface IApiError {
-  message?: string;
-  error?: { message?: string };
-  status?: number;
-}
-
 const checkResponse = <T>(res: Response): Promise<T> =>
-  res.ok
-    ? res.json()
-    : res.json().then((err: IApiError) => Promise.reject({ ...err, status: res.status }));
+  res.ok ? res.json() : res.json().then((err) => Promise.reject({ ...err, status: res.status }));
 
 type TServerResponse<T> = { success: boolean } & T;
 
 type TRefreshResponse = TServerResponse<{
   refreshToken: string;
+
   accessToken: string;
 }>;
 
@@ -25,7 +18,6 @@ type TUserResponse = TServerResponse<{ user: TUser }>;
 type TAuthResponse = TServerResponse<{ user: TUser; accessToken: string; refreshToken: string }>;
 type TIngredientsResponse = TServerResponse<{ data: TIngredient[] }>;
 type TNewOrderResponse = TServerResponse<{ order: TOrder; name: string }>;
-type TMessageResponse = TServerResponse<{ message: string }>;
 export type TFeedsResponse = TServerResponse<{
   orders: TOrder[];
   total: number;
@@ -59,10 +51,9 @@ export const fetchWithRefresh = async <T>(url: string, options: RequestInit = {}
 
   try {
     return await checkResponse<T>(res);
-  } catch (err: unknown) {
-    const apiError = err as IApiError;
-    const message = apiError?.message || apiError?.error?.message;
-    const status = apiError?.status;
+  } catch (err: any) {
+    const message = err?.message || err?.error?.message;
+    const status = err?.status;
 
     if (
       message === 'jwt expired' ||
@@ -138,7 +129,7 @@ export const logoutApi = () =>
     headers: { 'Content-Type': 'application/json;charset=utf-8' },
     body: JSON.stringify({ token: localStorage.getItem('refreshToken') }),
   })
-    .then((res) => checkResponse<TMessageResponse>(res))
+    .then((res) => checkResponse<TServerResponse<{ message: string }>>(res))
     .finally(() => {
       setCookie('accessToken', '', { expires: -1 });
       localStorage.removeItem('refreshToken');
@@ -158,14 +149,14 @@ export const forgotPasswordApi = ({ email }: { email: string }) =>
     method: 'POST',
     headers: { 'Content-Type': 'application/json;charset=utf-8' },
     body: JSON.stringify({ email }),
-  }).then((res) => checkResponse<TMessageResponse>(res));
+  }).then((res) => checkResponse<TServerResponse<{ message: string }>>(res));
 
 export const resetPasswordApi = ({ password, token }: { password: string; token: string }) =>
   fetch(`${URL}/password-reset/reset`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json;charset=utf-8' },
     body: JSON.stringify({ password, token }),
-  }).then((res) => checkResponse<TMessageResponse>(res));
+  }).then((res) => checkResponse<TServerResponse<{ message: string }>>(res));
 
 export const makeOrderApi = (ingredients: string[]) =>
   fetchWithRefresh<TNewOrderResponse>(`${URL}/orders`, {

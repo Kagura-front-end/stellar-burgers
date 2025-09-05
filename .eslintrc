@@ -1,37 +1,35 @@
 {
+  "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["react", "@typescript-eslint", "prettier"],
-  "extends": ["prettier"],
+  "plugins": ["react", "react-hooks", "@typescript-eslint", "prettier"],
+  "extends": [
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
   "parserOptions": {
-    "ecmaVersion": 2018,
+    "ecmaVersion": 2021,
     "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true
-    }
+    "ecmaFeatures": { "jsx": true }
   },
+  "env": { "browser": true, "es2021": true },
   "rules": {
-    "prettier/prettier": [
-      "warn",
+    "prettier/prettier": ["warn", { "usePrettierrc": true }],
+    "react/react-in-jsx-scope": "off",
+    "react/forbid-dom-props": [1, { "forbid": ["style"] }],
+    "react/forbid-component-props": [1, { "forbid": ["style"] }],
+    "no-restricted-syntax": [
+      "error",
       {
-        "usePrettierrc": true
+        "selector": "JSXAttribute[name.name='style'] > JSXExpressionContainer > ObjectExpression",
+        "message": "Inline style-объекты запрещены. Вынеси в .module.css или используй CSS-переменную."
       }
     ],
-    "react/react-in-jsx-scope": "off",
-    "comma-dangle": "off",
-    "use-isnan": ["error", { "enforceForSwitchCase": true }],
-    "react/void-dom-elements-no-children": "warn",
-    "react/no-unsafe": "warn",
-    "react/no-unused-state": "warn",
-    "react/prefer-stateless-function": "warn",
-    "react/self-closing-comp": "warn",
-    "react/no-will-update-set-state": "warn",
-    "react/no-this-in-sfc": "warn",
-    "react/no-string-refs": "warn",
-    "react/no-redundant-should-component-update": "warn",
-    "react/jsx-boolean-value": ["warn", "never"],
-    "react/jsx-key": "warn",
-    "react/jsx-max-props-per-line": ["warn", { "maximum": 7 }],
-    "react/jsx-max-depth": ["warn", { "max": 8 }],
+    "react/prop-types": "off",
+    "react/display-name": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
     "arrow-body-style": ["warn", "as-needed"],
     "dot-notation": "warn",
     "jsx-quotes": ["warn", "prefer-single"],
@@ -59,9 +57,5 @@
       }
     ]
   },
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
-  }
+  "settings": { "react": { "version": "detect" } }
 }

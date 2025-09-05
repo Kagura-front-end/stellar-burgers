@@ -2,9 +2,14 @@ import { FC } from 'react';
 import { OrdersListUI, FeedInfoUI } from '@ui';
 import type { TOrder } from '@utils-types';
 
+type FeedTotals = {
+  total: number;
+  totalToday: number;
+};
+
 type Props = {
   orders: TOrder[];
-  feed: any;
+  feed: FeedTotals;
   readyOrders: number[];
   pendingOrders: number[];
 };

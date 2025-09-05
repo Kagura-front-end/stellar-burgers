@@ -24,7 +24,8 @@ const HalfColumn: FC<HalfColumnProps> = ({ orders, title, textColor }) => (
     <ul className={`pt-6 ${styles.list}`}>
       {orders.map((num, idx) => (
         <li
-          className={`text text_type_digits-default ${styles.list_item} ${textColor === 'blue' ? styles.blueText : styles.defaultText}`}
+          className={`text text_type_digits-default ${styles.list_item}`}
+          style={{ color: textColor === 'blue' ? '#00cccc' : '#F2F2F3' }}
           key={`${title}-${num}-${idx}`}
         >
           {num}

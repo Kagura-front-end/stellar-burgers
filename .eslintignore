@@ -2,3 +2,5 @@ node_modules/
 dist/
 coverage/
 .storybook/
+*.min.js
+build

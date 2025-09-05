@@ -1,0 +1,15 @@
+.root {
+    padding-top: 8px;
+}
+
+.status_done {
+    color: #00cccc;
+}
+
+.status_pending {
+    color: #f2f2f3;
+}
+
+.status_canceled {
+    color: #e52b1a;
+}

@@ -19,11 +19,11 @@ export type BurgerConstructorUIProps = {
 export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   constructorItems,
   handleRemove,
-  price: _price,
-  orderRequest: _orderRequest,
-  orderNumber: _orderNumber,
-  onOrderClick: _onOrderClick,
-  closeOrderModal: _closeOrderModal,
+  price,
+  orderRequest,
+  orderNumber,
+  onOrderClick,
+  closeOrderModal,
 }) => {
   const hasMiddle = constructorItems.middle.length > 0;
 

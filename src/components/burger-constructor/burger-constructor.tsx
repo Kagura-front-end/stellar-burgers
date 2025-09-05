@@ -1,7 +1,7 @@
+import type { RootState } from '../../services/store';
 import { FC, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { useLocation, useNavigate } from 'react-router-dom';
-import type { RootState } from '../../services/store';
 import {
   selectConstructorBun,
   selectConstructorItems,
@@ -10,14 +10,12 @@ import {
   removeItem,
 } from '../../services/constructor/constructor.slice';
 import { BurgerConstructorUI } from '../ui/burger-constructor/burger-constructor';
-
 import {
   placeOrderThunk,
   currentOrderActions,
   selectOrderNumber,
   selectOrderRequest,
 } from '../../services/orders/currentOrder.slice';
-import type { TConstructorIngredient as TConstructorItem } from '../../services/constructor/constructor.slice';
 
 const BurgerConstructor: FC = () => {
   const dispatch = useAppDispatch();
@@ -35,11 +33,11 @@ const BurgerConstructor: FC = () => {
   const constructorItems = useMemo(
     () => ({
       bun: bun ? { name: bun.name, price: bun.price, image: bun.image } : null,
-      middle: items.map((it: TConstructorItem, idx: number) => ({
-        uuid: it.uuid ?? it._id ?? String(idx),
-        name: it.name,
-        price: it.price,
-        image: it.image,
+      middle: items.map((i) => ({
+        uuid: i.uuid,
+        name: i.name,
+        price: i.price,
+        image: i.image,
       })),
     }),
     [bun, items],
@@ -48,9 +46,8 @@ const BurgerConstructor: FC = () => {
   const orderNumber = useAppSelector(selectOrderNumber);
   const orderRequest = useAppSelector(selectOrderRequest);
 
-  const handleRemove = (item: { uuid: string } | any) => {
-    const id = item?.uuid ?? item?._id ?? String(item);
-    if (id) dispatch(removeItem(id));
+  const handleRemove = (item: { uuid: string }) => {
+    dispatch(removeItem(item.uuid));
   };
 
   const onOrderClick = async () => {
@@ -61,7 +58,7 @@ const BurgerConstructor: FC = () => {
       return;
     }
 
-    const ingredientIds = [bun._id, ...items.map((i: TConstructorItem) => i._id), bun._id];
+    const ingredientIds = [bun._id, ...items.map((i) => i._id), bun._id];
 
     const resultAction = await dispatch(placeOrderThunk(ingredientIds));
 

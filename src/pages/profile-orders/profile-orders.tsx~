@@ -30,7 +30,7 @@ export const ProfileOrders: FC = () => {
   }, [dispatch]);
 
   const onLogout = async () => {
-    await dispatch(logoutUserThunk()).unwrap();
+    await dispatch(logoutUserThunk() as any);
     navigate('/login', { replace: true, state: { from: location } });
   };
 

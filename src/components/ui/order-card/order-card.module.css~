@@ -121,6 +121,7 @@
 .meta {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .footer {
@@ -129,21 +130,21 @@
     align-items: center;
 }
 
-.img_wrap {
-    z-index: 100;
-    position: relative;
-}
-
 .stack {
     display: flex;
     flex-direction: row-reverse;
-    justify-content: flex-end;
+    align-items: center;
+    gap: 0;
+    padding: 0;
+    margin: 0;
+    list-style: none;
 }
 
-.stack .img_wrap {
+.stack .img_wrap + .img_wrap {
     margin-right: -16px;
 }
 
-.stack .img_wrap:last-child {
-    margin-right: 0;
+.img_wrap {
+    z-index: 100;
+    position: relative;
 }

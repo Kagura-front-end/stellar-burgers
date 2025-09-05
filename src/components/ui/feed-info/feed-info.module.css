@@ -34,3 +34,16 @@
 .content {
     text-align: left;
 }
+
+.statBlock {
+    margin-top: 60px;
+}
+
+.blueText {
+    color: #00cccc;
+}
+
+.defaultText {
+    color: #F2F2F3;
+}
+

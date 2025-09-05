@@ -11,13 +11,16 @@ export const Register: FC = () => {
 
   const errorText = useAppSelector((s) => s.user.error ?? '');
 
+  // Separate state fields so we can pass setters directly to RegisterUI
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: React.SyntheticEvent): void => {
+  // RegisterUI expects a void-returning handler (not async)
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
 
+    // Run the async flow without changing the handler's return type
     (async () => {
       const res = await dispatch(registerUserThunk({ name: userName, email, password }));
       if (res.meta.requestStatus === 'fulfilled') {

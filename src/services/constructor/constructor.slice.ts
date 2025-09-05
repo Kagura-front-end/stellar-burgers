@@ -51,23 +51,23 @@ export const { addIngredient, setBun, removeItem, clearConstructor } = construct
 export { addIngredient as addItem };
 export default constructorSlice.reducer;
 
-const selectConstructorState = (s: RootState) => s.burgerConstructor as any;
+const selectConstructorState = (state: RootState) => state.constructor;
 
 export const selectConstructorBun = createSelector(
   [selectConstructorState],
-  (st): TIngredient | null => (st && typeof st === 'object' && st.bun) || null,
+  (state): TIngredient | null => state?.bun ?? null,
 );
 
 export const selectConstructorItems = createSelector(
   [selectConstructorState],
-  (st): TConstructorItem[] => (st && Array.isArray(st.ingredients) ? st.ingredients : []),
+  (state): TConstructorItem[] => state?.ingredients ?? [],
 );
 
 export const selectTotalPrice = createSelector(
   [selectConstructorBun, selectConstructorItems],
   (bun, items) => {
     const buns = bun ? bun.price * 2 : 0;
-    const mids = items.reduce((sum, it) => sum + (it?.price ?? 0), 0);
+    const mids = items.reduce((sum, it) => sum + it.price, 0);
     return buns + mids;
   },
 );
@@ -76,12 +76,17 @@ export const selectCountsMap = createSelector(
   [selectConstructorBun, selectConstructorItems],
   (bun, items): Record<string, number> => {
     const map: Record<string, number> = {};
-    if (bun && (bun as any)._id) map[(bun as any)._id] = 2;
-    for (const it of items) {
-      const id = (it as any)._id;
-      if (!id) continue;
-      map[id] = (map[id] || 0) + 1;
+
+    if (bun && bun._id) {
+      map[bun._id] = 2;
     }
+
+    for (const it of items) {
+      if (it._id) {
+        map[it._id] = (map[it._id] || 0) + 1;
+      }
+    }
+
     return map;
   },
 );
