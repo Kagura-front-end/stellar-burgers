@@ -31,7 +31,7 @@ html, body, #root {
 *::-webkit-scrollbar-thumb,
 #root *::-webkit-scrollbar-thumb {
     background-color: var(--scrollbar-thumb);
-    border: 3px solid var(--scrollbar-track);
+    border: 3px solid var(--scrollbar-track); /* «обводка» из макета */
     border-radius: 0;
     background-clip: padding-box;
 }
