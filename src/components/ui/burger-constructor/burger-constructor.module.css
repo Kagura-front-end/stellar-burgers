@@ -1,13 +1,19 @@
-:root{
+:root {
     --tab-w: 536px;
     --row-h: 80px;
     --rail: 16px;
     --gap: 12px;
     --gutter: 16px;
     --grip-color: #F2F2F3;
+    --grip-shift-x: -5px;
+    --grip-shift-y: -2px;
+    --grip-col-gap: 8px;
+    --grip-row-gap: 8px;
+    --grip-x0: 4px;
+    --grip-y0: 4px;
 }
 
-.burger_constructor{
+.burger_constructor {
     inline-size: calc(var(--rail) + var(--tab-w) + var(--gap) + var(--gutter));
     display: flex;
     flex-direction: column;
@@ -16,23 +22,24 @@
     padding-bottom: 20px;
 }
 
-.scrollArea{
+.scrollArea {
     inline-size: calc(var(--rail) + var(--tab-w) + var(--gap) + var(--gutter));
     max-block-size: 420px;
     overflow-y: auto;
     overflow-x: hidden;
     padding-inline-end: var(--gutter);
     box-sizing: border-box;
+    scrollbar-gutter: auto;
 }
 
-.list{
+.list {
     inline-size: calc(var(--rail) + var(--tab-w) + var(--gap));
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
-.row{
+.row {
     position: relative;
     padding-inline-start: calc(var(--rail) + var(--gap));
     margin-block: 8px;
@@ -41,7 +48,7 @@
     align-items: center;
 }
 
-.rowHandle{
+.rowHandle {
     position: absolute;
     inset-inline-start: 0;
     inset-block: 0;
@@ -58,26 +65,27 @@
     cursor: grab;
 }
 
-.rowHandle:disabled{
+.rowHandle:disabled {
     cursor: default;
 }
 
-.rowHandle::before{
+.rowHandle::before {
     content: "";
     inline-size: 16px;
     block-size: 24px;
     display: block;
-    background:
-            radial-gradient(circle 2px, var(--grip-color) 99%, transparent 0) 4px 4px / 8px 8px no-repeat,
-            radial-gradient(circle 2px, var(--grip-color) 99%, transparent 0) 12px 4px / 8px 8px no-repeat,
-            radial-gradient(circle 2px, var(--grip-color) 99%, transparent 0) 4px 12px / 8px 8px no-repeat,
-            radial-gradient(circle 2px, var(--grip-color) 99%, transparent 0) 12px 12px / 8px 8px no-repeat,
-            radial-gradient(circle 2px, var(--grip-color) 99%, transparent 0) 4px 20px / 8px 8px no-repeat,
-            radial-gradient(circle 2px, var(--grip-color) 99%, transparent 0) 12px 20px / 8px 8px no-repeat;
     opacity: .9;
+    pointer-events: none;
+
+    background: radial-gradient(circle 2px, var(--grip-color) 99%, transparent 0) calc(var(--grip-x0) + var(--grip-shift-x)) calc(var(--grip-y0) + var(--grip-shift-y)) / 8px 8px no-repeat,
+    radial-gradient(circle 2px, var(--grip-color) 99%, transparent 0) calc(var(--grip-x0) + var(--grip-col-gap) + var(--grip-shift-x)) calc(var(--grip-y0) + var(--grip-shift-y)) / 8px 8px no-repeat,
+    radial-gradient(circle 2px, var(--grip-color) 99%, transparent 0) calc(var(--grip-x0) + var(--grip-shift-x)) calc(var(--grip-y0) + var(--grip-row-gap) + var(--grip-shift-y)) / 8px 8px no-repeat,
+    radial-gradient(circle 2px, var(--grip-color) 99%, transparent 0) calc(var(--grip-x0) + var(--grip-col-gap) + var(--grip-shift-x)) calc(var(--grip-y0) + var(--grip-row-gap) + var(--grip-shift-y)) / 8px 8px no-repeat,
+    radial-gradient(circle 2px, var(--grip-color) 99%, transparent 0) calc(var(--grip-x0) + var(--grip-shift-x)) calc(var(--grip-y0) + var(--grip-row-gap) * 2 + var(--grip-shift-y)) / 8px 8px no-repeat,
+    radial-gradient(circle 2px, var(--grip-color) 99%, transparent 0) calc(var(--grip-x0) + var(--grip-col-gap) + var(--grip-shift-x)) calc(var(--grip-y0) + var(--grip-row-gap) * 2 + var(--grip-shift-y)) / 8px 8px no-repeat;
 }
 
-.rowTab{
+.rowTab {
     inline-size: var(--tab-w);
     min-block-size: var(--row-h);
     box-sizing: border-box;
@@ -86,13 +94,13 @@
     border-radius: 0;
 }
 
-.rowTab :global(.constructor-element){
+.rowTab :global(.constructor-element) {
     display: block;
     inline-size: 100%;
     margin: 0;
 }
 
-.edgeFrame{
+.edgeFrame {
     inline-size: calc(var(--rail) + var(--tab-w) + var(--gap) + var(--gutter));
     padding-inline-end: var(--gutter);
     box-sizing: border-box;
@@ -134,4 +142,21 @@
     font-weight: 400;
     font-size: 48px;
     line-height: 36px;
+}
+
+.rowTop .rowHandle,
+.rowBottom .rowHandle {
+    display: none;
+}
+
+.rowHandle:disabled::before {
+    display: none;
+}
+
+.rowTab :global(svg) {
+    min-width: 24px;
+    min-height: 24px;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
 }
