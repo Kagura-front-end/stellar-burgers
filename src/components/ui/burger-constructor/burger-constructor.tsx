@@ -132,7 +132,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
 
     <div className={`${styles.total} mt-10 mr-4`} data-cy='constructor_total'>
       <div className={`${styles.cost} mr-10`} aria-label='Итоговая стоимость'>
-        <span className='text text_type_digits-large'>{price}</span>
+        <span className={styles.totalText}>{price}</span>
         <CurrencyIcon type='primary' />
       </div>
       <Button

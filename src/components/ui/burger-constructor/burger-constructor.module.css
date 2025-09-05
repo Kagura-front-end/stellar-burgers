@@ -173,3 +173,12 @@
 .text {
     font-size: 35px;
 }
+
+.totalText {
+    font-family: var(--text-digits-font-family, 'Iceland', monospace);
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 36px;
+    display: inline-flex;
+    align-items: center;
+}

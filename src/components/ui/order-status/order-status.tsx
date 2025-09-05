@@ -1,16 +1,19 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import styles from './order-status.module.css';
 
-type Props = { status: string };
-
-const statusMap: Record<string, { text: string; className: string }> = {
-  done: { text: 'Выполнен', className: 'status_done' },
-  pending: { text: 'Готовится', className: 'status_pending' },
-  created: { text: 'Готовится', className: 'status_pending' },
-  canceled: { text: 'Отменён', className: 'status_canceled' },
+type Props = {
+  status: string;
+  className?: string;
 };
 
-export const OrderStatus: FC<Props> = ({ status }) => {
-  const { text, className } = statusMap[status] ?? { text: status, className: 'status_pending' };
-  return <div className={`text text_type_main-default ${styles.root} ${className}`}>{text}</div>;
+const TEXT: Record<string, string> = {
+  done: 'Выполнен',
+  pending: 'Готовится',
+  created: 'Готовится',
+  canceled: 'Отменён',
+};
+
+export const OrderStatus: FC<Props> = ({ status, className }) => {
+  const text = TEXT[status] ?? status;
+  return <span className={[styles.status, className].filter(Boolean).join(' ')}>{text}</span>;
 };

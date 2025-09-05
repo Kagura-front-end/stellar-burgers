@@ -2,6 +2,10 @@
     padding-top: 8px;
 }
 
+.status {
+    display: inline-block;
+}
+
 .status_done {
     color: #00cccc;
 }
