@@ -44,34 +44,10 @@ const constructorSlice = createSlice({
       state.bun = null;
       state.ingredients = [];
     },
-
-    startOrder(state) {
-      state.orderRequest = true;
-      state.orderNumber = null;
-    },
-
-    finishOrder(state, action: PayloadAction<number>) {
-      state.orderRequest = false;
-      state.orderNumber = action.payload;
-    },
-
-    resetOrder(state) {
-      state.orderRequest = false;
-      state.orderNumber = null;
-    },
   },
 });
 
-export const {
-  addIngredient,
-  setBun,
-  removeItem,
-  clearConstructor,
-  startOrder,
-  finishOrder,
-  resetOrder,
-} = constructorSlice.actions;
-
+export const { addIngredient, setBun, removeItem, clearConstructor } = constructorSlice.actions;
 export { addIngredient as addItem };
 export default constructorSlice.reducer;
 

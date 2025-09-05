@@ -1,20 +1,31 @@
-import { FC, useMemo } from 'react';
-import { OrdersListUI } from '@ui';
-import type { TOrder } from '@utils-types';
+import { FC } from 'react';
+import { useLocation, Link } from 'react-router-dom';
+import type { OrdersListProps } from './type';
+import OrderCard from '../order-card';
+import styles from './orders-list.module.css';
 
-type Props = {
-  orders: TOrder[];
-  onClick?: (num: string | number) => void;
-};
+export const OrdersList: FC<OrdersListProps> = ({ orders }) => {
+  const location = useLocation();
+  const isProfile = location.pathname.startsWith('/profile');
+  const makeTo = (num: number | string) => (isProfile ? `/profile/orders/${num}` : `/feed/${num}`);
 
-export const OrdersList: FC<Props> = ({ orders, onClick }) => {
-  const sorted = useMemo(
-    () =>
-      [...orders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-    [orders],
+  return (
+    <div className={styles.content}>
+      <ul className={styles.list}>
+        {orders.map((order) => (
+          <li key={order._id} className={styles.item}>
+            <Link
+              to={makeTo(order.number)}
+              state={{ background: location }}
+              className={styles.link}
+            >
+              <OrderCard order={order} />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
-
-  return <OrdersListUI orders={sorted} onClick={onClick} />;
 };
 
 export default OrdersList;

@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IngredientDetailsUI, Preloader } from '../ui';
-import { useAppSelector } from '../../services/store';
+import { useAppSelector } from '../../services/hooks';
 import { selectIngredients } from '../../services/ingredients/ingredients.slice';
+import { TIngredient } from '@utils-types';
 
 export const IngredientDetails = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export const IngredientDetails = () => {
   }, [id, navigate]);
 
   const items = useAppSelector(selectIngredients);
-  const ingredientData = items.find((i) => i._id === id);
+  const ingredientData = items.find((i: TIngredient) => i._id === id);
 
   if (!ingredientData) return <Preloader />;
 

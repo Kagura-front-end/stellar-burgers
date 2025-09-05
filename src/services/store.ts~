@@ -31,13 +31,11 @@ function normalizeConstructorState(raw: unknown): StoredConstructorState {
       typedRaw.bun && typeof typedRaw.bun === 'object' ? (typedRaw.bun as TIngredient) : null;
 
     const srcItems = Array.isArray(typedRaw.ingredients) ? typedRaw.ingredients : [];
-    const ingredients: StoredConstructorItem[] = srcItems.map((it: any, idx: number) => {
-      if (it && typeof it === 'object' && '_id' in it) {
-        const base = it as Partial<StoredConstructorItem> & TIngredient;
-        const uuid =
-          typeof (base as any).uuid === 'string'
-            ? (base as any).uuid
-            : `m-${base._id}-${idx}-${nanoid()}`;
+    const ingredients: StoredConstructorItem[] = srcItems.map((rawItem: unknown, idx: number) => {
+      if (rawItem && typeof rawItem === 'object' && '_id' in rawItem) {
+        const base = rawItem as TIngredient & Partial<StoredConstructorItem>;
+        const hasUuid = typeof (base as { uuid?: unknown }).uuid === 'string';
+        const uuid = hasUuid ? (base as { uuid: string }).uuid : `m-${base._id}-${idx}-${nanoid()}`;
         return {
           _id: base._id,
           name: base.name,
@@ -53,7 +51,6 @@ function normalizeConstructorState(raw: unknown): StoredConstructorState {
           uuid,
         };
       }
-
       return {
         _id: nanoid(),
         name: 'Unknown ingredient',

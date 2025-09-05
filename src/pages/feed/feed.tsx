@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import {
   fetchFeeds,
@@ -18,9 +17,6 @@ import styles from './feed.module.css';
 
 const FeedPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const location = useLocation();
-  const navigate = useNavigate();
-
   useEffect(() => {
     void Promise.all([dispatch(fetchIngredients()), dispatch(fetchFeeds())]);
   }, [dispatch]);
@@ -31,9 +27,6 @@ const FeedPage: React.FC = () => {
   const pending = useAppSelector(selectPublicPendingNumbers);
   const loading = useAppSelector(selectFeedLoading);
   const error = useAppSelector(selectFeedError);
-
-  const openOrder = (num: number | string) =>
-    navigate(`/feed/${num}`, { state: { background: location } });
 
   const handleRefresh = () => {
     dispatch(fetchFeeds());
@@ -63,7 +56,7 @@ const FeedPage: React.FC = () => {
 
         <div className={styles.layout}>
           <section className={styles.left}>
-            <OrdersList orders={orders} onClick={openOrder} />
+            <OrdersList orders={orders} />
           </section>
 
           <div className={styles.separatorCol}>

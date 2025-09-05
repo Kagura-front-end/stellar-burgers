@@ -87,7 +87,9 @@ function loadConstructorFromLS(): StoredConstructorState | undefined {
 function saveConstructorToLS(state: StoredConstructorState) {
   try {
     localStorage.setItem(CONSTRUCTOR_LS_KEY, JSON.stringify(state));
-  } catch {}
+  } catch {
+    console.error('Failed to save constructor to LS');
+  }
 }
 
 function throttle<T extends (...args: unknown[]) => void>(fn: T, wait = 300): T {
@@ -140,7 +142,7 @@ store.subscribe(
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-export const useAppDispatch: () => AppDispatch = useReduxDispatch;
+export const useAppDispatch = () => useReduxDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
 
 export default store;

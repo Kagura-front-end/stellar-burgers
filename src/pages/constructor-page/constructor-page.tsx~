@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../../services/store';
 import { fetchIngredients } from '../../services/ingredients/ingredients.slice';
 
-import { ConstructorPageUI } from '@ui-pages/constructor-page';
+import { ConstructorPageUI } from '../../components/ui/pages/constructor-page';
 import { BurgerIngredients, BurgerConstructor } from '../../components';
 
 export const ConstructorPage: FC = () => {

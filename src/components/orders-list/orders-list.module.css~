@@ -1,0 +1,49 @@
+.columns {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    column-gap: 24px;
+}
+
+.column {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.list {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-height: 180px;
+    overflow: hidden;
+}
+
+.title {
+    margin: 0;
+    text-align: left;
+}
+
+.list_item {
+    text-align: left;
+    flex: 0 0 50%;
+}
+
+.content {
+    text-align: left;
+}
+
+.statBlock {
+    margin-top: 60px;
+}
+
+.blueText {
+    color: #00cccc;
+}
+
+.defaultText {
+    color: #F2F2F3;
+}
+

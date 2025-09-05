@@ -24,23 +24,12 @@ import { fetchUser, userActions } from '../../services/user/user.slice';
 import { Preloader } from '@ui';
 import { getCookie } from '../../utils/cookie';
 
-function OrderModal() {
-  const navigate = useNavigate();
-  const onClose = () => navigate(-1);
-
-  return (
-    <Modal title='' onClose={onClose}>
-      <OrderInfo />
-    </Modal>
-  );
-}
-
 const NotFound = () => <div className={styles.notFound}>Страница не найдена</div>;
 
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state as { background?: Location } | undefined;
+  const background = location.state && (location.state as { background?: Location }).background;
   const onClose = () => navigate(-1);
 
   const dispatch = useAppDispatch();
@@ -69,7 +58,7 @@ export default function App() {
     <div className={styles.app}>
       <AppHeader />
 
-      <Routes location={state?.background ?? location}>
+      <Routes location={background || location}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
         <Route path='/ingredients/:id' element={<IngredientDetailsPage />} />
@@ -91,7 +80,7 @@ export default function App() {
         <Route path='*' element={<NotFound />} />
       </Routes>
 
-      {state?.background && (
+      {background && (
         <Routes>
           <Route
             path='/ingredients/:id'
@@ -101,10 +90,22 @@ export default function App() {
               </Modal>
             }
           />
-          <Route path='/feed/:number' element={<OrderModal />} />
-          <Route element={<RequireAuth />}>
-            <Route path='/profile/orders/:number' element={<OrderModal />} />
-          </Route>
+          <Route
+            path='/feed/:number'
+            element={
+              <Modal title='' onClose={onClose}>
+                <OrderInfo />
+              </Modal>
+            }
+          />
+          <Route
+            path='/profile/orders/:number'
+            element={
+              <Modal title='' onClose={onClose}>
+                <OrderInfo />
+              </Modal>
+            }
+          />
         </Routes>
       )}
     </div>
