@@ -4,10 +4,13 @@ import type { OrdersListProps } from './type';
 import OrderCard from '../order-card';
 import styles from './orders-list.module.css';
 
-export const OrdersList: FC<OrdersListProps> = ({ orders }) => {
+export const OrdersList: FC<OrdersListProps> = ({ orders, showStatus }) => {
   const location = useLocation();
+
   const isProfile = location.pathname.startsWith('/profile');
   const makeTo = (num: number | string) => (isProfile ? `/profile/orders/${num}` : `/feed/${num}`);
+
+  const effectiveShowStatus = showStatus ?? isProfile;
 
   return (
     <div className={styles.content}>
@@ -19,7 +22,7 @@ export const OrdersList: FC<OrdersListProps> = ({ orders }) => {
               state={{ background: location }}
               className={styles.link}
             >
-              <OrderCard order={order} />
+              <OrderCard order={order} showStatus={effectiveShowStatus} />
             </Link>
           </li>
         ))}

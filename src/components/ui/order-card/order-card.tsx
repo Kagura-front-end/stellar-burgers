@@ -7,9 +7,10 @@ import { OrderStatus } from '@components';
 export type OrderCardUIProps = {
   order: TOrder;
   ingredients: TIngredient[];
+  showStatus?: boolean;
 };
 
-export const OrderCardUI: FC<OrderCardUIProps> = ({ order, ingredients }) => {
+export const OrderCardUI: FC<OrderCardUIProps> = ({ order, ingredients, showStatus = true }) => {
   const MAX = 6;
   const visible = ingredients.slice(0, MAX);
   const rest = Math.max(ingredients.length - MAX, 0);
@@ -27,7 +28,9 @@ export const OrderCardUI: FC<OrderCardUIProps> = ({ order, ingredients }) => {
       </div>
 
       <h3 className='text text_type_main-medium mb-2'>{order.name}</h3>
-      <OrderStatus status={order.status} />
+
+      {/* status is shown only if allowed */}
+      {showStatus && <OrderStatus status={order.status} />}
 
       <div className={styles.footer}>
         <ul className={`${styles.ingredients} ${styles.stack}`} aria-label='Состав'>

@@ -56,7 +56,7 @@ const FeedPage: React.FC = () => {
 
         <div className={styles.layout}>
           <section className={styles.left}>
-            <OrdersList orders={orders} />
+            <OrdersList orders={orders} showStatus={false} />
           </section>
 
           <div className={styles.separatorCol}>
