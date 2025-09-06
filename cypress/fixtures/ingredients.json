@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "data": [
+    {"_id": "bun-1", "name": "Булка светлая", "type": "bun", "price": 100, "image": "/img/bun1.png"},
+    {"_id": "bun-2", "name": "Булка тёмная", "type": "bun", "price": 120, "image": "/img/bun2.png"},
+    {"_id": "f-1", "name": "Краторная котлета", "type": "main", "price": 300, "image": "/img/f1.png"},
+    {"_id": "f-2", "name": "Соус фирменный", "type": "sauce", "price": 50, "image": "/img/f2.png"}
+  ]
+}

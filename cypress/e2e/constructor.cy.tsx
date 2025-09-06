@@ -1,0 +1,75 @@
+describe('конструктор бургера', () => {
+  beforeEach(() => {
+    cy.intercept('GET', '**/api/ingredients*', { fixture: 'ingredients.json' }).as('getIngredients');
+  });
+
+  it('рендеринг ингредиентов', () => {
+    cy.visit('/');
+    cy.wait('@getIngredients').its('response.statusCode').should('eq', 200);
+
+    cy.contains(/Булка светлая/i).should('exist');
+    cy.contains(/Краторная котлета/i).should('exist');
+  });
+
+  it('модалка ингредиента: открытие и закрытие', () => {
+    cy.visit('/');
+    cy.wait('@getIngredients').its('response.statusCode').should('eq', 200);
+
+    cy.contains('Соус фирменный').click();
+    cy.get('[data-cy="modal"], [role="dialog"]').should('contain', 'Соус фирменный');
+
+    cy.get('[data-cy="modal-close"]').click();
+    cy.get('[data-cy="modal"], [role="dialog"]').should('not.exist');
+
+    cy.contains('Соус фирменный').click();
+    cy.get('[data-cy="modal-overlay"]').click('topLeft');
+    cy.get('[data-cy="modal"], [role="dialog"]').should('not.exist');
+  });
+
+  it('оформление заказа: номер и очистка конструктора', () => {
+    cy.intercept('GET', '**/api/auth/user*', { fixture: 'user.json' }).as('getUser');
+    cy.intercept('POST', '**/api/orders*', { fixture: 'order.json' }).as('createOrder');
+    cy.intercept('POST', '**/api/auth/token*', {
+      body: { success: true, accessToken: 'Bearer test-access', refreshToken: 'test-refresh' }
+    }).as('refreshToken');
+
+    cy.visit('/', {
+      onBeforeLoad(win) {
+        win.localStorage.setItem('refreshToken', 'test-refresh');
+        win.document.cookie = 'accessToken=test-access; path=/';
+      }
+    });
+
+    cy.wait('@getUser').then(({ response }) => {
+      expect(response?.body).to.have.keys('success', 'user');
+      expect(response?.body.user).to.have.keys('name', 'email');
+    });
+
+    cy.wait('@getIngredients').its('response.statusCode').should('eq', 200);
+
+    ['Булка тёмная', 'Краторная котлета', 'Соус фирменный'].forEach((name) => {
+      cy.contains(name)
+        .closest('[data-cy="ingredient-card"]')
+        .within(() => {
+          cy.contains('button', /добав/i).click();
+        });
+    });
+
+    cy.get('[data-cy="order-button"], button').contains(/оформить заказ/i).click();
+
+    cy.wait('@createOrder').then(({ request, response }) => {
+      expect(response?.body?.order?.number).to.eq(424242);
+      expect(request.headers?.authorization).to.match(/^Bearer\s.+/);
+    });
+
+    cy.get('[data-cy="modal"], [role="dialog"]').should('contain', '424242');
+
+    cy.get('[data-cy="modal-close"]').click();
+    cy.get('[data-cy="modal"], [role="dialog"]').should('not.exist');
+
+    cy.get('[data-cy="constructor"]').should('contain', 'добавьте ингредиенты');
+
+    cy.clearCookie('accessToken');
+    cy.window().then((win) => win.localStorage.removeItem('refreshToken'));
+  });
+});

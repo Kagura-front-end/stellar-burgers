@@ -1,0 +1,30 @@
+// jest.config.ts
+import type { Config } from 'jest';
+
+const config: Config = {
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+  testMatch: ['**/?(*.)+(spec|test).ts?(x)'],
+
+  // если используешь алиасы наподобие "@/..." или "@utils-types"
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@utils-types$': '<rootDir>/src/utils/types',
+
+    // стили и ассеты (чтобы не падали импорты css/png/svg)
+    '\\.(css|scss|sass)$': 'identity-obj-proxy',
+    '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js'
+  },
+
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', { tsconfig: './tsconfig.json' }],
+    // если используешь CSS Modules и хочешь реальный объект классов:
+    // '\\.(css|scss|sass)$': 'jest-css-modules-transform'
+  },
+
+  setupFilesAfterEnv: [
+    '<rootDir>/src/setupTests.ts' // если используешь @testing-library/jest-dom
+  ]
+};
+
+export default config;
