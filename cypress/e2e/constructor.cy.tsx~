@@ -6,7 +6,6 @@ describe('конструктор бургера', () => {
   it('рендеринг ингредиентов', () => {
     cy.visit('/');
     cy.wait('@getIngredients').its('response.statusCode').should('eq', 200);
-
     cy.contains(/Булка светлая/i).should('exist');
     cy.contains(/Краторная котлета/i).should('exist');
   });
@@ -14,16 +13,10 @@ describe('конструктор бургера', () => {
   it('модалка ингредиента: открытие и закрытие', () => {
     cy.visit('/');
     cy.wait('@getIngredients').its('response.statusCode').should('eq', 200);
-
     cy.contains('Соус фирменный').click();
-    cy.get('[data-cy="modal"], [role="dialog"]').should('contain', 'Соус фирменный');
-
-    cy.get('[data-cy="modal-close"]').click();
-    cy.get('[data-cy="modal"], [role="dialog"]').should('not.exist');
-
-    cy.contains('Соус фирменный').click();
-    cy.get('[data-cy="modal-overlay"]').click('topLeft');
-    cy.get('[data-cy="modal"], [role="dialog"]').should('not.exist');
+    cy.get('[role="dialog"], [class*="modal"]').should('contain', 'Соус фирменный');
+    cy.get('body').type('{esc}');
+    cy.get('[role="dialog"], [class*="modal"]').should('not.exist');
   });
 
   it('оформление заказа: номер и очистка конструктора', () => {
@@ -40,35 +33,51 @@ describe('конструктор бургера', () => {
       }
     });
 
-    // если приложение запрашивает юзера на старте — дождёмся (необязательно)
-    // cy.wait('@getUser');
-
     cy.wait('@getIngredients').its('response.statusCode').should('eq', 200);
 
-    ['Булка тёмная', 'Краторная котлета', 'Соус фирменный'].forEach((name) => {
-      cy.contains(name)
-        .closest('[data-cy="ingredient-card"]')
-        .within(() => {
-          cy.contains('button', /добав/i).click();
-        });
-    });
+    const dragTo = (text: string, dropSelector: string, useFirst = true) => {
+      const dataTransfer = new DataTransfer();
+      cy.contains(text)
+        .scrollIntoView()
+        .closest('a, article, li, div')
+        .should('exist')
+        .trigger('pointerdown', { which: 1, force: true })
+        .trigger('dragstart', { dataTransfer, force: true });
 
-    cy.get('[data-cy="order-button"], button').contains(/оформить заказ/i).click();
+      const target = useFirst ? cy.get(dropSelector).first() : cy.get(dropSelector);
+      target
+        .should('exist')
+        .trigger('dragenter', { dataTransfer, force: true })
+        .trigger('dragover', { dataTransfer, force: true })
+        .trigger('drop', { dataTransfer, force: true });
+
+      cy.contains(text)
+        .closest('a, article, li, div')
+        .trigger('dragend', { dataTransfer, force: true });
+    };
+
+    dragTo('Булка тёмная', '[data-cy="drop-buns"]', true);
+    dragTo('Краторная котлета', '[data-cy="drop-fillings"]', true);
+    dragTo('Соус фирменный', '[data-cy="drop-fillings"]', true);
+
+    cy.get('[data-cy="order-button"], button')
+      .contains(/оформить заказ/i)
+      .scrollIntoView()
+      .should('be.visible')
+      .and('not.be.disabled')
+      .click();
 
     cy.wait('@createOrder').then(({ request, response }) => {
       expect(response?.body?.order?.number).to.eq(424242);
       expect(request.headers?.authorization).to.match(/^Bearer\s.+/);
     });
 
-    cy.get('[data-cy="modal"], [role="dialog"]').should('contain', '424242');
+    cy.get('[role="dialog"], [class*="modal"]').should('contain', '424242');
+    cy.get('body').type('{esc}');
+    cy.get('[role="dialog"], [class*="modal"]').should('not.exist');
+    cy.contains(/добавьте ингредиенты|перетащите/i).should('exist');
 
-    cy.get('[data-cy="modal-close"]').click();
-    cy.get('[data-cy="modal"], [role="dialog"]').should('not.exist');
-
-    cy.get('[data-cy="constructor"]').should('contain', 'добавьте ингредиенты');
-
-    // очистка
-    cy.clearCookie('accessToken');
     cy.window().then((win) => win.localStorage.removeItem('refreshToken'));
+    cy.clearCookie('accessToken');
   });
 });

@@ -1,0 +1,35 @@
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "bun-1",
+      "name": "Булка светлая",
+      "type": "bun",
+      "price": 100,
+      "image": "https://via.placeholder.com/120?text=bun1",
+      "image_mobile": "https://via.placeholder.com/80?text=bun1",
+      "image_large": "https://via.placeholder.com/240?text=bun1"
+    },
+    {
+      "_id": "bun-2",
+      "name": "Булка тёмная",
+      "type": "bun",
+      "price": 120,
+      "image": "https://via.placeholder.com/120?text=bun2"
+    },
+    {
+      "_id": "f-1",
+      "name": "Краторная котлета",
+      "type": "main",
+      "price": 300,
+      "image": "https://via.placeholder.com/120?text=f1"
+    },
+    {
+      "_id": "f-2",
+      "name": "Соус фирменный",
+      "type": "sauce",
+      "price": 50,
+      "image": "https://via.placeholder.com/120?text=f2"
+    }
+  ]
+}

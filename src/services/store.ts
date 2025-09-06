@@ -139,6 +139,15 @@ store.subscribe(
   }, 300),
 );
 
+declare global {
+  interface Window {
+    __store: typeof store;
+  }
+}
+if (typeof window !== 'undefined') {
+  window.__store = store;
+}
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 

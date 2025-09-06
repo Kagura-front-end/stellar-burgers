@@ -31,7 +31,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   onOrderClick,
   closeOrderModal,
 }) => (
-  <section className={styles.burger_constructor}>
+  <section className={styles.burger_constructor} data-cy='constructor'>
     {constructorItems.bun ? (
       <div className={styles.edgeFrame}>
         <div className={`${styles.row} ${styles.rowTop}`}>
@@ -42,7 +42,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
             tabIndex={-1}
             disabled
           />
-          <div className={styles.rowTab}>
+          <div className={styles.rowTab} data-cy='drop-buns'>
             <ConstructorElement
               type='top'
               isLocked
@@ -57,7 +57,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
       <div className={styles.edgeFrame}>
         <div className={`${styles.row} ${styles.rowTop}`}>
           <span className={styles.rowHandle} aria-hidden='true' />
-          <div className={styles.rowTab}>
+          <div className={styles.rowTab} data-cy='drop-buns'>
             <div className={`${styles.noBuns} ${styles.noBunsTop}`}>
               <span className='text text_type_main-default text_color_inactive'>
                 Выберите булки
@@ -69,7 +69,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
     )}
 
     <div className={styles.scrollArea}>
-      <ul className={styles.list}>
+      <ul className={styles.list} data-cy='drop-fillings'>
         {constructorItems.middle.length ? (
           constructorItems.middle.map((item) => (
             <li key={item.uuid} className={styles.row}>
@@ -104,7 +104,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
             tabIndex={-1}
             disabled
           />
-          <div className={styles.rowTab}>
+          <div className={styles.rowTab} data-cy='drop-buns'>
             <ConstructorElement
               type='bottom'
               isLocked
@@ -119,7 +119,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
       <div className={styles.edgeFrame}>
         <div className={`${styles.row} ${styles.rowBottom}`}>
           <span className={styles.rowHandle} aria-hidden='true' />
-          <div className={styles.rowTab}>
+          <div className={styles.rowTab} data-cy='drop-buns'>
             <div className={`${styles.noBuns} ${styles.noBunsBottom}`}>
               <span className='text text_type_main-default text_color_inactive'>
                 Выберите булки
@@ -141,6 +141,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         size='large'
         onClick={onOrderClick}
         disabled={!constructorItems.bun || !constructorItems.middle.length}
+        data-cy='order-button'
       >
         Оформить заказ
       </Button>

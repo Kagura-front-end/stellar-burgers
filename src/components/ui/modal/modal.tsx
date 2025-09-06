@@ -32,6 +32,7 @@ export const ModalUI: FC<TModalUIProps> = memo(({ title, onClose, children }) =>
         role='dialog'
         aria-modal='true'
         aria-labelledby={title ? labelId : undefined}
+        data-cy='modal'
       >
         <div className={styles.header}>
           {title && (
@@ -39,13 +40,19 @@ export const ModalUI: FC<TModalUIProps> = memo(({ title, onClose, children }) =>
               {title}
             </h3>
           )}
-          <button className={styles.button} type='button' aria-label='Закрыть' onClick={onClose}>
+          <button
+            className={styles.button}
+            type='button'
+            aria-label='Закрыть'
+            onClick={onClose}
+            data-cy='modal-close'
+          >
             <CloseIcon type='primary' />
           </button>
         </div>
         <div className={styles.content}>{children}</div>
       </div>
-      <ModalOverlayUI onClick={onClose} />
+      <ModalOverlayUI onClick={onClose} data-cy='modal-overlay' />
     </>
   );
 });
