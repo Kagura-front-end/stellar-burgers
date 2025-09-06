@@ -20,3 +20,6 @@ export const ConstructorPage: FC = () => {
     </ConstructorPageUI>
   );
 };
+
+/*
+test*/
