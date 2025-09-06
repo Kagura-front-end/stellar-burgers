@@ -141,10 +141,11 @@ store.subscribe(
 
 declare global {
   interface Window {
-    __store: typeof store;
+    __store?: typeof store;
+    Cypress?: unknown;
   }
 }
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && window.Cypress) {
   window.__store = store;
 }
 

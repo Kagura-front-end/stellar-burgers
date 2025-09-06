@@ -1,149 +1,149 @@
 .ingredients {
-    display: flex;
-    align-items: center;
-    flex-wrap: nowrap;
-    padding: 0;
-    margin: 0;
-    list-style: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 .order {
-    display: block;
-    text-decoration: none;
-    color: unset;
-    background-color: #1c1c21;
-    border-radius: 40px;
-    min-width: 576px;
-    box-sizing: border-box;
+  display: block;
+  text-decoration: none;
+  color: unset;
+  background-color: #1c1c21;
+  border-radius: 40px;
+  min-width: 576px;
+  box-sizing: border-box;
 }
 
 .order_info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .order_name {
-    text-align: left;
+  text-align: left;
 }
 
 .order_content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .order_total {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    vertical-align: middle;
-    line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  vertical-align: middle;
+  line-height: 1;
 }
 
 .order_total > svg,
 .order_total img {
-    display: block;
+  display: block;
 }
 
 .img_wrap {
-    width: 62px;
-    height: 62px;
-    border-radius: 50%;
-    border: #801ab3 solid 2px;
-    background-color: #1c1c21;
-    position: relative;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    z-index: 100;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: #801ab3 solid 2px;
+  background-color: #1c1c21;
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  z-index: 100;
 }
 
 .img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: static;
-    right: auto;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: static;
+  right: auto;
 }
 
 .stack {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    gap: 0;
-    padding: 0;
-    margin: 0;
-    list-style: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 .stack > li {
-    margin-left: -16px;
-    position: relative;
-    z-index: 1;
+  margin-left: -16px;
+  position: relative;
+  z-index: 1;
 }
 
 .stack > li:first-child {
-    margin-left: 0;
+  margin-left: 0;
 }
 
 .stack > li:nth-child(2) {
-    z-index: 2;
+  z-index: 2;
 }
 
 .stack > li:nth-child(3) {
-    z-index: 3;
+  z-index: 3;
 }
 
 .stack > li:nth-child(4) {
-    z-index: 4;
+  z-index: 4;
 }
 
 .stack > li:nth-child(5) {
-    z-index: 5;
+  z-index: 5;
 }
 
 .stack > li:nth-child(6) {
-    z-index: 6;
+  z-index: 6;
 }
 
 .more {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 
 .more::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.45);
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
 }
 
 .moreText {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 1;
-    color: #fff;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  color: #fff;
 }
 
 .meta {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

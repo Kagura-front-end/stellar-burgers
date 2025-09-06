@@ -1,12 +1,12 @@
 .element {
-    display: contents;
+  display: contents;
 }
 
 .element:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 :global(.move_button) svg {
-    opacity: 0;
-    pointer-events: none;
+  opacity: 0;
+  pointer-events: none;
 }

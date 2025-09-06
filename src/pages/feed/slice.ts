@@ -14,7 +14,7 @@ const initialState: FeedState = {
   total: 0,
   totalToday: 0,
   loading: false,
-  error: null
+  error: null,
 };
 
 const feedSlice = createSlice({
@@ -37,7 +37,7 @@ const feedSlice = createSlice({
         state.loading = false;
         state.error = (action.payload as string) ?? action.error.message ?? 'Error';
       });
-  }
+  },
 });
 
 export default feedSlice.reducer;

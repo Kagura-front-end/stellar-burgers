@@ -17,11 +17,7 @@ const sampleOrder: TOrder = {
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   number: 424242,
-  ingredients: [
-    '60d3b41abdacab0026a733c6',
-    '60d3b41abdacab0026a733cd',
-    '60d3b41abdacab0026a733ce',
-  ],
+  ingredients: ['60d3b41abdacab0026a733c6', '60d3b41abdacab0026a733cd', '60d3b41abdacab0026a733ce'],
 };
 
 export const Default: Story = {

@@ -4,19 +4,17 @@ import constructorReducer, {
   addIngredient,
   setBun,
   removeItem,
-  TConstructorItem
+  TConstructorItem,
 } from '../services/constructor/constructor.slice';
 
-import ingredientsReducer, {
-  fetchIngredients
-} from '../services/ingredients/ingredients.slice';
+import ingredientsReducer, { fetchIngredients } from '../services/ingredients/ingredients.slice';
 
 import type { TIngredient } from '@utils-types';
 
 describe('rootReducer', () => {
   const rootReducer = combineReducers({
     constructor: constructorReducer,
-    ingredients: ingredientsReducer
+    ingredients: ingredientsReducer,
   });
 
   it('возвращает initialState при UNKNOWN_ACTION', () => {
@@ -26,10 +24,9 @@ describe('rootReducer', () => {
   });
 });
 
-
 describe('constructorSlice', () => {
   const makeIng = (_id: string, type: TIngredient['type'], name: string): TIngredient =>
-    ({ _id, type, name } as TIngredient);
+    ({ _id, type, name }) as TIngredient;
 
   const bun: TIngredient = makeIng('bun-1', 'bun', 'Булка');
   const f1: TIngredient = makeIng('f-1', 'main', 'Котлета');
@@ -47,7 +44,9 @@ describe('constructorSlice', () => {
     const ids = state.ingredients.map((i) => i._id);
     expect(ids).toEqual(['f-1', 'f-2']);
 
-    const allHaveUuid: boolean = state.ingredients.every((i) => typeof i.uuid === 'string' && i.uuid.length > 0);
+    const allHaveUuid: boolean = state.ingredients.every(
+      (i) => typeof i.uuid === 'string' && i.uuid.length > 0,
+    );
     expect(allHaveUuid).toBe(true);
   });
 
@@ -71,14 +70,12 @@ describe('ingredientsSlice (async)', () => {
   });
 
   it('fulfilled → пишет данные и loading=false', () => {
-    const payload: TIngredient[] = [
-      { _id: '1', type: 'bun', name: 'Булка' } as TIngredient
-    ];
+    const payload: TIngredient[] = [{ _id: '1', type: 'bun', name: 'Булка' } as TIngredient];
 
     const pre = ingredientsReducer(undefined, { type: fetchIngredients.pending.type });
     const state = ingredientsReducer(pre, {
       type: fetchIngredients.fulfilled.type,
-      payload
+      payload,
     });
 
     expect(state.items).toEqual(payload);
@@ -89,7 +86,7 @@ describe('ingredientsSlice (async)', () => {
     const pre = ingredientsReducer(undefined, { type: fetchIngredients.pending.type });
     const state = ingredientsReducer(pre, {
       type: fetchIngredients.rejected.type,
-      error: { message: 'boom' }
+      error: { message: 'boom' },
     });
 
     expect(state.error).toBeDefined();

@@ -23,5 +23,5 @@ export const refreshFeed = createAsyncThunk<FeedResponse>(
     } catch (e: any) {
       return rejectWithValue(e?.message ?? 'Network error');
     }
-  }
+  },
 );
