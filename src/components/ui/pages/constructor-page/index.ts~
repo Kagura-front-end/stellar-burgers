@@ -1,2 +1,0 @@
-export { default } from './constructor-page';
-export * from './constructor-page';

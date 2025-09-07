@@ -1,8 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { TOrder } from '@utils-types';
 import { refreshFeed } from './thunk';
+import type { FeedResponse } from './thunk';
 
 type FeedState = {
-  orders: any[];
+  orders: TOrder[];
   total: number;
   totalToday: number;
   loading: boolean;
@@ -14,7 +16,7 @@ const initialState: FeedState = {
   total: 0,
   totalToday: 0,
   loading: false,
-  error: null
+  error: null,
 };
 
 const feedSlice = createSlice({
@@ -27,17 +29,23 @@ const feedSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(refreshFeed.fulfilled, (state, action) => {
-        state.loading = false;
-        state.orders = action.payload.orders;
-        state.total = action.payload.total;
-        state.totalToday = action.payload.totalToday;
-      })
-      .addCase(refreshFeed.rejected, (state, action) => {
-        state.loading = false;
-        state.error = (action.payload as string) ?? action.error.message ?? 'Error';
-      });
-  }
+      .addCase(
+        refreshFeed.fulfilled,
+        (state, action: PayloadAction<FeedResponse>) => {
+          state.loading = false;
+          state.orders = action.payload.orders;
+          state.total = action.payload.total;
+          state.totalToday = action.payload.totalToday;
+        },
+      )
+      .addCase(
+        refreshFeed.rejected,
+        (state, action: ReturnType<typeof refreshFeed.rejected>) => {
+          state.loading = false;
+          state.error = action.payload ?? action.error.message ?? 'Error';
+        },
+      );
+  },
 });
 
 export default feedSlice.reducer;

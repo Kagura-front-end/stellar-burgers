@@ -32,12 +32,23 @@ export type TFeedsResponse = TServerResponse<{
   totalToday: number;
 }>;
 
-export const refreshToken = (): Promise<TRefreshResponse> =>
-  fetch(`${URL}/auth/token`, {
+const hasAuthTokens = (): boolean => {
+  const access = getCookie('accessToken');
+  const refresh = localStorage.getItem('refreshToken');
+  return Boolean(access || refresh);
+};
+
+export const refreshToken = (): Promise<TRefreshResponse> => {
+  const rt = localStorage.getItem('refreshToken');
+  if (!rt) {
+    return Promise.reject({ message: 'No refresh token' } as IApiError);
+  }
+  return fetch(`${URL}/auth/token`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json;charset=utf-8' },
-    body: JSON.stringify({ token: localStorage.getItem('refreshToken') }),
+    body: JSON.stringify({ token: rt }),
   }).then((res) => checkResponse<TRefreshResponse>(res));
+};
 
 export const fetchWithRefresh = async <T>(url: string, options: RequestInit = {}): Promise<T> => {
   const accessToken = getCookie('accessToken');
@@ -65,10 +76,11 @@ export const fetchWithRefresh = async <T>(url: string, options: RequestInit = {}
     const status = apiError?.status;
 
     if (
-      message === 'jwt expired' ||
-      message === 'Token is invalid' ||
-      status === 401 ||
-      status === 403
+      (message === 'jwt expired' ||
+        message === 'Token is invalid' ||
+        status === 401 ||
+        status === 403) &&
+      localStorage.getItem('refreshToken')
     ) {
       const rt = await refreshToken();
 
@@ -144,14 +156,22 @@ export const logoutApi = () =>
       localStorage.removeItem('refreshToken');
     });
 
-export const getUserApi = () =>
-  fetchWithRefresh<TUserResponse>(`${URL}/auth/user`).then((d) => d.user);
+export const getUserApi = () => {
+  if (!hasAuthTokens()) {
+    return Promise.reject({ message: 'No auth tokens' } as IApiError);
+  }
+  return fetchWithRefresh<TUserResponse>(`${URL}/auth/user`).then((d) => d.user);
+};
 
-export const updateUserApi = (user: Partial<TUser> & { password?: string }) =>
-  fetchWithRefresh<TUserResponse>(`${URL}/auth/user`, {
+export const updateUserApi = (user: Partial<TUser> & { password?: string }) => {
+  if (!hasAuthTokens()) {
+    return Promise.reject({ message: 'No auth tokens' } as IApiError);
+  }
+  return fetchWithRefresh<TUserResponse>(`${URL}/auth/user`, {
     method: 'PATCH',
     body: JSON.stringify(user),
   }).then((d) => d.user);
+};
 
 export const forgotPasswordApi = ({ email }: { email: string }) =>
   fetch(`${URL}/password-reset`, {

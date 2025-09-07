@@ -1,19 +1,19 @@
 .root {
-    padding-top: 8px;
+  padding-top: 8px;
 }
 
 .status {
-    display: inline-block;
+  display: inline-block;
 }
 
 .status_done {
-    color: #00cccc;
+  color: #00cccc;
 }
 
 .status_pending {
-    color: #f2f2f3;
+  color: #f2f2f3;
 }
 
 .status_canceled {
-    color: #e52b1a;
+  color: #e52b1a;
 }

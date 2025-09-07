@@ -1,93 +1,93 @@
 .container {
-    max-width: 1240px;
-    margin-left: 365px;
+  max-width: 1240px;
+  margin-left: 365px;
 }
 
 .viewport {
-    --header-h: 88px;
-    height: calc(100vh - var(--header-h));
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
+  --header-h: 88px;
+  height: calc(100vh - var(--header-h));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .headerGrid {
-    display: grid;
-    grid-template-columns: 608px 0 minmax(320px, 1fr);
-    align-items: center;
-    margin: 40px 0 20px;
+  display: grid;
+  grid-template-columns: 608px 0 minmax(320px, 1fr);
+  align-items: center;
+  margin: 40px 0 20px;
 }
 
 .headerTitle {
-    grid-column: 1 / 2;
-    margin: 0;
+  grid-column: 1 / 2;
+  margin: 0;
 }
 
 .headerActions {
-    grid-column: 2 / 3;
-    justify-self: end;
-    z-index: 1;
+  grid-column: 2 / 3;
+  justify-self: end;
+  z-index: 1;
 }
 
 .layout {
-    display: grid;
-    grid-template-columns: 608px 56px minmax(320px, 1fr);
-    align-items: start;
-    flex: 1 1 auto;
-    min-height: 0;
+  display: grid;
+  grid-template-columns: 608px 56px minmax(320px, 1fr);
+  align-items: start;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .left {
-    min-height: 0;
+  min-height: 0;
 }
 
 .separatorCol {
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
 }
 
 .right {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .right .cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 24px;
-    align-items: start;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 24px;
+  align-items: start;
 }
 
 .right .colList {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-auto-rows: max-content;
-    grid-template-columns: repeat(2, max-content);
-    gap: 8px 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-auto-rows: max-content;
+  grid-template-columns: repeat(2, max-content);
+  gap: 8px 16px;
 }
 
 .right .num {
 }
 
 .right .ready {
-    color: #00cccc;
+  color: #00cccc;
 }
 
 .right .statBlock {
-    margin-top: 60px;
+  margin-top: 60px;
 }
 
 .right .totals {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .right .totalDigits {
-    text-shadow:
-            0px 0px 16px rgba(51, 51, 255, 0.25),
-            0px 0px 8px rgba(51, 51, 255, 0.25),
-            0px 4px 32px rgba(51, 51, 255, 0.5);
+  text-shadow:
+    0px 0px 16px rgba(51, 51, 255, 0.25),
+    0px 0px 8px rgba(51, 51, 255, 0.25),
+    0px 4px 32px rgba(51, 51, 255, 0.5);
 }

@@ -4,5 +4,4 @@ export type OrdersListProps = {
   orders: TOrder[];
   onClick?: (num: string | number) => void;
   showStatus?: boolean;
-
 };
