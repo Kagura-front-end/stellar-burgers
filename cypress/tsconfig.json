@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "types": ["cypress", "@testing-library/cypress"]
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["**/*.cy.ts", "**/*.cy.tsx", "support/**/*.d.ts"]
 }

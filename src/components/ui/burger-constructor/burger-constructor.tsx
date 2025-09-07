@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useRef } from 'react';
 import {
   ConstructorElement,
   Button,
@@ -8,18 +8,52 @@ import { BurgerConstructorElementUI } from '../burger-constructor-element/burger
 import styles from './burger-constructor.module.css';
 import { Modal } from '@components';
 import { Preloader, OrderDetailsUI } from '@ui';
+import type { BurgerConstructorUIProps } from './type';
+import { useDrag, useDrop } from 'react-dnd';
+import clsx from 'clsx';
 
-export type BurgerConstructorUIProps = {
-  constructorItems: {
-    bun: { name: string; price: number; image: string } | null;
-    middle: Array<{ uuid: string; name: string; price: number; image: string }>;
-  };
-  handleRemove: (item: { uuid: string }) => void;
-  price: number;
-  orderRequest: boolean;
-  orderNumber: number | null;
-  onOrderClick: () => void | Promise<void>;
-  closeOrderModal: () => void;
+const DND_ITEM = 'FILLING';
+
+type DraggableFillingProps = {
+  item: { uuid: string; name: string; price: number; image: string };
+  index: number;
+  onMove?: (from: number, to: number) => void;
+  onRemove: (item: { uuid: string }) => void;
+};
+
+const DraggableFilling: FC<DraggableFillingProps> = ({ item, index, onMove, onRemove }) => {
+  const ref = useRef<HTMLLIElement | null>(null);
+
+  const [, drop] = useDrop<{ index: number }>({
+    accept: DND_ITEM,
+    hover(drag) {
+      if (!ref.current) return;
+      if (drag.index === index) return;
+      onMove?.(drag.index, index);
+      drag.index = index;
+    },
+  });
+
+  const [{ isDragging }, drag] = useDrag({
+    type: DND_ITEM,
+    item: { index },
+    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+  });
+
+  drag(drop(ref));
+
+  return (
+    <li
+      ref={ref}
+      className={clsx(styles.row, styles.draggable, { [styles.dragging]: isDragging })}
+      data-cy='filling-item'
+    >
+      <button className={styles.rowHandle} aria-label='Переместить' />
+      <div className={styles.rowTab}>
+        <BurgerConstructorElementUI ingredient={item} onClose={() => onRemove(item)} />
+      </div>
+    </li>
+  );
 };
 
 export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
@@ -30,8 +64,9 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   orderNumber,
   onOrderClick,
   closeOrderModal,
+  onMove,
 }) => (
-  <section className={styles.burger_constructor} data-cy='constructor'>
+  <section className={styles.burger_constructor}>
     {constructorItems.bun ? (
       <div className={styles.edgeFrame}>
         <div className={`${styles.row} ${styles.rowTop}`}>
@@ -42,7 +77,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
             tabIndex={-1}
             disabled
           />
-          <div className={styles.rowTab} data-cy='drop-buns'>
+          <div className={styles.rowTab}>
             <ConstructorElement
               type='top'
               isLocked
@@ -57,7 +92,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
       <div className={styles.edgeFrame}>
         <div className={`${styles.row} ${styles.rowTop}`}>
           <span className={styles.rowHandle} aria-hidden='true' />
-          <div className={styles.rowTab} data-cy='drop-buns'>
+          <div className={styles.rowTab}>
             <div className={`${styles.noBuns} ${styles.noBunsTop}`}>
               <span className='text text_type_main-default text_color_inactive'>
                 Выберите булки
@@ -69,15 +104,16 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
     )}
 
     <div className={styles.scrollArea}>
-      <ul className={styles.list} data-cy='drop-fillings'>
+      <ul className={styles.list} data-cy='constructor-fillings'>
         {constructorItems.middle.length ? (
-          constructorItems.middle.map((item) => (
-            <li key={item.uuid} className={styles.row}>
-              <button className={styles.rowHandle} aria-label='Переместить' />
-              <div className={styles.rowTab}>
-                <BurgerConstructorElementUI ingredient={item} onClose={() => handleRemove(item)} />
-              </div>
-            </li>
+          constructorItems.middle.map((it, idx) => (
+            <DraggableFilling
+              key={it.uuid}
+              item={it}
+              index={idx}
+              onMove={onMove}
+              onRemove={handleRemove}
+            />
           ))
         ) : (
           <li className={styles.row}>
@@ -95,7 +131,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
     </div>
 
     {constructorItems.bun ? (
-      <div className={styles.edgeFrame}>
+      <div className={styles.edgeFrame} data-cy='drop-buns'>
         <div className={`${styles.row} ${styles.rowBottom}`}>
           <button
             className={styles.rowHandle}
@@ -104,7 +140,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
             tabIndex={-1}
             disabled
           />
-          <div className={styles.rowTab} data-cy='drop-buns'>
+          <div className={styles.rowTab}>
             <ConstructorElement
               type='bottom'
               isLocked
@@ -116,10 +152,10 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         </div>
       </div>
     ) : (
-      <div className={styles.edgeFrame}>
+      <div className={styles.edgeFrame} data-cy='drop-buns'>
         <div className={`${styles.row} ${styles.rowBottom}`}>
           <span className={styles.rowHandle} aria-hidden='true' />
-          <div className={styles.rowTab} data-cy='drop-buns'>
+          <div className={styles.rowTab}>
             <div className={`${styles.noBuns} ${styles.noBunsBottom}`}>
               <span className='text text_type_main-default text_color_inactive'>
                 Выберите булки

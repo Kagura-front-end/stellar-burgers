@@ -59,6 +59,19 @@ const constructorSlice = createSlice({
       state.orderRequest = false;
       state.orderNumber = null;
     },
+
+    reorderIngredient(state, action: PayloadAction<{ fromIndex: number; toIndex: number }>) {
+      const { fromIndex, toIndex } = action.payload;
+
+      if (fromIndex === toIndex) return;
+      const len = state.ingredients.length;
+      if (fromIndex < 0 || fromIndex >= len || toIndex < 0 || toIndex >= len) {
+        return;
+      }
+
+      const [moved] = state.ingredients.splice(fromIndex, 1);
+      state.ingredients.splice(toIndex, 0, moved);
+    },
   },
 });
 
@@ -70,6 +83,7 @@ export const {
   startOrder,
   finishOrder,
   resetOrder,
+  reorderIngredient,
 } = constructorSlice.actions;
 
 export { addIngredient as addItem };

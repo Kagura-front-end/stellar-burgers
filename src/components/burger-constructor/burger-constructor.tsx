@@ -8,6 +8,7 @@ import {
   selectTotalPrice,
   clearConstructor,
   removeItem,
+  reorderIngredient,
 } from '../../services/constructor/constructor.slice';
 import { BurgerConstructorUI } from '../ui/burger-constructor/burger-constructor';
 import {
@@ -50,6 +51,10 @@ const BurgerConstructor: FC = () => {
     dispatch(removeItem(item.uuid));
   };
 
+  const onMove = (fromIndex: number, toIndex: number) => {
+    dispatch(reorderIngredient({ fromIndex, toIndex }));
+  };
+
   const onOrderClick = async () => {
     if (!bun || items.length === 0) return;
 
@@ -59,7 +64,6 @@ const BurgerConstructor: FC = () => {
     }
 
     const ingredientIds = [bun._id, ...items.map((i) => i._id), bun._id];
-
     const resultAction = await dispatch(placeOrderThunk(ingredientIds));
 
     if (placeOrderThunk.fulfilled.match(resultAction)) {
@@ -80,6 +84,7 @@ const BurgerConstructor: FC = () => {
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
       handleRemove={handleRemove}
+      onMove={onMove}
     />
   );
 };
