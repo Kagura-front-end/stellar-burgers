@@ -1,2 +1,0 @@
-export { BurgerConstructorUI } from './burger-constructor';
-export type { BurgerConstructorUIProps } from './burger-constructor';
